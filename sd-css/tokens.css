@@ -1,0 +1,467 @@
+/*
+ * Stardust Design System — Token CSS Variables
+ * Generated from Figma: Stardust Components (a7JnfZ0Nd8df1TBPaMQ5Tj)
+ * Source: base collection (VariableCollectionId:3794:373) + mapped collection (VariableCollectionId:3794:458)
+ *
+ * PREFIX: --sd-  (Stardust component tokens — distinct from --xp- site chrome vars in main.css)
+ *
+ * To re-sync: tell Claude "re-sync tokens.css from Figma". Claude will run get_variable_defs
+ * on node 1:5354 and regenerate this file. No HTML changes needed — CSS var names are the stable contract.
+ *
+ * DO NOT hardcode hex values in component or token pages — always reference these --sd- vars.
+ * Last synced: 2026-05-27
+ */
+
+:root {
+
+  /* ─────────────────────────────────────────────
+   * TIER 1 — PRIMITIVES (base collection)
+   * ───────────────────────────────────────────── */
+
+  /* Purple scale */
+  --sd-colour-purple-50:   #F3F1FF;
+  --sd-colour-purple-100:  #E8E3F2;
+  --sd-colour-purple-200:  #D0C7E5;
+  --sd-colour-purple-300:  #B9ABD8;
+  --sd-colour-purple-400:  #A18FCC;
+  --sd-colour-purple-500:  #8068BA;
+  --sd-colour-purple-550:  #A687F2;
+  --sd-colour-purple-600:  #60479A;
+  --sd-colour-purple-700:  #4E3A7E;
+  --sd-colour-purple-800:  #3D2D62;
+  --sd-colour-purple-900:  #2B2046;
+
+  /* Orange scale */
+  --sd-colour-orange-50:   #FEF2E0;
+  --sd-colour-orange-100:  #FCDEB1;
+  --sd-colour-orange-200:  #FAC87F;
+  --sd-colour-orange-300:  #F8B24C;
+  --sd-colour-orange-400:  #F7A226;
+  --sd-colour-orange-500:  #FF9800;
+  --sd-colour-orange-600:  #F69202;
+  --sd-colour-orange-700:  #EC7702;
+  --sd-colour-orange-800:  #E56701;
+  --sd-colour-orange-900:  #DB3B03;
+  --sd-colour-orange-950:  #8A4A02;  /* AA-safe dark orange; was text-on-orange until 13 Aug 2026, now unbound (kept for ramp completeness) */
+  --sd-colour-orange-1000: #3B2408;  /* dark-mode orange tint surface */
+
+  /* Cyan scale */
+  --sd-colour-cyan-20:     #F0F9F9;
+  --sd-colour-cyan-50:     #DFF2F1;
+  --sd-colour-cyan-100:    #AFDEDC;
+  --sd-colour-cyan-200:    #7BCAC5;
+  --sd-colour-cyan-300:    #42B4AD;
+  --sd-colour-cyan-400:    #00A49B;
+  --sd-colour-cyan-500:    #01A39D;
+  --sd-colour-cyan-600:    #008480;
+  --sd-colour-cyan-700:    #00776B;
+  --sd-colour-cyan-800:    #00675C;
+  --sd-colour-cyan-900:    #004B40;
+  --sd-colour-cyan-950:    #0E4A44;  /* dark-mode cyan tint hover + focus halo */
+  --sd-colour-cyan-1000:   #07302C;  /* dark-mode cyan tint surface */
+
+  /* Green scale */
+  --sd-colour-green-50:    #F1F8F2;
+  --sd-colour-green-100:   #BFE1C3;
+  --sd-colour-green-200:   #ACD8B1;
+  --sd-colour-green-300:   #90CB97;
+  --sd-colour-green-400:   #74BE7D;
+  --sd-colour-green-500:   #59B163;
+  --sd-colour-green-600:   #489951;
+  --sd-colour-green-700:   #3B7D42;
+  --sd-colour-green-800:   #2E6133;
+  --sd-colour-green-900:   #214524;
+  --sd-colour-green-950:   #112B15;  /* dark-mode green tint surface */
+
+  /* Grey scale */
+  --sd-colour-grey-0:      #FFFFFF;
+  --sd-colour-grey-50:     #FCFCFC;
+  --sd-colour-grey-100:    #FAFAFA;
+  --sd-colour-grey-200:    #F6F6F6;
+  --sd-colour-grey-300:    #F1F1F1;
+  --sd-colour-grey-400:    #E2E2E2;
+  --sd-colour-grey-500:    #D0D0D0;
+  --sd-colour-grey-600:    #BDBDBD;
+  --sd-colour-grey-700:    #A0A0A0;
+  --sd-colour-grey-800:    #838383;
+  --sd-colour-grey-850:    #757575;  /* dark-mode unchecked focus halo (WCAG 2.4.11, 4.07:1 on grey-1200) */
+  --sd-colour-grey-900:    #686868;
+  --sd-colour-grey-1000:   #424242;
+  --sd-colour-grey-1050:   #2C2C2D;
+  --sd-colour-grey-1100:   #252525;
+  --sd-colour-grey-1150:   #1C1C1C;  /* dark-mode subtle wash (weekend cells, zebra rows) */
+  --sd-colour-grey-1200:   #121212;
+  --sd-colour-grey-1300:   #0B0B0B;  /* dark-mode sunken surface (page behind cards) */
+
+  /* Red scale */
+  --sd-colour-red-20:      #FDE8EE;
+  --sd-colour-red-50:      #FBDAE3;
+  --sd-colour-red-100:     #F7BACA;
+  --sd-colour-red-200:     #EF7292;
+  --sd-colour-red-400:     #D54263;
+  --sd-colour-red-800:     #D21D3E;
+  --sd-colour-red-900:     #B01832;  /* light-mode text on a red tint (5.37:1 on red-50) */
+  --sd-colour-red-950:     #3D0F1A;  /* dark-mode red tint surface */
+
+  /* Spacing primitives */
+  --sd-spacing-0:   0px;
+  --sd-spacing-1:   4px;
+  --sd-spacing-2:   8px;
+  --sd-spacing-3:   12px;
+  --sd-spacing-4:   16px;
+  --sd-spacing-5:   20px;
+  --sd-spacing-6:   24px;
+  --sd-spacing-8:   32px;
+  --sd-spacing-10:  40px;
+  --sd-spacing-12:  48px;
+  --sd-spacing-16:  64px;
+  --sd-spacing-20:  80px;
+
+  /* Radius primitives */
+  --sd-radius-sm:   4px;
+  --sd-radius-m:    8px;
+  --sd-radius-lg:   16px;
+  --sd-radius-full: 9999px;
+
+  /* Font-size primitives */
+  --sd-font-size-tiny: 9px;
+  --sd-font-size-xs:   12px;
+  --sd-font-size-sm:   14px;
+  --sd-font-size-base: 16px;
+  --sd-font-size-lg:   20px;
+  --sd-font-size-xl:   24px;
+  --sd-font-size-2xl:  32px;
+  --sd-font-size-3xl:  48px;
+
+  /* Line-height primitives */
+  --sd-line-height-tiny: 15px;
+  --sd-line-height-xs:   16px;
+  --sd-line-height-sm:   23px;
+  --sd-line-height-base: 20px;
+  --sd-line-height-lg:   24px;
+  --sd-line-height-xl:   28px;
+  --sd-line-height-2xl:  28px;
+  --sd-line-height-3xl:  56px;
+
+  /* Font family */
+  --sd-font-family: 'Inter', sans-serif;
+
+
+  /* ─────────────────────────────────────────────
+   * TIER 2 — SEMANTIC (mapped collection)
+   * ───────────────────────────────────────────── */
+
+  /* Action */
+  --sd-colour-action-primary:    var(--sd-colour-cyan-700);   /* #00776B */
+  --sd-colour-action-hover:      var(--sd-colour-cyan-600);   /* #008480 */
+  --sd-colour-action-pressed:    var(--sd-colour-cyan-900);   /* #004B40 */
+  --sd-colour-action-disabled:   var(--sd-colour-grey-200);   /* #F6F6F6 */
+  --sd-colour-action-disabled-fg: color-mix(in srgb, var(--sd-colour-action-primary) 60%, transparent); /* dimmed action label for a disabled ghost/minimal control on a tinted surface — follows action-primary into dark mode */
+  --sd-colour-action-foreground: var(--sd-colour-grey-0);     /* #FFFFFF */
+
+  /* Accent */
+  --sd-colour-accent-secondary:  var(--sd-colour-purple-500); /* #8068BA */
+  --sd-colour-accent-subtle:     var(--sd-colour-purple-50);  /* #F3F1FF */
+
+  /* Text */
+  --sd-colour-text-primary:      var(--sd-colour-grey-1100);  /* #252525 */
+  --sd-colour-text-secondary:    var(--sd-colour-grey-900);   /* #686868 — darkened from grey-800
+                                    #838383 on 2026-08-05. grey-800 was 3.79:1 on white and 3.51:1
+                                    on surface-grey, failing the WCAG 2.1 AA 4.5:1 minimum across
+                                    58 `color:` declarations in shared component CSS. grey-900 is
+                                    5.57:1 on white, 5.16:1 on surface-grey, and ≥4.81:1 on every
+                                    hue tint. Update the Figma variable colour/text/secondary to
+                                    alias colour/grey/900 to match. */
+  --sd-colour-text-disabled:     var(--sd-colour-grey-600);   /* #BDBDBD */
+  --sd-colour-text-inverse:      var(--sd-colour-grey-0);     /* #FFFFFF */
+  --sd-colour-text-link:         var(--sd-colour-cyan-700);   /* #00776B */
+
+  /* Text — ON A HUE TINT.
+     A tinted surface is only half a token: it needs a matching foreground. Before
+     these existed, components improvised — calendar used raw primitives, pills used
+     `action-primary`, fab used `feedback-warning-default` — which put 17 light-mode
+     pairings below AA and collapsed to 1.60:1 in dark mode. Pair each
+     `surface-<hue>` with its `text-on-<hue>`. */
+  --sd-colour-text-on-cyan:      var(--sd-colour-cyan-800);    /* #00675C — 5.85:1 on surface-cyan */
+  --sd-colour-text-on-green:     var(--sd-colour-green-800);   /* #2E6133 — 6.77:1 on surface-green */
+  --sd-colour-text-on-purple:    var(--sd-colour-purple-700);  /* #4E3A7E — 8.45:1 on surface-purple */
+  --sd-colour-text-on-red:       var(--sd-colour-red-900);     /* #B01832 — 5.37:1 on surface-red */
+  /* text-on-orange is the deliberate exception to the AA pairing above: restored to the bright
+     brand orange (orange-900 #DB3B03) by design decision 13 Aug 2026 — the AA-safe orange-950
+     (#8A4A02) read as brown. ~2.9:1 on surface-orange; AA intentionally set aside here. Dark mode
+     keeps its own value (orange-300) and is unaffected. */
+  --sd-colour-text-on-orange:    var(--sd-colour-orange-900);   /* #DB3B03 — bright brand orange (AA set aside) */
+
+  /* Surface — ELEVATION RAMP.
+     In light mode elevation reads as a shadow over white, so these collapse to the
+     same value. In dark mode a shadow over near-black is invisible and elevation
+     must come from a LIGHTER surface, so they diverge. A single surface-default
+     cannot express "menu over card over page" in dark mode. */
+  --sd-colour-surface-sunken:    var(--sd-colour-grey-200);   /* #F6F6F6 — page behind cards */
+  --sd-colour-surface-raised:    var(--sd-colour-grey-0);     /* #FFFFFF — card / sheet */
+  --sd-colour-surface-overlay:   var(--sd-colour-grey-0);     /* #FFFFFF — menu / modal / toast */
+
+  /* Surface */
+  --sd-colour-surface-default:   var(--sd-colour-grey-0);     /* #FFFFFF */
+  /* Neutral interaction ramp. surface-grey is the HOVER wash; -pressed is one step
+     further for :active. Components used the raw grey-300 for pressed before this
+     token existed, which meant they could not theme — and collapsing pressed onto
+     surface-grey would have made hover and pressed identical.
+     surface-subtle is LIGHTER than the hover wash: a passive tint for weekend cells
+     and zebra rows that must not read as an interaction state. */
+  --sd-colour-surface-subtle:       var(--sd-colour-grey-100);   /* #FAFAFA */
+  --sd-colour-surface-grey:         var(--sd-colour-grey-200);   /* #F6F6F6 — static fills */
+  --sd-colour-surface-grey-pressed: var(--sd-colour-grey-300);   /* #F1F1F1 — static, kept for parity */
+
+  /* STATE LAYERS — translucent, composited OVER whatever surface the element sits on.
+     An absolute grey wash cannot mean "one step lighter than my own background": on a
+     raised or overlay surface it either collides with that surface (making hover
+     invisible) or with the page. A translucent layer composites correctly at ANY
+     elevation, and over a tinted or zebra background too.
+     Apply as a background-image so the element keeps its own background-colour:
+       background-image: linear-gradient(var(--sd-colour-state-hover), var(--sd-colour-state-hover));
+     Alphas are chosen so that over white they reproduce the previous absolute greys
+     EXACTLY — #00000009 over white is #F6F6F6, #0000000E is #F1F1F1 — so light mode is
+     pixel-identical to before this existed. */
+  --sd-colour-state-hover:   #00000009;  /* 3.5% black */
+  --sd-colour-state-pressed: #0000000E;  /* 5.5% black */
+  --sd-colour-surface-cyan:      var(--sd-colour-cyan-50);    /* #DFF2F1 */
+  --sd-colour-surface-green:     var(--sd-colour-green-50);   /* #F1F8F2 */
+  --sd-colour-surface-purple:    var(--sd-colour-purple-50);  /* #F3F1FF */
+  --sd-colour-surface-red:       var(--sd-colour-red-50);     /* #FBDAE3 */
+  --sd-colour-surface-orange:    var(--sd-colour-orange-50);  /* #FEF2E0 */
+  --sd-colour-surface-inverse:   var(--sd-colour-grey-1200);  /* #121212 */
+
+  /* Border */
+  --sd-colour-border-default:    var(--sd-colour-purple-200); /* #D0C7E5 */
+  --sd-colour-border-strong:     var(--sd-colour-grey-800);   /* #838383 */
+  --sd-colour-border-focus:      var(--sd-colour-cyan-700);   /* #00776B */
+  --sd-colour-border-error:      var(--sd-colour-red-800);    /* #D21D3E */
+  --sd-colour-border-subtle:     var(--sd-colour-grey-400);   /* #E2E2E2 — neutral hairline for tracks, dividers, table cells (border-default is purple-tinted; this is the quiet neutral) */
+
+  /* Focus halos */
+  --sd-colour-focus-primary:     var(--sd-colour-cyan-200);   /* #7BCAC5 — checked/intermediate focus halo */
+  --sd-colour-focus-secondary:   var(--sd-colour-grey-800);   /* #838383 — unchecked focus halo.
+                                    Darkened from grey-600 #BDBDBD (~2.0:1, failed WCAG 2.4.11 3:1 minimum)
+                                    to grey-800 (~3.3:1). Figma variable colour/focus/secondary updated
+                                    to match on 2026-06-11. */
+
+  /* Feedback — Success */
+  --sd-colour-feedback-success-default: var(--sd-colour-cyan-500);  /* #01A39D */
+  --sd-colour-feedback-success-subtle:  var(--sd-colour-cyan-50);   /* #DFF2F1 */
+
+  /* Feedback — Warning */
+  --sd-colour-feedback-warning-default: var(--sd-colour-orange-700); /* #EC7702 */
+  --sd-colour-feedback-warning-subtle:  var(--sd-colour-orange-50);  /* #FEF2E0 */
+  /* Foreground for text/icons sitting ON a filled amber surface. Mode-invariant:
+     amber is too high-luminance to carry white in EITHER mode. White on orange-700
+     was 2.91:1 (failing even the 3:1 non-text floor); near-black is 6.43:1 in light
+     and 10.23:1 on the dark amber (orange-300). Its counterpart for action fills is
+     --sd-colour-action-foreground; error and success fills carry white safely and so
+     keep using --sd-colour-text-inverse. */
+  --sd-colour-feedback-warning-foreground: var(--sd-colour-grey-1200); /* #121212 */
+
+  /* Feedback — Error */
+  --sd-colour-feedback-error-default:   var(--sd-colour-red-800);    /* #D21D3E */
+  --sd-colour-feedback-error-subtle:    var(--sd-colour-red-400);    /* #D54263 */
+
+  /* Spacing — Component */
+  --sd-spacing-component-sm: var(--sd-spacing-2);  /* 8px */
+  --sd-spacing-component-md: var(--sd-spacing-4);  /* 16px */
+  --sd-spacing-component-lg: var(--sd-spacing-6);  /* 24px */
+
+  /* Spacing — Stack gap */
+  --sd-spacing-stack-gap-tight:   var(--sd-spacing-1);  /* 4px */
+  --sd-spacing-stack-gap-default: var(--sd-spacing-2);  /* 8px */
+  --sd-spacing-stack-gap-loose:   var(--sd-spacing-3);  /* 12px */
+  --sd-spacing-stack-gap-wide:    var(--sd-spacing-4);  /* 16px */
+
+  /* Spacing — Section + Page margin */
+  --sd-spacing-section-gap:          var(--sd-spacing-6);   /* 24px */
+  --sd-spacing-page-margin-mobile:   var(--sd-spacing-5);   /* 20px */
+  --sd-spacing-page-margin-tablet:   var(--sd-spacing-6);   /* 24px */
+  --sd-spacing-page-margin-desktop:  var(--sd-spacing-8);   /* 32px */
+
+
+  /* ─────────────────────────────────────────────
+   * TIER 2 — CSS-FIRST TOKENS
+   * Extracted from values already used consistently in component
+   * CSS. Matching Figma variables created 2026-06-11 in the base
+   * collection (font/weight/*, motion/*, z-index/*) — fold these
+   * into the Figma-synced sections above on the next full re-sync.
+   * ───────────────────────────────────────────── */
+
+  /* Font weight */
+  --sd-font-weight-regular:  400;
+  --sd-font-weight-medium:   500;
+  --sd-font-weight-semibold: 600;
+  --sd-font-weight-bold:     700;
+
+  /* Motion — duration */
+  --sd-motion-duration-fast: 80ms;   /* box-shadow / focus halo snap */
+  --sd-motion-duration-base: 150ms;  /* colour, background, border transitions */
+  --sd-motion-duration-slow: 200ms;  /* toggle thumb travel, larger movement */
+
+  /* Motion — easing (Material Design 3 alignment) */
+  --sd-motion-easing-standard:   cubic-bezier(0.2, 0, 0, 1);
+  --sd-motion-easing-default:    ease;
+
+  /* Surface — interaction tints */
+  --sd-colour-surface-cyan-hover: var(--sd-colour-cyan-100);  /* #AFDEDC — hover/active on surface-cyan
+                                    selections (e.g. selected menu rows). Figma variable
+                                    colour/surface/cyan-hover created 2026-06-12. */
+
+  /* Scrim — modal overlays (bottom sheet, future dialogs). 40% black.
+     Figma variable colour/scrim created 2026-06-12. */
+  --sd-colour-scrim: #00000066;
+
+  /* Z-index scale */
+  --sd-z-base:     0;
+  --sd-z-sticky:   100;   /* sticky headers, TOC */
+  --sd-z-sidenav:  200;   /* site side navigation */
+  --sd-z-dropdown: 300;
+  --sd-z-modal:    400;
+  --sd-z-toast:    500;
+
+  /* Light is the default mode. Declared so native scrollbars, date pickers and
+     form controls agree with the token set. */
+  color-scheme: light;
+}
+
+
+/* ═════════════════════════════════════════════════════════════
+ * DARK MODE — Palette A "Neutral Dark"
+ * ═════════════════════════════════════════════════════════════
+ *
+ * HOW IT WORKS
+ * ------------
+ * Dark mode overrides TIER 2 (semantic aliases) ONLY. Tier 1 primitives are
+ * mode-invariant by definition: --sd-colour-cyan-400 means "cyan 400", not "the
+ * action colour". Any component reading Tier 2 themes for free; any component
+ * reading a primitive directly will NOT theme, which is why the shared component
+ * CSS contains no direct primitive colour references.
+ *
+ * The selector is [data-sd-theme="dark"] rather than :root[data-sd-theme="dark"]
+ * so a single page can show both modes side by side and a product can theme one
+ * region. Set the attribute on <html> from a blocking script in <head>, before any
+ * stylesheet, to avoid a flash of light:
+ *
+ *   <script>
+ *     (function () {
+ *       var stored = localStorage.getItem('sd-theme');   // 'light' | 'dark' | 'system' | null
+ *       var system = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+ *       document.documentElement.dataset.sdTheme =
+ *         (stored && stored !== 'system') ? stored : system;
+ *     })();
+ *   </script>
+ *
+ * Resolving "system" to an explicit value in JS is deliberate: it means the CSS
+ * needs no media query, and a stored user preference always beats the OS.
+ *
+ * WHY FLAT BLOCKS AND NOT light-dark()
+ * ------------------------------------
+ * light-dark() is tidier CSS but cannot be expressed as a Figma Variable mode,
+ * cannot survive the DTCG export, and is unusable by React Native via Style
+ * Dictionary. A flat block mirrors a Figma "Dark" mode column 1:1 and survives
+ * every downstream transform.
+ *
+ * FIGMA: modes belong on the MAPPED collection only — primitives stay single-mode.
+ *
+ * CONTRAST: every value below was measured against surface-default, surface-raised
+ * AND surface-overlay. All 125 background+colour pairings in the shared component
+ * CSS pass WCAG 2.1 AA for their role in this mode. Disabled states are exempt.
+ * Regenerate the audit with the dark-mode sandbox page.
+ * Last verified: 2026-08-05
+ * ───────────────────────────────────────────────────────────── */
+
+[data-sd-theme="light"] { color-scheme: light; }
+
+[data-sd-theme="dark"] {
+  color-scheme: dark;
+
+  /* Surface — elevation is a LIGHTER surface, not a shadow. */
+  --sd-colour-surface-sunken:    var(--sd-colour-grey-1300);  /* #0B0B0B */
+  --sd-colour-surface-default:   var(--sd-colour-grey-1200);  /* #121212 */
+  --sd-colour-surface-raised:    var(--sd-colour-grey-1100);  /* #252525 */
+  --sd-colour-surface-overlay:   var(--sd-colour-grey-1050);  /* #2C2C2D */
+  /* Neutral ramp inverts direction: everything interactive gets LIGHTER. */
+  --sd-colour-surface-subtle:       var(--sd-colour-grey-1150);  /* #1C1C1C */
+  --sd-colour-surface-grey:         var(--sd-colour-grey-1100);  /* #252525 — static fills */
+  --sd-colour-surface-grey-pressed: var(--sd-colour-grey-1050);  /* #2C2C2D — static, parity */
+
+  /* State layers flip from black to WHITE. Alphas chosen so that over
+     surface-default they land on #252525 / #2C2C2C — i.e. the same values the old
+     absolute greys produced — while still reading correctly one and two steps up the
+     elevation ramp, where an absolute grey would have collided:
+       on default #121212 → hover #252525, pressed #2C2C2C
+       on raised  #252525 → hover #363636, pressed #3D3D3D
+       on overlay #2C2C2D → hover #3D3D3D, pressed #434344 */
+  --sd-colour-state-hover:   #FFFFFF14;  /* 7.8% white */
+  --sd-colour-state-pressed: #FFFFFF1C;  /* 11% white */
+  --sd-colour-surface-inverse:   var(--sd-colour-grey-0);     /* #FFFFFF — inverts WITH the mode */
+
+  /* Text — grey-400, not pure white: full white on near-black causes halation. */
+  --sd-colour-text-primary:      var(--sd-colour-grey-400);   /* #E2E2E2 — 14.46:1 */
+  --sd-colour-text-secondary:    var(--sd-colour-grey-700);   /* #A0A0A0 — 7.16:1 / 5.86:1 raised */
+  --sd-colour-text-disabled:     var(--sd-colour-grey-900);   /* #686868 — exempt from minimums */
+  --sd-colour-text-inverse:      var(--sd-colour-grey-1200);  /* #121212 — inverts WITH the mode */
+  --sd-colour-text-link:         var(--sd-colour-cyan-300);   /* #42B4AD — cyan-700 is 3.44:1 here */
+
+  /* Action — lifted UP the cyan scale, because cyan-700 #00776B is only 3.44:1 on
+     #121212 and fails as text/icon/link. Pressed goes LIGHTER, the dark-mode
+     convention for "more emphasis on press". */
+  --sd-colour-action-primary:    var(--sd-colour-cyan-400);   /* #00A49B — 6.05:1 */
+  --sd-colour-action-hover:      var(--sd-colour-cyan-300);   /* #42B4AD — 7.46:1 */
+  --sd-colour-action-pressed:    var(--sd-colour-cyan-200);   /* #7BCAC5 — 9.90:1 */
+  --sd-colour-action-disabled:   var(--sd-colour-grey-1050);  /* #2C2C2D */
+  /* FLIPS to near-black. A white label on cyan-400 is 3.10:1 (fails); #121212 is 6.05:1. */
+  --sd-colour-action-foreground: var(--sd-colour-grey-1200);  /* #121212 */
+
+  /* Accent — purple-500 is 4.11:1 on base but 3.36:1 on raised. Lifted. */
+  --sd-colour-accent-secondary:  var(--sd-colour-purple-400); /* #A18FCC — 6.53:1 */
+  --sd-colour-accent-subtle:     var(--sd-colour-purple-900); /* #2B2046 */
+
+  /* Border */
+  --sd-colour-border-default:    var(--sd-colour-grey-1000);  /* #424242 — purple-200 would glare */
+  --sd-colour-border-strong:     var(--sd-colour-grey-800);   /* #838383 — 4.94:1 */
+  --sd-colour-border-focus:      var(--sd-colour-cyan-300);   /* #42B4AD */
+  --sd-colour-border-error:      var(--sd-colour-red-200);    /* #EF7292 */
+  --sd-colour-border-subtle:     var(--sd-colour-grey-1050);  /* #2C2C2D — quieter than border-default in dark; grey-400 would glare */
+
+  /* Focus halos — these are halo BACKGROUNDS behind the control, so in dark mode
+     they must be LIGHTER than the surface (they are darker in light mode). Chosen
+     to mirror the light ratios: focus-primary 1.86:1 vs light's 1.89:1;
+     focus-secondary 4.07:1 vs light's 3.79:1, holding the WCAG 2.4.11 3:1 floor. */
+  --sd-colour-focus-primary:     var(--sd-colour-cyan-950);   /* #0E4A44 */
+  --sd-colour-focus-secondary:   var(--sd-colour-grey-850);   /* #757575 */
+
+  /* Hue tint surfaces — purpose-made desaturated tints. The light -50 steps are far
+     too bright and the -900 steps are still too saturated to sit a feedback colour
+     on: cyan-900 #004B40 as the success fill gives success text only 4.02:1. */
+  --sd-colour-surface-cyan:       var(--sd-colour-cyan-1000);   /* #07302C */
+  --sd-colour-surface-cyan-hover: var(--sd-colour-cyan-950);    /* #0E4A44 */
+  --sd-colour-surface-green:      var(--sd-colour-green-950);   /* #112B15 */
+  --sd-colour-surface-purple:     var(--sd-colour-purple-900);  /* #2B2046 */
+  --sd-colour-surface-red:        var(--sd-colour-red-950);     /* #3D0F1A */
+  --sd-colour-surface-orange:     var(--sd-colour-orange-1000); /* #3B2408 */
+
+  /* Text on a hue tint — lifted to the -300/-200 steps. */
+  --sd-colour-text-on-cyan:      var(--sd-colour-cyan-300);    /* #42B4AD — 5.70:1 */
+  --sd-colour-text-on-green:     var(--sd-colour-green-300);   /* #90CB97 — 8.10:1 */
+  --sd-colour-text-on-purple:    var(--sd-colour-purple-300);  /* #B9ABD8 — 7.07:1 */
+  --sd-colour-text-on-red:       var(--sd-colour-red-200);     /* #EF7292 — 5.85:1 */
+  --sd-colour-text-on-orange:    var(--sd-colour-orange-300);  /* #F8B24C — 7.95:1 */
+
+  /* Feedback — error red-800 is 3.56:1 on base and 2.91:1 on raised: an AA failure.
+     feedback-warning-foreground is NOT overridden — near-black is correct in both
+     modes, because amber is high-luminance in both. */
+  --sd-colour-feedback-success-default: var(--sd-colour-cyan-300);    /* #42B4AD — 7.46:1 */
+  --sd-colour-feedback-success-subtle:  var(--sd-colour-cyan-1000);   /* #07302C */
+  --sd-colour-feedback-warning-default: var(--sd-colour-orange-300);  /* #F8B24C — 10.23:1 */
+  --sd-colour-feedback-warning-subtle:  var(--sd-colour-orange-1000); /* #3B2408 */
+  --sd-colour-feedback-error-default:   var(--sd-colour-red-200);     /* #EF7292 — 6.68:1 */
+  --sd-colour-feedback-error-subtle:    var(--sd-colour-red-950);     /* #3D0F1A */
+
+  /* Scrim — 40% black over an already-dark surface barely reads. */
+  --sd-colour-scrim: #000000B3;  /* 70% */
+}

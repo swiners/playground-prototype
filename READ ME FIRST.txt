@@ -1,0 +1,159 @@
+PLAYGROUND — SIGN-IN TO ROOM DASHBOARD
+A design prototype from the Playground App Modernisation work.
+
+
+HOW TO OPEN IT
+--------------
+Most likely you've been sent a LINK. Open it in your browser and you're in —
+nothing to download, nothing to install. If we're on a call, share your screen
+and we'll follow along from there.
+
+If you were sent a ZIP instead, it runs with no internet at all:
+
+1. Unzip the folder FIRST. Don't open index.html from inside the zip preview —
+   Windows and macOS both serve those files from a temporary location and half
+   the prototype won't load.
+2. Double-click index.html. It opens in your browser.
+
+Chrome is the one it's been checked in. Safari and Edge should be fine.
+
+Either way nothing installs and nothing phones home — React, the fonts and
+every photo travel with it, and there is no server behind it doing anything.
+
+
+WHAT IT IS, AND WHAT IT ISN'T
+-----------------------------
+This is a PLAY PROTOTYPE. There is no backend and no database. Every service,
+room, child, face, allergy and event in here is invented. The PIN gate is a
+string comparison in the browser — theatre, not security. Nothing you do in it
+is saved anywhere or sent anywhere.
+
+It is not a build, and it is not a preview of a release date. It's the design
+made clickable so we can find out what's wrong with it before anyone builds it.
+
+
+THE SERVICE YOU'RE LOOKING AT
+-----------------------------
+Little Bugs Early Learning, with 112 invented children across six rooms: four
+single-age rooms — Nursery (1 year), Possum (2), Koala (3) and Kangaroo (4) —
+and two mixed-age clubs, Wombat and Bilby, both 3 to 5 on vacation care. The
+clubs do no sleep checks and no nappy checks, because that care type doesn't.
+
+Each room is set up around a DIFFERENT situation, deliberately: one is in the
+middle of a sleep round, one is busy at the door and over ratio, one is deep
+in medication and allergies, one is quiet with nothing due at all. So please
+open more than one. A single room is a single situation, not the product.
+
+
+SIGNING IN
+----------
+The service username and password arrive pre-filled. The only thing you type
+is the 4-digit educator PIN. In the zip it's printed in the test rail (see
+below) under Reference. On a link sent for a session the rail is switched off,
+so whoever sent you the link has the PIN — just ask.
+
+
+THE TEST RAIL
+-------------
+A facilitator panel that lets you jump straight to any situation. Open it with
+the small handle on the RIGHT edge of the window, or press Ctrl + . (Cmd + . on
+a Mac). Esc closes it.
+
+  Journey       14 numbered scenarios — pick one and the prototype jumps
+                straight into that situation, in the room that situation
+                belongs to. Ctrl+1 to Ctrl+9 run the first nine without
+                opening the rail. Ctrl+0 resets everything.
+  Conditions    online or offline, and whether staffing numbers show on the
+                room dashboard.
+  Surface       a phone or tablet frame if you'd rather see it at device size
+                than filling your whole window, and portrait or landscape.
+  Appearance    light and dark.
+  Copy link     copies a link that reopens the exact state you're looking at.
+                Handy if you find something odd and want to show us.
+
+On a link sent for a customer session the rail is switched off entirely — no
+handle, no keyboard shortcut, no way in. If you can't find it, that's
+deliberate and not a fault. The panel names the things we're trying to find
+out from the session, and reading them first would spoil the answers.
+
+
+THINGS THAT AREN'T WIRED UP
+---------------------------
+Deliberate gaps, so you don't spend time reporting them:
+
+  - The camera. It shows a placeholder, not your webcam.
+  - The DASHBOARD's date picker popover (the calendar that opens from the date
+    pill at the top). Stepping days with the < > arrows does work, and the day
+    picker inside a child's profile is fully wired.
+  - Four items in the side menu carry a "Not in this prototype" pill:
+    Incident records, Learning, Help & support, Account. Everything else in
+    that menu works.
+  - "Forgot Password?" on the service sign-in screen.
+
+Also not in scope for this piece of work at all, so they're absent rather than
+broken: observations and learning stories, messaging families, emergency and
+transport lists, checklists, and live staff ratios.
+
+
+ONE THING WORTH KNOWING
+-----------------------
+The rules baked in here — ratios, attendance, sign-in — are the Australian ones.
+If you're reading it with New Zealand in mind, say so and we'll note it, rather
+than you feeding back against rules that don't apply.
+
+
+WHAT CHANGED SINCE THE SEPTEMBER SESSIONS
+-----------------------------------------
+Newest first.
+
+Since the last round, the things you'd notice:
+
+  - The counts in the right-hand panel — Sleeping, Still booked in, Signed
+    out — are now buttons. Tap "Sleeping 6" and the list narrows to those six;
+    tap it again to go back. It's the quickest way to answer "who's asleep?"
+    without reading every row. Grouping by Sleep / rest does the same job a
+    different way.
+  - The quick-log buttons follow whatever the list is showing, and say how
+    many children they'll log for — "Sleep check · 6" is the six children in
+    front of you, not the whole room. With nothing filtered it still starts
+    with everyone signed in, the way it always did.
+  - Anything on "Due now" can be logged straight off that list — "Sleep check
+    for these 3". Medication is deliberately left out of it: a dose is one
+    child at a time, and that one is not meant to be fast.
+  - Wombat Club and Bilby Club are mixed-age 3-to-5 vacation care rather than
+    school-age, so the ages, the faces and the way they group all match now.
+
+If you were in one of the 9 September sessions, these are the things you
+raised, so you can check we heard them right:
+
+  - Times now say am or pm everywhere.
+  - Head count is inverted: it lists every child and you tick the ones you can
+    actually see. There is no "all present" button, on purpose.
+  - The cohort pills are gone. Grouping is a filter bar, and there's a
+    "Select all" where the pills used to bulk-select — on the bar in some
+    versions of this prototype, on each group heading in others, because
+    exactly where it should live is one of the things we're still testing.
+    Press and hold a child for half a second to start an ad-hoc selection
+    instead.
+  - The list is names and what needs doing. The event icons and signed-in times
+    are OFF by default now — switch them back on per room in Room settings if
+    your room works that way.
+  - The top bar is one row on a tablet and two on a phone, so most of what you
+    see is the list. On a phone the camera and room settings moved into the
+    side menu.
+  - The children's faces are AI-generated. They are not real children, on
+    purpose: a real child's photo on a tablet that sits in a room all day is a
+    consent question, not a picture question.
+  - Switching who's recording now asks for that educator's PIN, and there's a
+    proper "Log out" next to it.
+  - Correcting a record can change what was recorded, not just the time, and
+    the reason is now optional.
+  - Every pop-up has a visible X in the corner.
+  - A medication dose can be recorded even with no authorisation on file; the
+    record is flagged instead of blocked.
+  - The child profile carries Office's "special circumstances" and "About"
+    notes, each contact expands to all their authorisations, and you can open
+    any of the last two weeks without leaving the profile.
+
+
+Questions, or something looks wrong: Sam Weinhandl.

@@ -1,0 +1,336 @@
+/*
+ * Stardust Design System — Checkbox
+ * Single source of truth for .ds-checkbox and .ds-checkbox-field styles. Extracted from the checkbox doc page;
+ * loaded by component doc pages and the sandbox. All values reference --sd- tokens
+ * from tokens.css — never hardcode hex here.
+ */
+
+/* ── Checkbox wrapper — 44×44 hit area ──────────────────
+   The halo (hover/focus/pressed circle) is rendered via ::before
+   so it can scale-in independently from the 18px visual box.
+   background on the wrapper itself stays transparent.
+─────────────────────────────────────────────────────── */
+.ds-checkbox {
+  --cb-box-bg:     transparent;
+  --cb-box-border: var(--sd-colour-border-strong);
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: var(--sd-spacing-stack-gap-default);
+  border-radius: var(--sd-radius-full);
+  background: transparent;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  position: relative;
+  cursor: default;
+}
+
+/*
+ * ── State layer (::before) — MD3 motion spec ─────────────
+ *
+ * MD3 easing tokens used here:
+ *   Standard          cubic-bezier(0.2, 0, 0, 1)       — general movement
+ *   Standard Accel.   cubic-bezier(0.3, 0, 1, 1)       — elements exiting (fast out)
+ *   Emphasized Decel. cubic-bezier(0.05, 0.7, 0.1, 1)  — elements entering (natural settle)
+ *
+ * MD3 duration tokens used here:
+ *   short-2  100ms   box fill transition
+ *   short-3  150ms   check/dash path draw
+ *   medium-1 200ms   state layer scale-in
+ *   short-3  150ms   state layer scale-out (faster exit per MD3 guidelines)
+ *
+ * Asymmetric in/out: enter transition is set on the active-state rules so
+ * the browser uses it when entering that state; the default rule's transition
+ * governs the exit, which is shorter and uses accelerate easing per MD3.
+ *
+ * State layer uses scale-only visibility (no opacity transition) — the
+ * layer appears/disappears via scale alone, keeping the animation sharp.
+ */
+.ds-checkbox::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--sd-radius-full);
+  background: transparent;
+  /* MD3: ripple originates from centre — start at scale(0), not scale(0.5) */
+  transform: scale(0);
+  pointer-events: none;
+  /* EXIT transition — Standard Accelerate: fast, crisp dismissal */
+  transition:
+    transform        var(--sd-motion-duration-base) cubic-bezier(0.3, 0, 1, 1),
+    background-color 100ms var(--sd-motion-easing-standard);
+}
+
+/* ── Interactive: halo enter (asymmetric — Standard, slower) ──
+   Focus uses :has(:focus-visible) — keyboard focus only. A mouse click leaves
+   the native input focused but NOT focus-visible, so the halo does not linger
+   after selection (the old :focus-within kept it stuck on). */
+.ds-checkbox--interactive:hover:not(.is-disabled):not(.is-error)::before,
+.ds-checkbox--interactive:active:not(.is-disabled):not(.is-error)::before,
+.ds-checkbox--interactive:has(:focus-visible):not(.is-disabled):not(.is-error)::before {
+  transform: scale(1);
+  /* ENTER transition — Standard: smooth, purposeful arrival */
+  transition:
+    transform        var(--sd-motion-duration-slow) var(--sd-motion-easing-standard),
+    background-color 100ms var(--sd-motion-easing-standard);
+}
+
+/* Static demo variants — shown at full scale with no animation */
+.ds-checkbox.is-demo--hover::before,
+.ds-checkbox.is-demo--focus::before,
+.ds-checkbox.is-demo--pressed::before {
+  transform: scale(1);
+  transition: none;
+}
+
+/* ── Halo colours — interactive ────────────────────────── */
+.ds-checkbox--interactive.ds-checkbox--checked:hover:not(.is-disabled):not(.is-error)::before,
+.ds-checkbox--interactive.ds-checkbox--indeterminate:hover:not(.is-disabled):not(.is-error)::before {
+  background: var(--sd-colour-surface-cyan);
+}
+.ds-checkbox--interactive.ds-checkbox--unchecked:hover:not(.is-disabled):not(.is-error)::before {
+  background-image: linear-gradient(var(--sd-colour-state-hover), var(--sd-colour-state-hover));
+}
+
+.ds-checkbox--interactive.ds-checkbox--checked:active:not(.is-disabled):not(.is-error)::before,
+.ds-checkbox--interactive.ds-checkbox--indeterminate:active:not(.is-disabled):not(.is-error)::before {
+  background: var(--sd-colour-feedback-success-default);
+}
+.ds-checkbox--interactive.ds-checkbox--unchecked:active:not(.is-disabled):not(.is-error)::before {
+  background: var(--sd-colour-text-secondary);
+}
+
+/* Focus — new tokens: focus/primary (teal) and focus/secondary (grey).
+   Keyboard-only (:has(:focus-visible)) — see the halo-enter note above. */
+.ds-checkbox--interactive.ds-checkbox--checked:has(:focus-visible):not(.is-disabled):not(.is-error)::before,
+.ds-checkbox--interactive.ds-checkbox--indeterminate:has(:focus-visible):not(.is-disabled):not(.is-error)::before {
+  background: var(--sd-colour-focus-primary);
+}
+.ds-checkbox--interactive.ds-checkbox--unchecked:has(:focus-visible):not(.is-disabled):not(.is-error)::before {
+  background: var(--sd-colour-focus-secondary);
+}
+
+/* ── Halo colours — static demos ───────────────────────── */
+.ds-checkbox.is-demo--hover.ds-checkbox--checked::before,
+.ds-checkbox.is-demo--hover.ds-checkbox--indeterminate::before {
+  background: var(--sd-colour-surface-cyan);
+}
+.ds-checkbox.is-demo--hover.ds-checkbox--unchecked::before {
+  background-image: linear-gradient(var(--sd-colour-state-hover), var(--sd-colour-state-hover));
+}
+.ds-checkbox.is-demo--focus.ds-checkbox--checked::before,
+.ds-checkbox.is-demo--focus.ds-checkbox--indeterminate::before {
+  background: var(--sd-colour-focus-primary);
+}
+.ds-checkbox.is-demo--focus.ds-checkbox--unchecked::before {
+  background: var(--sd-colour-focus-secondary);
+}
+.ds-checkbox.is-demo--pressed.ds-checkbox--checked::before,
+.ds-checkbox.is-demo--pressed.ds-checkbox--indeterminate::before {
+  background: var(--sd-colour-feedback-success-default);
+}
+.ds-checkbox.is-demo--pressed.ds-checkbox--unchecked::before {
+  background: var(--sd-colour-text-secondary);
+}
+
+/* ── Box border changes on hover/focus/pressed (unchecked) ── */
+.ds-checkbox--interactive.ds-checkbox--unchecked:hover:not(.is-disabled):not(.is-error),
+.ds-checkbox--interactive.ds-checkbox--unchecked:active:not(.is-disabled):not(.is-error),
+.ds-checkbox--interactive.ds-checkbox--unchecked:has(:focus-visible):not(.is-disabled):not(.is-error),
+.ds-checkbox.is-demo--hover.ds-checkbox--unchecked,
+.ds-checkbox.is-demo--focus.ds-checkbox--unchecked,
+.ds-checkbox.is-demo--pressed.ds-checkbox--unchecked {
+  --cb-box-border: var(--sd-colour-text-primary);
+}
+
+/* ── Visual box ──────────────────────────────────────── */
+.ds-checkbox__box {
+  width: 18px;
+  height: 18px;
+  border-radius: var(--sd-radius-sm);
+  border: 2px solid var(--cb-box-border);
+  background: var(--cb-box-bg);
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--sd-colour-text-inverse);
+  position: relative;
+  z-index: 1; /* sit above ::before halo */
+  /* MD3 short-2 (100ms), Standard easing */
+  transition:
+    background-color 100ms var(--sd-motion-easing-standard),
+    border-color     100ms var(--sd-motion-easing-standard),
+    transform         75ms var(--sd-motion-easing-standard);
+}
+
+/* MD3 press feedback — slight squeeze on the container */
+.ds-checkbox--interactive:active:not(.is-disabled) .ds-checkbox__box {
+  transform: scale(0.85);
+}
+
+/* ── Icon glyph — simple appear (fade + settle) ─────────
+ * The tick/dash is drawn all at once and simply fades and settles into place,
+ * rather than stroke-drawing. Motion best practice for a small confirmation
+ * glyph: brief, single-property-feel, no fussy line-tracing.
+ *
+ * Hidden by default; the checked / indeterminate rules bring the matching
+ * glyph in. The box fill (100ms) leads; the glyph settles alongside it so the
+ * whole state change reads as one crisp confirmation.
+─────────────────────────────────────────────────────── */
+.ds-checkbox__icon {
+  width: 12px;
+  height: 12px;
+  display: block;
+  overflow: visible;
+  transform-origin: center;
+  opacity: 0;
+  transform: scale(0.6);
+  /* EXIT — MD3 short-1 (80ms), Standard Accelerate: quick, crisp dismissal */
+  transition:
+    opacity   var(--sd-motion-duration-fast) cubic-bezier(0.3, 0, 1, 1),
+    transform var(--sd-motion-duration-fast) cubic-bezier(0.3, 0, 1, 1);
+}
+.ds-checkbox--checked .ds-checkbox__icon--check,
+.ds-checkbox--indeterminate .ds-checkbox__icon--dash {
+  opacity: 1;
+  transform: scale(1);
+  /* ENTER — MD3 short-3 (150ms), Emphasized Decelerate: snappy in, natural settle */
+  transition:
+    opacity   var(--sd-motion-duration-base) cubic-bezier(0.05, 0.7, 0.1, 1.0),
+    transform var(--sd-motion-duration-base) cubic-bezier(0.05, 0.7, 0.1, 1.0);
+}
+
+/* ── Type: unchecked ─────────────────────────────────── */
+.ds-checkbox--unchecked {
+  --cb-box-bg: var(--sd-colour-surface-default);
+  --cb-box-border: var(--sd-colour-border-strong);
+}
+
+/* ── Type: checked / indeterminate ─────────────────────── */
+.ds-checkbox--checked,
+.ds-checkbox--indeterminate {
+  --cb-box-bg: var(--sd-colour-action-primary);
+  --cb-box-border: var(--sd-colour-action-primary);
+}
+
+.ds-checkbox--indeterminate .ds-checkbox__icon--check { display: none; }
+.ds-checkbox--checked    .ds-checkbox__icon--dash  { display: none; }
+
+/* ── Interactive ─────────────────────────────────────── */
+.ds-checkbox--interactive { cursor: pointer; }
+
+.ds-checkbox--interactive .ds-checkbox__native {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+  z-index: 2;
+}
+
+/* Disabled — visual state (not just pointer-events) */
+.ds-checkbox--interactive.is-disabled {
+  cursor: not-allowed;
+  pointer-events: none;
+}
+.ds-checkbox--interactive.is-disabled.ds-checkbox--unchecked {
+  --cb-box-border: var(--sd-colour-text-disabled);
+}
+.ds-checkbox--interactive.is-disabled.ds-checkbox--checked,
+.ds-checkbox--interactive.is-disabled.ds-checkbox--indeterminate {
+  --cb-box-bg: var(--sd-colour-action-disabled);
+  --cb-box-border: var(--sd-colour-action-disabled);
+  color: var(--sd-colour-text-disabled);
+}
+
+/* Error */
+.ds-checkbox--interactive.is-error.ds-checkbox--unchecked {
+  --cb-box-border: var(--sd-colour-border-error);
+}
+.ds-checkbox--interactive.is-error.ds-checkbox--checked,
+.ds-checkbox--interactive.is-error.ds-checkbox--indeterminate {
+  --cb-box-bg: var(--sd-colour-feedback-error-default);
+  --cb-box-border: var(--sd-colour-feedback-error-default);
+}
+
+/* ── Static demo disabled / error ───────────────────── */
+.ds-checkbox.is-demo--disabled.ds-checkbox--unchecked {
+  --cb-box-border: var(--sd-colour-text-disabled);
+}
+.ds-checkbox.is-demo--disabled.ds-checkbox--checked,
+.ds-checkbox.is-demo--disabled.ds-checkbox--indeterminate {
+  --cb-box-bg: var(--sd-colour-action-disabled);
+  --cb-box-border: var(--sd-colour-action-disabled);
+  color: var(--sd-colour-text-disabled);
+}
+.ds-checkbox.is-demo--error.ds-checkbox--unchecked {
+  --cb-box-border: var(--sd-colour-border-error);
+}
+.ds-checkbox.is-demo--error.ds-checkbox--checked,
+.ds-checkbox.is-demo--error.ds-checkbox--indeterminate {
+  --cb-box-bg: var(--sd-colour-feedback-error-default);
+  --cb-box-border: var(--sd-colour-feedback-error-default);
+}
+
+/* ── Checkbox field (parent composition: control + label + helper) ── */
+.ds-checkbox-field {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: var(--sd-spacing-stack-gap-default);
+  cursor: pointer;
+  font-family: var(--sd-font-family);
+  font-size: var(--sd-font-size-base);
+  line-height: var(--sd-line-height-base);
+  color: var(--sd-colour-text-primary);
+  max-width: 360px;
+}
+
+.ds-checkbox-field__text {
+  padding-top: 10px;
+}
+
+.ds-checkbox-field.is-disabled {
+  color: var(--sd-colour-text-disabled);
+  cursor: not-allowed;
+}
+
+.ds-checkbox-field.is-error .ds-checkbox-field__text {
+  color: var(--sd-colour-feedback-error-default);
+}
+
+.ds-checkbox-field.is-error .ds-checkbox-field__helper {
+  color: var(--sd-colour-feedback-error-default);
+  font-size: var(--sd-font-size-sm);
+  margin-top: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* All motion tokens set to none — state changes are still visually clear */
+  .ds-checkbox::before,
+  .ds-checkbox--interactive:hover:not(.is-disabled):not(.is-error)::before,
+  .ds-checkbox--interactive:active:not(.is-disabled):not(.is-error)::before,
+  .ds-checkbox--interactive:has(:focus-visible):not(.is-disabled):not(.is-error)::before,
+  .ds-checkbox__box,
+  .ds-checkbox--interactive:active:not(.is-disabled) .ds-checkbox__box,
+  .ds-checkbox__icon {
+    transition: none;
+    animation: none;
+  }
+  /* State layer visible immediately at full size — no scaling animation */
+  .ds-checkbox--interactive:hover:not(.is-disabled):not(.is-error)::before,
+  .ds-checkbox--interactive:active:not(.is-disabled):not(.is-error)::before,
+  .ds-checkbox--interactive:has(:focus-visible):not(.is-disabled):not(.is-error)::before {
+    transform: scale(1);
+  }
+  /* Box press — no squeeze */
+  .ds-checkbox--interactive:active:not(.is-disabled) .ds-checkbox__box {
+    transform: none;
+  }
+}

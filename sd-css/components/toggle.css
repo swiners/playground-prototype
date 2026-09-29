@@ -1,0 +1,135 @@
+/*
+ * Stardust Design System — Toggle
+ * Single source of truth for .ds-toggle styles. Extracted from the toggle doc page;
+ * loaded by component doc pages and the sandbox. All values reference --sd- tokens
+ * from tokens.css — never hardcode hex here.
+ *
+ * Visual: Vuetify / Material-style switch — thin track, overhanging thumb with
+ * elevation shadow. Off = grey track + white thumb; on = muted teal track +
+ * solid teal thumb (--sd-colour-action-hover / #008480).
+ * Markup: .ds-toggle > .ds-toggle__rail > .ds-toggle__knob-wrap > .ds-toggle__thumb
+ * Spec: toggle-spec.md
+ */
+
+/* ── Toggle (Switch) ──────────────────────────────────────
+   Binary on/off control. ≥44×44px touch target.
+   role="switch" + aria-checked. Label always external.
+──────────────────────────────────────────────────────── */
+.ds-toggle {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  vertical-align: middle;
+  user-select: none;
+}
+.ds-toggle:focus { outline: none; }
+.ds-toggle--disabled { cursor: not-allowed; pointer-events: none; opacity: 0.6; }
+
+/* Rail (track) — 36×14px; thumb overhangs vertically */
+.ds-toggle__rail {
+  position: relative;
+  display: block;
+  width: 36px;
+  height: 14px;
+  margin: 0;
+  border-radius: 7px;
+  background: var(--sd-colour-border-strong);
+  transition: background-color var(--sd-motion-duration-slow) var(--sd-motion-easing-standard);
+  flex-shrink: 0;
+  overflow: visible;
+}
+
+/* Knob wrapper — 20×20, centred on the 14px track (~3px overhang each side) */
+.ds-toggle__knob-wrap {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: translate(-3px, -50%);
+  transition: transform var(--sd-motion-duration-slow) var(--sd-motion-easing-standard);
+}
+
+/* No ripple — elevation is carried by the thumb shadow */
+.ds-toggle__knob-wrap::before { content: none; display: none; }
+
+/* Thumb — 20×20, white off / teal on, soft elevation */
+.ds-toggle__thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: var(--sd-radius-full);
+  background: var(--sd-colour-action-foreground);
+  border: none;
+  box-shadow: 0 1px 3px color-mix(in srgb, var(--sd-colour-text-primary) 40%, transparent);
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+  transition:
+    background-color var(--sd-motion-duration-slow) var(--sd-motion-easing-standard),
+    box-shadow var(--sd-motion-duration-base) ease;
+}
+
+/* ── ON state ─────────────────────────────────────────────
+   Track: action-hover at ~48% (muted teal). Thumb: solid action-hover. */
+.ds-toggle--on .ds-toggle__rail {
+  background: color-mix(in srgb, var(--sd-colour-action-hover) 48%, transparent);
+}
+.ds-toggle--on .ds-toggle__knob-wrap {
+  transform: translate(19px, -50%); /* 36 − 20 + 3 */
+}
+.ds-toggle--on .ds-toggle__thumb {
+  background: var(--sd-colour-action-hover);
+}
+
+/* ── HOVER ──────────────────────────────────────────────── */
+.ds-toggle:hover:not(.ds-toggle--disabled) .ds-toggle__thumb,
+.ds-toggle.is-demo--hover .ds-toggle__thumb {
+  box-shadow: 0 2px 5px color-mix(in srgb, var(--sd-colour-text-primary) 45%, transparent);
+}
+
+/* ── PRESSED (active / static demo) ─────────────────────── */
+.ds-toggle:active:not(.ds-toggle--disabled) .ds-toggle__thumb,
+.ds-toggle.is-demo--pressed .ds-toggle__thumb {
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--sd-colour-text-primary) 35%, transparent);
+}
+
+/* ── FOCUS (:focus-visible only) — outline on the track ─── */
+.ds-toggle:focus-visible .ds-toggle__rail,
+.ds-toggle.is-demo--focus .ds-toggle__rail {
+  outline: 2px solid var(--sd-colour-border-focus);
+  outline-offset: 6px;
+}
+
+/* ── DISABLED ───────────────────────────────────────────── */
+.ds-toggle--disabled .ds-toggle__rail {
+  background: var(--sd-colour-action-disabled);
+}
+.ds-toggle--disabled .ds-toggle__thumb {
+  background: var(--sd-colour-action-foreground);
+  box-shadow: none;
+}
+.ds-toggle--disabled.ds-toggle--on .ds-toggle__rail {
+  background: color-mix(in srgb, var(--sd-colour-action-hover) 48%, transparent);
+}
+.ds-toggle--disabled.ds-toggle--on .ds-toggle__thumb {
+  background: var(--sd-colour-action-hover);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ds-toggle__rail,
+  .ds-toggle__knob-wrap,
+  .ds-toggle__thumb {
+    transition: none;
+  }
+}
