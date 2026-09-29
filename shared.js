@@ -4,7 +4,7 @@ const {
   useLayoutEffect,
   useRef
 } = React;
-const PG_VERSION = '0.11.3';
+const PG_VERSION = '0.11.4';
 const TEAL = 'var(--sd-colour-action-primary)';
 const LINK = 'var(--sd-colour-text-link)';
 const HERO_GRAD = 'radial-gradient(120% 70% at 50% 0%, var(--sd-colour-cyan-700), var(--sd-colour-cyan-900))';

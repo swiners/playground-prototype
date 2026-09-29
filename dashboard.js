@@ -125,10 +125,10 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
   }, {
     key: 'bilby',
     name: 'Bilby Club',
-    ages: '3–5 yrs',
+    ages: '5–12 yrs',
     educators: 2,
     booked: 18,
-    limit: 11,
+    limit: 15,
     care: 'vac',
     sleepTrack: 'Rest'
   }, {
@@ -159,6 +159,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     }
   };
   const RD_SLEEP_INTERVAL = 10;
+  const rdDueLabel = (event, mins, late) => late ? `${event} · ${mins} min overdue` : mins < 2 ? `${event} · due now` : `${event} · due ${mins} min ago`;
   const RD_HC_DONE = {
     ok: '12:48',
     late: '12:34'
@@ -257,24 +258,23 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     key: 'sleep',
     label: 'Sleep / rest'
   }, {
-    key: 'age',
-    label: 'Age'
+    key: 'school',
+    label: 'School'
+  }, {
+    key: 'grade',
+    label: 'Grade'
   }, {
     key: 'kinder',
     label: 'Kinder program'
-  }, {
-    key: 'session',
-    label: 'Session group'
-  }, {
-    key: 'school',
-    label: 'School'
   }, {
     key: 'all',
     label: 'All'
   }];
   const RD_UNGROUPED = 'all';
+  const RD_FIELD_GROUPINGS = ['school', 'grade', 'kinder'];
   const RD_GROUPING_LEGACY = {
-    class: 'kinder'
+    class: 'kinder',
+    age: 'grade'
   };
   const rdReadGrouping = v => {
     const k = RD_GROUPING_LEGACY[v] || v;
@@ -290,7 +290,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     label: 'B · Named bands'
   }];
   const rdReadRule = v => v === RULE_BANDS || v === 'c' ? RULE_BANDS : RULE_FILTER;
-  const rdGroupsCarry = (rule, facets, grouping) => rule === RULE_BANDS ? true : !!rdFacetChips(facets).length && grouping !== RD_UNGROUPED;
+  const rdGroupsCarry = (rule, facets, grouping) => rule === RULE_BANDS ? true : grouping !== RD_UNGROUPED && (!!rdFacetChips(facets).length || grouping !== 'attendance');
   const RD_SLEEP_GROUPS = [{
     key: 'sleeping',
     label: 'Sleeping',
@@ -328,27 +328,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     key: 'disability',
     label: 'Additional needs'
   }];
-  const RD_AGE_BANDS = [{
-    key: 'u2',
-    label: 'Under 2',
-    test: a => a < 2
-  }, {
-    key: '2',
-    label: '2 years',
-    test: a => a >= 2 && a < 3
-  }, {
-    key: '3',
-    label: '3 years',
-    test: a => a >= 3 && a < 4
-  }, {
-    key: '4',
-    label: '4 years',
-    test: a => a >= 4 && a < 5
-  }, {
-    key: '5',
-    label: '5 years and over',
-    test: a => a >= 5
-  }];
+  const RD_GRADE_ORDER = ['Preschool', 'Prep', 'Grade 1', 'Grade 2', 'Grade 3', 'Grade 4', 'Grade 5', 'Grade 6'];
   const rdLastName = name => name.trim().split(/\s+/).slice(-1)[0];
   const rdSortItems = (arr, sortKey) => [...arr].sort((a, b) => {
     const av = sortKey === 'last' ? rdLastName(a.name) : a.name;
@@ -356,16 +336,22 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     return av.localeCompare(bv);
   });
   function rdSubGroup(kids, grouping) {
-    if (grouping === 'age') {
-      const g = RD_AGE_BANDS.map(b => ({
-        key: 'age-' + b.key,
-        label: b.label,
-        items: kids.filter(c => c.age != null && b.test(c.age))
+    if (grouping === 'grade') {
+      const vals = [...new Set(kids.map(c => c.grade).filter(Boolean))].sort((a, b) => RD_GRADE_ORDER.indexOf(a) - RD_GRADE_ORDER.indexOf(b));
+      const g = vals.map(v => ({
+        key: `grade-${v}`,
+        label: v,
+        items: kids.filter(c => c.grade === v)
       }));
       g.push({
-        key: 'age-none',
-        label: 'Age not specified',
-        items: kids.filter(c => c.age == null)
+        key: 'grade-young',
+        label: 'Not yet at preschool',
+        items: kids.filter(c => !c.grade && c.age != null && c.age < 3)
+      });
+      g.push({
+        key: 'grade-none',
+        label: 'Grade not recorded',
+        items: kids.filter(c => !c.grade && !(c.age != null && c.age < 3))
       });
       return g;
     }
@@ -414,9 +400,9 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       });
       return g;
     }
-    if (grouping === 'kinder' || grouping === 'session') {
-      const field = grouping === 'kinder' ? 'kinder' : 'session';
-      const order = field === 'kinder' ? RD_KINDER_PROGRAMS : RD_SESSION_GROUPS;
+    if (grouping === 'kinder') {
+      const field = 'kinder';
+      const order = RD_KINDER_PROGRAMS;
       const rank = v => {
         const i = order.indexOf(v);
         return i === -1 ? order.length : i;
@@ -427,24 +413,16 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         label: v,
         items: kids.filter(c => c[field] === v)
       }));
-      if (grouping === 'kinder') {
-        g.push({
-          key: 'kinder-school',
-          label: 'At school (Prep)',
-          items: kids.filter(c => !c.kinder && c.school)
-        });
-        g.push({
-          key: 'kinder-none',
-          label: 'No kinder program recorded',
-          items: kids.filter(c => !c.kinder && !c.school)
-        });
-      } else {
-        g.push({
-          key: `${field}-none`,
-          label: 'No session group recorded',
-          items: kids.filter(c => !c[field])
-        });
-      }
+      g.push({
+        key: 'kinder-school',
+        label: 'At school',
+        items: kids.filter(c => !c.kinder && c.school)
+      });
+      g.push({
+        key: 'kinder-none',
+        label: 'No kinder program recorded',
+        items: kids.filter(c => !c.kinder && !c.school)
+      });
       return g;
     }
     return [{
@@ -519,10 +497,6 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     age: 3,
     at: '7:02',
     status: 'here',
-    alert: {
-      kind: 'due',
-      label: 'Sleep check due'
-    },
     state: 'Sleeping',
     last: [['sleep', '12:40', 'Asleep'], ['nappy', '12:05', 'Wet'], ['meal', '11:30', 'Most']],
     corrected: ['nappy'],
@@ -559,7 +533,9 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     state: 'Awake',
     alert: {
       kind: 'urgent',
-      label: 'Medication due'
+      overdue: true,
+      mins: 10,
+      label: rdDueLabel('Medication', 10, true)
     },
     last: [['meal', '11:30', 'Half', 'Off his food today'], ['nappy', '11:10', 'Soiled'], ['sun', '10:15', 'SPF 30']],
     meds: [{
@@ -810,7 +786,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     possum: () => 2,
     kangaroo: () => 4,
     wombat: i => 3 + i % 3,
-    bilby: i => 3 + (i + 2) % 3,
+    bilby: i => 5 + i * 3 % 8,
     brushtail: i => 3 + i % 3
   };
   const RD_SIGNED = {
@@ -818,7 +794,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     possum: 13,
     kangaroo: 12,
     wombat: 18,
-    bilby: 13,
+    bilby: 12,
     brushtail: 92
   };
   const RD_ROOM_SCENARIO = {
@@ -847,7 +823,9 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         10: 'sun'
       }
     },
-    bilby: {},
+    bilby: {
+      arriving: true
+    },
     brushtail: {
       sleep: Array.from({
         length: RD_SIGNED.brushtail
@@ -859,14 +837,25 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
   };
   const RD_SCENARIO_ALERTS = {
     nappy: {
-      kind: 'due',
-      label: 'Nappy check due'
+      event: 'Nappy check'
     },
     sun: {
-      kind: 'due',
-      label: 'Sunscreen due'
+      event: 'Sunscreen'
     }
   };
+  const rdSeededAlert = (key, i) => {
+    const a = RD_SCENARIO_ALERTS[key];
+    if (!a) return null;
+    const mins = 4 + i * 7 % 26;
+    return {
+      kind: 'due',
+      overdue: false,
+      mins,
+      label: rdDueLabel(a.event, mins, false)
+    };
+  };
+  const RD_ALLERGEN_TAGS = ['Egg allergy', 'Dairy allergy', 'Seasonal allergies', 'Gluten sensitivity', 'Sesame allergy'];
+  const RD_ANAPHYLAXIS_TAGS = ['Peanut allergy', 'Tree nut allergy', 'Shellfish allergy'];
   const RD_OTHERS = Object.entries(RD_POOL).flatMap(([room, names]) => names.map((name, i) => {
     const signed = i < RD_SIGNED[room];
     const age = RD_ROOM_AGE[room](i);
@@ -876,18 +865,22 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       medication: true,
       anaphylaxis: true
     } : {};
+    const tags = flags.allergy ? [RD_ALLERGEN_TAGS[(i + room.length) % RD_ALLERGEN_TAGS.length]] : flags.anaphylaxis ? [RD_ANAPHYLAXIS_TAGS[(i + room.length) % RD_ANAPHYLAXIS_TAGS.length], ...(i % 2 ? ['Asthma'] : [])] : [];
     const base = {
       id: room + '-' + i,
       name,
       img: 10 + i * 7 % 60,
       room,
       age,
-      ...flags
+      ...flags,
+      ...(tags.length ? {
+        tags
+      } : {})
     };
     if (signed) {
       const sc = RD_ROOM_SCENARIO[room] || {};
       const alertKey = (sc.alerts || {})[i];
-      const alert = alertKey ? RD_SCENARIO_ALERTS[alertKey] : null;
+      const alert = alertKey ? rdSeededAlert(alertKey, i) : null;
       const club = room === 'wombat' || room === 'bilby';
       const at = club ? '7:' + String(5 + i * 4 % 50).padStart(2, '0') : '7:' + String(10 + i * 3 % 45).padStart(2, '0');
       const last = club ? [['meal', '12:10', 'All'], ['sun', '9:15', 'SPF 50']] : [['meal', '11:30', 'All']];
@@ -910,7 +903,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         last
       };
     }
-    const notHere = ['absent', 'gone', 'holiday', 'expected'][i % 4];
+    const notHere = (RD_ROOM_SCENARIO[room] || {}).arriving ? 'expected' : ['absent', 'gone', 'holiday', 'expected'][i % 4];
     if (notHere === 'gone') {
       return {
         ...base,
@@ -926,30 +919,30 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     };
   }));
   const RD_KINDER_PROGRAMS = ['3-year-old kinder', '4-year-old kinder'];
-  const RD_SESSION_GROUPS = ['Mon–Wed', 'Tue–Thu', 'Fri'];
   const rdKinderSeed = id => {
     let h = 0;
     const t = String(id);
     for (let i = 0; i < t.length; i++) h = h * 31 + t.charCodeAt(i) >>> 0;
     return h;
   };
-  const RD_SCHOOLS = ['Fitzroy Primary', 'Carlton North Primary', 'St Brigid’s Primary'];
+  const RD_SCHOOLS = ['Fitzroy Primary', 'Carlton North Primary', 'St Brigid’s Primary', 'Collingwood College'];
   const RD_SCHOOL_ROOMS = ['wombat', 'bilby'];
+  const rdGrade = age => age <= 5 ? 'Prep' : `Grade ${Math.min(age - 5, 6)}`;
   const rdWithKinder = c => {
     if (c.age == null || c.age < 3) return c;
     if (!c.kinder && (c.school || c.age >= 5 && RD_SCHOOL_ROOMS.includes(c.room))) {
       const n = parseInt(String(c.id).split('-').pop(), 10) || 0;
+      const slot = c.room === 'bilby' ? c.status === 'expected' ? 0 : 1 + n % (RD_SCHOOLS.length - 1) : Math.floor(n / 3);
       return {
         ...c,
-        school: c.school || RD_SCHOOLS[Math.floor(n / 3) % RD_SCHOOLS.length],
-        grade: 'Prep',
-        session: c.session || RD_SESSION_GROUPS[rdKinderSeed(c.id) % RD_SESSION_GROUPS.length]
+        school: c.school || RD_SCHOOLS[slot % RD_SCHOOLS.length],
+        grade: c.grade || rdGrade(c.age)
       };
     }
     return {
       ...c,
-      kinder: c.kinder || RD_KINDER_PROGRAMS[Math.min(Math.max(c.age - 3, 0), RD_KINDER_PROGRAMS.length - 1)],
-      session: c.session || RD_SESSION_GROUPS[rdKinderSeed(c.id) % RD_SESSION_GROUPS.length]
+      grade: c.grade || 'Preschool',
+      kinder: c.kinder || RD_KINDER_PROGRAMS[Math.min(Math.max(c.age - 3, 0), RD_KINDER_PROGRAMS.length - 1)]
     };
   };
   const RD_ALL_CHILDREN = [...RD_KOALA, ...RD_OTHERS].map(rdWithKinder);
@@ -1023,6 +1016,11 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
   }) {
     const [failed, setFailed] = useState(false);
     const seed = rdSeed(c.id);
+    if (c.age != null && c.age >= 6) return React.createElement(RdAvatar, {
+      name: c.name,
+      size: size,
+      ring: ring
+    });
     if (!failed) {
       return React.createElement("img", {
         src: RD_KID_PHOTO(c),
@@ -1446,7 +1444,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     const m = str.match(/^(\d{1,2}):(\d{2})$/);
     if (!m) return str;
     const h = Number(m[1]);
-    return `${h % 12 || 12}:${m[2]} ${h < 12 ? 'am' : 'pm'}`;
+    return `${h % 12 || 12}:${m[2]}\u00a0${h < 12 ? 'am' : 'pm'}`;
   };
   const RD_PAD = t => {
     const p = String(t).split(':');
@@ -2155,7 +2153,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     if (!collect) return null;
     const label = full ? `${rdCollectLabel(collect)} · ${collect.who} can’t collect` : rdCollectLabel(collect);
     return React.createElement("span", {
-      className: "ds-pill ds-pill--sm ds-pill--grey ds-pill--solid",
+      className: "ds-pill ds-pill--sm ds-pill--grey ds-pill--minimal",
       title: `${collect.who} is not permitted to collect`
     }, label);
   }
@@ -3806,6 +3804,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       style: {
         fontSize: 12,
         fontWeight: 600,
+        textWrap: 'pretty',
         color: hc.overdue ? 'var(--sd-colour-feedback-error-default)' : 'var(--sd-colour-text-secondary)'
       }
     }, hc.note)), React.createElement("span", {
@@ -4900,6 +4899,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       style: {
         fontSize: 12,
         fontWeight: 600,
+        textWrap: 'pretty',
         color: d.headcount.overdue ? 'var(--sd-colour-feedback-error-default)' : 'var(--sd-colour-text-secondary)'
       }
     }, d.headcount.note)), React.createElement("span", {
@@ -5993,7 +5993,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         marginTop: 3
       }
     }, React.createElement("span", {
-      className: "ds-pill ds-pill--xs ds-pill--grey ds-pill--solid"
+      className: "ds-pill ds-pill--xs ds-pill--grey ds-pill--minimal"
     }, "Not permitted to collect")))), React.createElement("span", {
       style: {
         fontSize: 12,
@@ -6643,7 +6643,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
           height: 7,
           flexShrink: 0,
           borderRadius: 'var(--sd-radius-full)',
-          background: s.dot === 'warn' ? 'var(--sd-colour-feedback-warning-default)' : 'var(--sd-colour-surface-inverse)'
+          background: s.dot === 'warn' ? 'var(--sd-colour-feedback-warning-default)' : 'var(--sd-colour-text-secondary)'
         }
       }), s.badge != null && React.createElement("span", {
         style: {
@@ -7702,6 +7702,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       }
     }, label, " needs a connection. Everything else here still works and will sync later."));
   }
+  const RD_SEG_CHROME = 10;
   function RdSegmented({
     options,
     value,
@@ -7713,6 +7714,23 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     const box = React.useRef(null);
     const opts = options.map(o => Array.isArray(o) ? o : [o, o]);
     const keys = opts.map(o => o[0]);
+    const [wrap, setWrap] = useState(false);
+    const labelKey = opts.map(o => o[1]).join(' ');
+    useLayoutEffect(() => {
+      const el = box.current;
+      const parent = el && el.parentElement;
+      if (!el || !parent || !window.ResizeObserver) return undefined;
+      const fit = () => {
+        const cs = getComputedStyle(parent);
+        const avail = parent.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+        const natural = Array.from(el.children).reduce((w, c) => w + c.offsetWidth, 0) + RD_SEG_CHROME;
+        setWrap(avail > 0 && natural > avail);
+      };
+      fit();
+      const ro = new ResizeObserver(fit);
+      ro.observe(parent);
+      return () => ro.disconnect();
+    }, [labelKey]);
     const move = delta => {
       const i = keys.indexOf(value);
       const next = keys[(i + delta + keys.length) % keys.length];
@@ -7732,7 +7750,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         move(-1);
       }
     };
-    const cls = 'ds-segmented' + (size === 'touch' ? ' ds-segmented--touch' : '') + (variant === 'raised' ? ' ds-segmented--raised' : '');
+    const cls = 'ds-segmented' + (size === 'touch' ? ' ds-segmented--touch' : '') + (variant === 'raised' ? ' ds-segmented--raised' : '') + (wrap ? ' ds-segmented--wrap' : '');
     return React.createElement("div", {
       ref: box,
       className: cls,
@@ -8228,7 +8246,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       size: 15,
       width: 2.2
     }), "Clear all filters");
-    const selectAll = d.selectRule === RULE_BANDS || d.grouped || !d.canSelect || !d.shownIds.length ? null : React.createElement("button", _extends({
+    const selectAll = d.selectRule === RULE_BANDS || d.grouped && d.hasFilters || !d.canSelect || !d.shownIds.length ? null : React.createElement("button", _extends({
       type: "button",
       onClick: d.toggleAllShown,
       className: "fp-btn"
@@ -8253,7 +8271,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       }
     }), React.createElement(RdTick, {
       state: d.shownTickState
-    }), React.createElement("span", null, d.shownTickState === 'checked' ? `Clear these ${d.shownIds.length}` : `Select all ${d.shownIds.length}`));
+    }), React.createElement("span", null, d.shownTickState === 'checked' ? `Clear these ${d.shownIds.length}` : d.grouped ? `Select everyone · ${d.shownIds.length}` : `Select all ${d.shownIds.length}`));
     const chips = rdFacetChips(d.facets || {});
     return React.createElement("div", {
       style: {
@@ -8685,7 +8703,10 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       style: {
         display: 'flex',
         alignItems: 'center',
-        gap: 10
+        gap: 10,
+        flexWrap: 'wrap',
+        minWidth: 0,
+        maxWidth: '100%'
       }
     }, React.createElement("span", {
       style: {
@@ -11966,11 +11987,12 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     if (!last) return null;
     const since = RD_MINS(RD_NOW) - RD_MINS(last[1]);
     if (since < RD_SLEEP_INTERVAL) return null;
+    const late = since - RD_SLEEP_INTERVAL;
     return {
       kind: 'due',
-      overdue: true,
-      mins: since,
-      label: `Sleep check · ${since} min overdue`
+      overdue: late > 0,
+      mins: late,
+      label: rdDueLabel('Sleep check', late, late > 0)
     };
   };
   const rdLiveAlert = (c, events) => {
@@ -12088,7 +12110,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         alert: a
       } : c;
     };
-    const liveSelected = selected ? roster.find(c => c.id === selected.id) || RD_OTHER.find(c => c.id === selected.id) || selected : null;
+    const liveRaw = selected ? roster.find(c => c.id === selected.id) || RD_OTHER.find(c => c.id === selected.id) || selected : null;
+    const liveSelected = liveRaw ? strip(withSleepDue(stripOffEvents(liveRaw))) : null;
     const RD_ROOM_STATS = RD_ROOMS.map(r => roomStats(r, roster, roomMaps));
     const pool = (scope === 'room' ? roster.filter(c => c.room === roomKey) : roster).map(stripOffEvents).map(withSleepDue).map(strip);
     const q = query.trim().toLowerCase();
@@ -12121,7 +12144,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       sortKey,
       setSortKey,
       sortOptions: RD_SORTS,
-      groupingOptions: selectRule === RULE_BANDS ? RD_GROUPINGS_C : RD_GROUPINGS,
+      groupingOptions: (selectRule === RULE_BANDS ? RD_GROUPINGS_C : RD_GROUPINGS).filter(g => !RD_FIELD_GROUPINGS.includes(g.key) || new Set(pool.map(c => c[g.key] || '—')).size >= 2),
       selectArm,
       facets,
       setFacets,
@@ -12327,7 +12350,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         return {
           expected: room.signed,
           overdue: left <= 0,
-          note: left > 0 ? `Next count due in ${left} min · last done ${RD_AMPM(RD_AGO(since))}` : `${-left} min overdue · every ${care.hcInterval} min`
+          note: left > 0 ? `Next count due in ${left} min · last\u00a0done\u00a0${RD_AMPM(RD_AGO(since))}` : `${-left} min overdue · every ${care.hcInterval} min`
         };
       })(),
       work: rdGroupChildren(matched, grouping, sortKey),

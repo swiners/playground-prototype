@@ -122,6 +122,16 @@
 
 .ds-segmented__label { flex-shrink: 0; }
 
+
+.ds-segmented--wrap {
+  flex-wrap: wrap;
+  
+  border-radius: var(--sd-radius-lg);
+  row-gap: var(--sd-spacing-1);
+  
+  max-width: 100%;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .ds-segmented__item { transition: none; }
 }
