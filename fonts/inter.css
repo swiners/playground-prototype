@@ -1,7 +1,4 @@
-/* Inter, vendored. Both originals loaded this from fonts.googleapis.com; on venue wifi a miss
-   silently swaps the whole prototype to a system font mid-demo — the one failure nobody would
-   think to check for. Latin subset. Google serves ONE variable woff2 for all four weights, so
-   this is a single 48KB file with a variable font-weight range, not four copies of it. */
+
 @font-face {
   font-family: 'Inter';
   font-style: normal;

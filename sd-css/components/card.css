@@ -1,15 +1,4 @@
-/*
- * Stardust Design System — Card (Clickable Card)
- * Single source of truth for .ds-card styles. Composes Title Block, Avatar,
- * Pill, Button and the radio/checkbox/toggle visuals — load those component
- * stylesheets alongside this file. All values reference --sd- tokens from
- * tokens.css — never hardcode hex here.
- *
- * Selected (selectable family) matches the multi-select dropdown pattern:
- * surface/cyan fill + action/primary title + surface-cyan-hover on hover.
- * The inset 1px ring on top of the 1px border reads as 2px with zero
- * layout shift. Flat throughout — no elevation.
- */
+
 
 .ds-card {
   display: flex;
@@ -37,8 +26,7 @@ a.ds-card { text-decoration: none; color: inherit; }
   border-color: var(--sd-colour-border-focus);
   box-shadow: 0 0 1px var(--sd-spacing-1) var(--sd-colour-feedback-success-subtle);
 }
-/* Selected — matches the multi-select dropdown pattern:
-   surface/cyan fill, action/primary title, cyan-hover on hover */
+
 .ds-card--selectable[aria-checked="true"] {
   background: var(--sd-colour-surface-cyan);
   border-color: var(--sd-colour-action-primary);
@@ -72,7 +60,7 @@ a.ds-card { text-decoration: none; color: inherit; }
 }
 .ds-card__chevron { display: flex; width: 16px; height: 16px; color: var(--sd-colour-text-secondary); }
 .ds-card__chevron svg { width: 16px; height: 16px; display: block; }
-/* static state demos (Figma variant reference) */
+
 .ds-card.is-demo--hover { background-image: linear-gradient(var(--sd-colour-state-hover), var(--sd-colour-state-hover)); }
 .ds-card.is-demo--pressed { background-image: linear-gradient(var(--sd-colour-state-pressed), var(--sd-colour-state-pressed)); }
 .ds-card.is-demo--focus {
@@ -84,11 +72,8 @@ a.ds-card { text-decoration: none; color: inherit; }
   .ds-card { transition: none; }
 }
 
-/* ── Compact — dense lists and sheet rows ───────────────── */
-/* Collapses the decorative glyph hit-wrappers (the CARD is the touch
-   target, so the 44px wrappers are redundant inside it) and tightens
-   padding/line-height. min-height holds the 44px touch-target floor;
-   height grows with content (e.g. title + subtitle rows). */
+
+
 .ds-card--compact {
   padding: 6px var(--sd-spacing-3);
   min-height: 44px;
@@ -96,7 +81,7 @@ a.ds-card { text-decoration: none; color: inherit; }
 .ds-card--compact .ds-title-block__title,
 .ds-card--compact .ds-title-block__subtitle {
   font-size: var(--sd-font-size-sm);
-  line-height: var(--sd-line-height-base); /* 20px */
+  line-height: var(--sd-line-height-base); 
 }
 .ds-card--compact .ds-checkbox,
 .ds-card--compact .ds-radio {

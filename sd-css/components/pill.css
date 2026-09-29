@@ -1,15 +1,6 @@
-/*
- * Stardust Design System — Pill
- * Single source of truth for .ds-pill styles. Extracted from the pill doc page;
- * loaded by component doc pages (including Title Block, which composes Pill) and the
- * sandbox. All values reference --sd- tokens from tokens.css — never hardcode hex here.
- */
 
-/* ── Pill — non-interactive status/information label ──────
-   36 variants: 4 colour × 3 type × 3 size.
-   Render as <span> — never <button> or <a>.
-   Leading icon and trailing flag: aria-hidden="true".
-─────────────────────────────────────────────────────────── */
+
+
 .ds-pill {
   display: inline-flex;
   align-items: center;
@@ -22,16 +13,9 @@
   user-select: none;
 }
 
-/* ── Sizes ───────────────────────────────────────────── */
-/*
- * No vertical padding — height is the sole vertical dimension driver.
- * align-items: center on .ds-pill centres both icons and text within the
- * full height. Adding vertical padding collapses the cross-axis content
- * area (border-box) to match the icon height exactly, leaving no room
- * for align-items to centre, causing subpixel misalignment.
- */
-/* xs — metadata pills (e.g. inline tags) that must read as smaller than a status
-   pill, so the size difference does hierarchy work rather than being a one-off. */
+
+
+
 .ds-pill--xs {
   height: 20px;
   padding: 0 var(--sd-spacing-2);
@@ -72,10 +56,7 @@
 .ds-pill--xs .ds-pill__icon { width: 14px; height: 14px; }
 .ds-pill__icon svg { width: 100%; height: 100%; display: block; }
 
-/* Leading status dot — a saturated dot before the label. Not decoration: it is
-   what makes a soft-tinted pill readable at a glance down a table column, and keeps
-   two amber-tinted pills (e.g. Waitlisted vs Medium) distinguishable at speed. It
-   inherits the pill's own text colour. The label still carries the meaning. */
+
 .ds-pill__dot {
   flex: none;
   width: 6px;
@@ -85,50 +66,38 @@
 }
 .ds-pill--xs .ds-pill__dot { width: 5px; height: 5px; }
 
-/* ── Colour × Type ───────────────────────────────────── */
-/* Purple */
+
+
 .ds-pill--purple.ds-pill--solid   { background: var(--sd-colour-accent-secondary);      color: var(--sd-colour-action-foreground); }
 .ds-pill--purple.ds-pill--ghost   { background: var(--sd-colour-surface-default); border-color: var(--sd-colour-accent-secondary); color: var(--sd-colour-accent-secondary); }
 .ds-pill--purple.ds-pill--minimal { background: var(--sd-colour-surface-purple);         color: var(--sd-colour-text-on-purple); }
-/* Orange */
+
 .ds-pill--orange.ds-pill--solid   { background: var(--sd-colour-feedback-error-default); color: var(--sd-colour-action-foreground); }
 .ds-pill--orange.ds-pill--ghost   { background: var(--sd-colour-surface-default); border-color: var(--sd-colour-feedback-error-default); color: var(--sd-colour-feedback-error-default); }
 .ds-pill--orange.ds-pill--minimal { background: var(--sd-colour-surface-orange);          color: var(--sd-colour-text-on-orange); }
-/* Green */
+
 .ds-pill--green.ds-pill--solid    { background: var(--sd-colour-action-primary);          color: var(--sd-colour-action-foreground); }
 .ds-pill--green.ds-pill--ghost    { background: var(--sd-colour-surface-default); border-color: var(--sd-colour-action-primary); color: var(--sd-colour-action-primary); }
 .ds-pill--green.ds-pill--minimal  { background: var(--sd-colour-surface-cyan);            color: var(--sd-colour-text-on-cyan); }
-/* Grey */
+
 .ds-pill--grey.ds-pill--solid     { background: var(--sd-colour-surface-inverse);         color: var(--sd-colour-action-foreground); }
 .ds-pill--grey.ds-pill--ghost     { background: var(--sd-colour-surface-default); border-color: var(--sd-colour-text-disabled); color: var(--sd-colour-text-primary); }
 .ds-pill--grey.ds-pill--minimal   { background: var(--sd-colour-surface-grey);            color: var(--sd-colour-text-primary); }
 
-/* ── Status ──────────────────────────────────────────────
-   Semantic status layer: maps a conventional status to an
-   EXISTING semantic token colour + subtle fill. Consolidates
-   the 8 legacy hardcoded status badges (Active, Archived,
-   Deleted, Expired, Inactive, Recalled, Upcoming, Waitlist)
-   into one pill. Use standalone — no colour/type class needed:
-   each status modifier supplies both background and text
-   colour. Render as <span>; the label text still carries the
-   meaning (never colour alone). Sizing via .ds-pill--sm/md/lg.
-   Mapping: active→success · upcoming/waitlist→accent (info) ·
-   archived/inactive→neutral · expired→warning · deleted/
-   recalled→error.
-─────────────────────────────────────────────────────────── */
-/* Success — active */
+
+
 .ds-pill--status-active   { background: var(--sd-colour-surface-cyan);   color: var(--sd-colour-text-on-cyan); }
-/* Accent / info — upcoming, waitlist */
+
 .ds-pill--status-upcoming { background: var(--sd-colour-surface-purple); color: var(--sd-colour-text-on-purple); }
 .ds-pill--status-waitlist { background: var(--sd-colour-surface-purple); color: var(--sd-colour-text-on-purple); }
-/* Neutral — archived, inactive */
+
 .ds-pill--status-archived { background: var(--sd-colour-surface-grey);   color: var(--sd-colour-text-secondary); }
 .ds-pill--status-inactive { background: var(--sd-colour-surface-grey);   color: var(--sd-colour-text-secondary); }
-/* Warning — expired */
+
 .ds-pill--status-expired  { background: var(--sd-colour-surface-orange); color: var(--sd-colour-text-on-orange); }
-/* Error — deleted, recalled */
+
 .ds-pill--status-deleted  { background: var(--sd-colour-surface-red);    color: var(--sd-colour-text-on-red); }
 .ds-pill--status-recalled { background: var(--sd-colour-surface-red);    color: var(--sd-colour-text-on-red); }
 
-/* Inline SVG icons (currentColor tinting) */
-.ds-pill__icon svg path { /* inherits fill: currentColor from parent */ }
+
+.ds-pill__icon svg path {  }

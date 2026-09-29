@@ -1,15 +1,6 @@
-/*
- * Stardust Design System — Selection Pill
- * Single source of truth for .ds-selection-pill styles. Extracted from the selection-pill
- * doc page; loaded by component doc pages and the sandbox. All values reference --sd-
- * tokens from tokens.css — never hardcode hex here.
- */
 
-/* ── Selection Pill ───────────────────────────────────────
-   Interactive pill/chip for filtering, tagging, selection.
-   5 states × 4 selectionTypes. Height 44px, radius/full.
-   Spec: selection-pill-spec.md
-──────────────────────────────────────────────────────── */
+
+
 .ds-selection-pill {
   display: inline-flex;
   align-items: center;
@@ -35,24 +26,24 @@
 }
 .ds-selection-pill:focus { outline: none; }
 
-/* Hover — glow, 1px border unchanged */
+
 .ds-selection-pill:hover {
   box-shadow: 0 0 1px var(--sd-spacing-1) var(--sd-colour-feedback-success-subtle);
 }
 
-/* Focus — 2px border + glow (:focus-visible only) */
+
 .ds-selection-pill:focus-visible {
   border-width: 2px;
   box-shadow: 0 0 1px var(--sd-spacing-1) var(--sd-colour-feedback-success-subtle);
 }
 
-/* Selected — surface/green bg, 2px border, no glow */
+
 .ds-selection-pill--selected {
   background: var(--sd-colour-surface-green);
   border: 2px solid var(--sd-colour-action-primary);
 }
 
-/* Disabled */
+
 .ds-selection-pill--disabled,
 .ds-selection-pill:disabled {
   border: 2px solid var(--sd-colour-text-disabled);
@@ -61,7 +52,7 @@
   pointer-events: none;
 }
 
-/* ── Parts ────────────────────────────────────────────── */
+
 .ds-selection-pill__icon {
   display: flex; align-items: center; justify-content: center;
   width: 24px; height: 24px; flex-shrink: 0;
@@ -76,7 +67,7 @@
 }
 .ds-selection-pill__indicator svg { width: 20px; height: 20px; display: block; }
 
-/* Dismiss FAB (24px embedded circular button) */
+
 .ds-selection-pill__dismiss {
   display: flex; align-items: center; justify-content: center;
   width: 24px; height: 24px;
@@ -91,13 +82,13 @@
 }
 .ds-selection-pill__dismiss svg { width: 100%; height: 100%; display: block; }
 
-/* FAB bg tracks pill state */
+
 .ds-selection-pill:hover        .ds-selection-pill__dismiss { background: var(--sd-colour-focus-primary); }
 .ds-selection-pill:focus-visible .ds-selection-pill__dismiss { background: var(--sd-colour-focus-primary); }
 .ds-selection-pill--selected    .ds-selection-pill__dismiss { background: var(--sd-colour-action-hover); color: var(--sd-colour-text-inverse); }
 .ds-selection-pill--disabled    .ds-selection-pill__dismiss { background: var(--sd-colour-text-disabled); color: var(--sd-colour-text-inverse); pointer-events: none; }
 
-/* Static demo state overrides */
+
 .ds-selection-pill.is-demo--hover   { box-shadow: 0 0 1px var(--sd-spacing-1) var(--sd-colour-feedback-success-subtle); }
 .ds-selection-pill.is-demo--focus   { border-width: 2px; box-shadow: 0 0 1px var(--sd-spacing-1) var(--sd-colour-feedback-success-subtle); }
 .ds-selection-pill.is-demo--hover   .ds-selection-pill__dismiss { background: var(--sd-colour-focus-primary); }

@@ -268,8 +268,8 @@
     });
     const [locked, setLocked] = useState(!!params.locked);
     const [busy, setBusy] = useState(false);
-    const railLocked = params.rail === 'off';
-    const [railOpen, setRailOpen] = useState(params.rail === '1' && !bare && params.rail !== 'off');
+    const railLocked = true;
+    const [railOpen, setRailOpen] = useState(false);
     const [splashLabel, setSplashLabel] = useState(null);
     const onSignedIn = ({
       educator,
@@ -518,7 +518,7 @@
     }, stage)))) : React.createElement("div", {
       className: "pg-bleed"
     }, stage);
-    const shellOn = !bare && !!framed && params.shell !== '0';
+    const shellOn = false;
     return React.createElement(React.Fragment, null, shellOn ? React.createElement(ReviewShell, {
       params: params,
       setParam: setParam,

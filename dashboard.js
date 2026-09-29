@@ -1,12 +1,4 @@
-function _extends() {
-  return _extends = Object.assign ? Object.assign.bind() : function (n) {
-    for (var e = 1; e < arguments.length; e++) {
-      var t = arguments[e];
-      for (var r in t) ({}).hasOwnProperty.call(t, r) && (n[r] = t[r]);
-    }
-    return n;
-  }, _extends.apply(null, arguments);
-}
+function _extends() { return _extends = Object.assign ? Object.assign.bind() : function (n) { for (var e = 1; e < arguments.length; e++) { var t = arguments[e]; for (var r in t) ({}).hasOwnProperty.call(t, r) && (n[r] = t[r]); } return n; }, _extends.apply(null, arguments); }
 (function () {
   const RD_ROW_H = 64;
   const RD_MENU_D = 'M4 7h16M4 12h16M4 17h16';
@@ -84,6 +76,10 @@ function _extends() {
   const RD_SYNC_D = 'M20 11a8 8 0 0 0-14-4.5L4 8m0-4v4h4M4 13a8 8 0 0 0 14 4.5L20 16m0 4v-4h-4';
   const RD_CLOCK_D = 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18ZM12 7v5l3.5 2';
   const RD_STAFF_D = 'M12 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7ZM5 20a7 7 0 0 1 14 0';
+  const RD_SHIELD_D = 'M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7l8-4ZM12 9v4M12 16h.01';
+  const RD_WARN_D = 'M12 3l9 16H3L12 3ZM12 9v5M12 17h.01';
+  const RD_PHONE_D = 'M5 3h3.4l1.6 4-2.2 1.6a11 11 0 0 0 5.6 5.6L15 11.9l4 1.6V17a2 2 0 0 1-2.2 2A14 14 0 0 1 3 5.2 2 2 0 0 1 5 3Z';
+  const RD_BAG_D = 'M4 8h16v11a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V8ZM8.5 8V6a3.5 3.5 0 0 1 7 0v2';
   const RD_ROOMS = [{
     key: 'nursery',
     name: 'Nursery',
@@ -270,13 +266,15 @@ function _extends() {
     key: 'session',
     label: 'Session group'
   }, {
+    key: 'school',
+    label: 'School'
+  }, {
     key: 'all',
     label: 'All'
   }];
   const RD_UNGROUPED = 'all';
   const RD_GROUPING_LEGACY = {
-    class: 'kinder',
-    school: 'session'
+    class: 'kinder'
   };
   const rdReadGrouping = v => {
     const k = RD_GROUPING_LEGACY[v] || v;
@@ -402,6 +400,20 @@ function _extends() {
       });
       return g;
     }
+    if (grouping === 'school') {
+      const vals = [...new Set(kids.map(c => c.school).filter(Boolean))].sort((a, b) => a.localeCompare(b));
+      const g = vals.map(v => ({
+        key: `school-${v}`,
+        label: v,
+        items: kids.filter(c => c.school === v)
+      }));
+      g.push({
+        key: 'school-none',
+        label: 'Not at school yet',
+        items: kids.filter(c => !c.school)
+      });
+      return g;
+    }
     if (grouping === 'kinder' || grouping === 'session') {
       const field = grouping === 'kinder' ? 'kinder' : 'session';
       const order = field === 'kinder' ? RD_KINDER_PROGRAMS : RD_SESSION_GROUPS;
@@ -415,11 +427,24 @@ function _extends() {
         label: v,
         items: kids.filter(c => c[field] === v)
       }));
-      g.push({
-        key: `${field}-none`,
-        label: grouping === 'kinder' ? 'No kinder program recorded' : 'No session group recorded',
-        items: kids.filter(c => !c[field])
-      });
+      if (grouping === 'kinder') {
+        g.push({
+          key: 'kinder-school',
+          label: 'At school (Prep)',
+          items: kids.filter(c => !c.kinder && c.school)
+        });
+        g.push({
+          key: 'kinder-none',
+          label: 'No kinder program recorded',
+          items: kids.filter(c => !c.kinder && !c.school)
+        });
+      } else {
+        g.push({
+          key: `${field}-none`,
+          label: 'No session group recorded',
+          items: kids.filter(c => !c[field])
+        });
+      }
       return g;
     }
     return [{
@@ -516,6 +541,12 @@ function _extends() {
     at: '7:05',
     status: 'here',
     state: 'Sleeping',
+    collect: {
+      who: 'Father',
+      courtOrder: true,
+      onFile: 'parenting order, 4 Aug 2026',
+      note: 'If he arrives, do not release Mia — call the nominated supervisor.'
+    },
     last: [['sleep', '12:50', 'Asleep'], ['nappy', '11:55', 'Dry'], ['meal', '11:30', 'All']]
   }, {
     id: 3,
@@ -667,7 +698,13 @@ function _extends() {
     at: '7:22',
     status: 'here',
     state: 'Awake',
-    last: [['meal', '11:30', 'All'], ['sun', '10:15', 'SPF 30']]
+    prefs: {
+      sun: 'Medical exemption'
+    },
+    prefNotes: {
+      sun: 'Eczema — GP letter on file, parent applies barrier cream'
+    },
+    last: [['meal', '11:30', 'All'], ['sun', '10:15', 'Medical exemption', 'Eczema — GP letter on file, parent applies barrier cream']]
   }, {
     id: 15,
     name: 'Finn O’Donnell',
@@ -694,6 +731,11 @@ function _extends() {
     img: 55,
     age: 3,
     disability: true,
+    collect: {
+      who: 'Mother',
+      courtOrder: false,
+      note: 'Mother is not collecting this term, by family arrangement. Check with the office before releasing to her.'
+    },
     at: '7:35',
     status: 'here',
     state: 'Awake',
@@ -801,8 +843,8 @@ function _extends() {
     },
     wombat: {
       alerts: {
-        2: 'sun',
-        11: 'sun'
+        1: 'sun',
+        10: 'sun'
       }
     },
     bilby: {},
@@ -891,8 +933,19 @@ function _extends() {
     for (let i = 0; i < t.length; i++) h = h * 31 + t.charCodeAt(i) >>> 0;
     return h;
   };
+  const RD_SCHOOLS = ['Fitzroy Primary', 'Carlton North Primary', 'St Brigid’s Primary'];
+  const RD_SCHOOL_ROOMS = ['wombat', 'bilby'];
   const rdWithKinder = c => {
     if (c.age == null || c.age < 3) return c;
+    if (!c.kinder && (c.school || c.age >= 5 && RD_SCHOOL_ROOMS.includes(c.room))) {
+      const n = parseInt(String(c.id).split('-').pop(), 10) || 0;
+      return {
+        ...c,
+        school: c.school || RD_SCHOOLS[Math.floor(n / 3) % RD_SCHOOLS.length],
+        grade: 'Prep',
+        session: c.session || RD_SESSION_GROUPS[rdKinderSeed(c.id) % RD_SESSION_GROUPS.length]
+      };
+    }
     return {
       ...c,
       kinder: c.kinder || RD_KINDER_PROGRAMS[Math.min(Math.max(c.age - 3, 0), RD_KINDER_PROGRAMS.length - 1)],
@@ -1092,7 +1145,19 @@ function _extends() {
     key: 'excursion',
     label: 'Consent to excursions'
   }];
-  const RD_SPECIAL_NOTES = ['Parents separated — collection alternates weekly. Check the roster before releasing.', 'Court order on file: paternal grandmother must not collect. Speak to the nominated supervisor.', 'Recently bereaved (grandparent, June). May need extra reassurance at drop-off.', 'Family speaks Cantonese at home. Mum is the confident English speaker of the two.', 'Older sibling in Kangaroo Room — they settle much faster if they see each other at drop-off.'];
+  const RD_SPECIAL_NOTES = [{
+    text: 'Grandparents do the Thursday pickup — they are on the authorised list, no need to call ahead.',
+    tone: 'calm'
+  }, {
+    text: 'Recently bereaved (grandparent, June). May need extra reassurance at drop-off.',
+    tone: 'calm'
+  }, {
+    text: 'Family speaks Cantonese at home. Mum is the confident English speaker of the two.',
+    tone: 'calm'
+  }, {
+    text: 'Older sibling in Kangaroo Room — they settle much faster if they see each other at drop-off.',
+    tone: 'calm'
+  }];
   const RD_ABOUT_NOTES = ['Loves the sandpit and anything with wheels. Will not wear a hat without a fuss — offer the blue one.', 'Very settled once she has her comforter. Doesn’t like loud group singing; happier at the edge.', 'Big eater, but slow. Needs a bit longer at lunch rather than being rushed.', 'Napping is hit and miss — often just rests. Doesn’t need to be woken.', 'Chatty and confident with adults, more cautious with new children. Warms up by about morning tea.'];
   function rdProfile(c) {
     const surname = rdLastName(c.name);
@@ -1112,14 +1177,24 @@ function _extends() {
       rel: 'Father',
       phone: phone(2),
       auths: auths(2)
-    }];
+    }].map(g => c.collect && c.collect.who === g.rel ? {
+      ...g,
+      noCollect: true,
+      auths: g.auths.map(a => a.key === 'pickup' ? {
+        ...a,
+        on: false
+      } : a)
+    } : g);
     const emergency = {
       name: `${RD_GPS[seed % RD_GPS.length]} ${surname}`,
       rel: 'Grandparent',
       phone: phone(4),
       auths: auths(4)
     };
-    const special = seed % 3 === 0 ? null : RD_SPECIAL_NOTES[seed % RD_SPECIAL_NOTES.length];
+    const drawn = seed % 3 === 0 ? null : RD_SPECIAL_NOTES[seed % RD_SPECIAL_NOTES.length];
+    const kept = c.collect && drawn && /collect/i.test(drawn.text) ? null : drawn;
+    const special = kept ? kept.text : null;
+    const specialTone = kept ? kept.tone : null;
     const about = RD_ABOUT_NOTES[(seed + 2) % RD_ABOUT_NOTES.length];
     const attachments = [];
     if (c.allergy || c.anaphylaxis) attachments.push({
@@ -1127,10 +1202,17 @@ function _extends() {
       type: 'PDF',
       updated: '2 Jul 2026'
     });
-    attachments.push({
+    if (c.meds && c.meds.length || c.medication) attachments.push({
       name: c.meds && c.meds.length ? 'Medication authorisation' : 'Medication authorisation — none on file',
       type: c.meds && c.meds.length ? 'PDF' : 'Missing',
       updated: c.meds && c.meds.length ? '17 Aug 2026' : '—'
+    });
+    (c.meds || []).filter(m => /action plan/i.test(m.auth || '') && !/ASCIA|anaphylaxis/i.test(m.auth)).forEach(m => {
+      if (!attachments.some(a => a.name === m.auth)) attachments.push({
+        name: m.auth,
+        type: 'PDF',
+        updated: m.authOn ? `${m.authOn} 2026` : '—'
+      });
     });
     attachments.push({
       name: 'Enrolment record',
@@ -1159,6 +1241,7 @@ function _extends() {
       attachments,
       history,
       special,
+      specialTone,
       about
     };
   }
@@ -1375,6 +1458,11 @@ function _extends() {
     const eds = RD_EDUCATORS;
     const by = i => eds[(seed + i) % eds.length].name;
     const pick = (arr, i) => arr[(seed + i) % arr.length];
+    const barred = c.collect ? {
+      Father: 'Dad',
+      Mother: 'Mum'
+    }[c.collect.who] || null : null;
+    const carers = ['Mum', 'Dad', 'their grandparent'].filter(x => x !== barred);
     const rows = [];
     const add = (at, kind, detail, extra) => rows.push({
       min: RD_MINS(at),
@@ -1384,7 +1472,7 @@ function _extends() {
     });
     if (past) {
       if (seed % 9 === 0 || seed % 13 === 0) return [];
-      add(`${7 + seed % 2}:${String(10 + seed % 45).padStart(2, '0')}`, 'in', `Delivered by ${pick(['Mum', 'Dad', 'their grandparent'], 1)}`, {
+      add(`${7 + seed % 2}:${String(10 + seed % 45).padStart(2, '0')}`, 'in', `Delivered by ${pick(carers, 1)}`, {
         by: by(0)
       });
       add('9:35', 'meal', `Morning tea · ate ${pick(['all', 'most', 'half'], 3)}`, {
@@ -1405,7 +1493,7 @@ function _extends() {
       add('13:05', 'sleep', 'Check · Sight · found asleep', {
         by: by(1)
       });
-      add(`15:${String(20 + seed % 39).padStart(2, '0')}`, 'out', `Collected by ${pick(['Mum', 'Dad', 'their grandparent'], 2)}`, {
+      add(`15:${String(20 + seed % 39).padStart(2, '0')}`, 'out', `Collected by ${pick(carers, 2)}`, {
         by: by(2)
       });
       return rows.map(r => ({
@@ -1416,7 +1504,7 @@ function _extends() {
     }
     const present = c.status === 'here' || c.status === 'gone';
     if (present) {
-      add(c.at || '7:45', 'in', `Delivered by ${pick(['Mum', 'Dad', 'their grandparent'], 1)}`, {
+      add(c.at || '7:45', 'in', `Delivered by ${pick(carers, 1)}`, {
         by: by(0)
       });
       add('8:40', 'nappy', `Found ${pick(['dry', 'wet', 'soiled'], 2)}`, {
@@ -1429,7 +1517,8 @@ function _extends() {
         by: by(0),
         note: seed % 3 === 0 ? 'Before outdoor play' : null
       });
-      if (c.meds && c.meds.length) add('11:10', 'med', `${c.meds[0].name} · ${c.meds[0].dose} · given`, {
+      const routine = (c.meds || []).find(m => !/anaphylaxis|000|as needed/i.test(m.window || ''));
+      if (routine && !(c.alert && /medication/i.test(c.alert.label))) add('11:10', 'med', `${routine.name} · ${routine.dose} · given`, {
         by: by(2),
         note: `Second-checked by ${by(1)}`
       });
@@ -1598,6 +1687,11 @@ function _extends() {
   }];
   const RD_DELIVERED_BY = ['Parent / guardian', 'Authorised contact', 'School', 'Walked in'];
   const RD_COLLECTED_BY = ['Parent / guardian', 'Authorised contact', 'School', 'Walked home'];
+  const rdCollectOptions = c => {
+    if (!c || !c.collect) return RD_COLLECTED_BY;
+    const named = rdProfile(c).guardians.filter(g => !g.noCollect && (g.auths || []).some(a => a.key === 'pickup' && a.on)).map(g => [`${g.name} (${g.rel})`, `${g.name.split(' ')[0]} · ${g.rel}`]);
+    return [...named, ...RD_COLLECTED_BY.filter(o => o !== 'Parent / guardian')];
+  };
   const RD_BULK = {
     sun: {
       label: 'Sunscreen',
@@ -1610,7 +1704,9 @@ function _extends() {
       },
       perChild: {
         label: 'Applied',
-        options: [['SPF 30', 'SPF 30'], ['SPF 50', 'SPF 50'], ['Own sunscreen', 'Own']]
+        options: [['SPF 30', 'SPF 30'], ['SPF 50', 'SPF 50'], ['Own sunscreen', 'Own']],
+        notApplied: 'Not applied',
+        reasonFor: ['Not applicable', 'Medical exemption', 'Refused']
       },
       prefKey: 'sun'
     },
@@ -2002,6 +2098,66 @@ function _extends() {
     return React.createElement("span", {
       className: "ds-pill ds-pill--sm ds-pill--orange ds-pill--minimal"
     }, children);
+  }
+  function RdChoiceChips({
+    options,
+    value,
+    onChange,
+    ariaLabel
+  }) {
+    return React.createElement("span", {
+      role: "radiogroup",
+      "aria-label": ariaLabel,
+      style: {
+        display: 'flex',
+        flexWrap: 'wrap',
+        gap: 6,
+        minWidth: 0
+      }
+    }, options.map(o => {
+      const [k, l] = Array.isArray(o) ? o : [o, o];
+      const on = value === k;
+      return React.createElement("button", {
+        key: k,
+        type: "button",
+        role: "radio",
+        "aria-checked": on,
+        onClick: () => onChange(k),
+        className: `ds-selection-pill${on ? ' ds-selection-pill--selected' : ''}`
+      }, React.createElement("span", {
+        className: "ds-selection-pill__label"
+      }, l));
+    }));
+  }
+  function RdNotAppliedToggle({
+    on,
+    onToggle,
+    name
+  }) {
+    return React.createElement("button", {
+      type: "button",
+      "aria-pressed": on,
+      "aria-label": `Sunscreen not applied for ${name}`,
+      onClick: onToggle,
+      className: `ds-selection-pill${on ? ' ds-selection-pill--selected' : ''}`,
+      style: {
+        flexShrink: 0
+      }
+    }, React.createElement("span", {
+      className: "ds-selection-pill__label"
+    }, "Not applied"));
+  }
+  const rdCollectLabel = k => k.courtOrder ? 'Court order' : 'Pickup restricted';
+  function RdCollectPill({
+    collect,
+    full
+  }) {
+    if (!collect) return null;
+    const label = full ? `${rdCollectLabel(collect)} · ${collect.who} can’t collect` : rdCollectLabel(collect);
+    return React.createElement("span", {
+      className: "ds-pill ds-pill--sm ds-pill--grey ds-pill--solid",
+      title: `${collect.who} is not permitted to collect`
+    }, label);
   }
   function RdRoomChip({
     name,
@@ -4058,7 +4214,9 @@ function _extends() {
       }, React.createElement(RdGlyph, {
         d: RD_LOCK_D,
         size: 13
-      }), "Signed in elsewhere"), detail.health && (c.tags || []).map(t => React.createElement(RdTag, {
+      }), "Signed in elsewhere"), c.collect && React.createElement(RdCollectPill, {
+        collect: c.collect
+      }), detail.health && (c.tags || []).map(t => React.createElement(RdTag, {
         key: t
       }, t)));
       if (!compact) return React.createElement(React.Fragment, null, nameEl, statusEl);
@@ -5150,7 +5308,7 @@ function _extends() {
         color: 'var(--sd-colour-text-primary)'
       }
     }, RD_AMPM(c.at))) : c.status === 'holiday' ? 'On holiday' : c.status === 'other' ? 'No booking today' : 'Absent today')));
-    const flags = c.alert || (c.tags || []).length ? React.createElement("div", {
+    const flags = c.alert || c.collect || (c.tags || []).length ? React.createElement("div", {
       style: {
         display: 'flex',
         gap: 6,
@@ -5158,6 +5316,9 @@ function _extends() {
       }
     }, c.alert && React.createElement(RdAlert, {
       alert: c.alert
+    }), React.createElement(RdCollectPill, {
+      collect: c.collect,
+      full: true
     }), (c.tags || []).map(t => React.createElement(RdTag, {
       key: t
     }, t))) : null;
@@ -5437,7 +5598,8 @@ function _extends() {
     child,
     history,
     dayOffset = 0,
-    onEdit
+    onEdit,
+    hideHeading = false
   }) {
     const sub = 'var(--sd-colour-text-secondary)';
     const chip = (bg, fg) => ({
@@ -5458,7 +5620,7 @@ function _extends() {
         flexDirection: 'column',
         gap: 18
       }
-    }, React.createElement("div", {
+    }, !hideHeading && React.createElement("div", {
       style: {
         display: 'flex',
         alignItems: 'baseline',
@@ -5826,7 +5988,13 @@ function _extends() {
         fontWeight: 500,
         color: sub
       }
-    }, person.rel, " \xB7 ", person.phone))), React.createElement("span", {
+    }, person.rel, " \xB7 ", person.phone), person.noCollect && React.createElement("span", {
+      style: {
+        marginTop: 3
+      }
+    }, React.createElement("span", {
+      className: "ds-pill ds-pill--xs ds-pill--grey ds-pill--solid"
+    }, "Not permitted to collect")))), React.createElement("span", {
       style: {
         fontSize: 12,
         fontWeight: 700,
@@ -5883,7 +6051,7 @@ function _extends() {
         fontWeight: 700,
         color: sub
       }
-    }, "Not authorised")))), React.createElement("span", {
+    }, a.key === 'pickup' && person.noCollect ? 'Restricted — see Health & safety' : 'Not authorised')))), React.createElement("span", {
       style: {
         display: 'block',
         marginTop: 10,
@@ -5901,6 +6069,8 @@ function _extends() {
   }) {
     const [openContact, setOpenContact] = useState(null);
     const [dayOffset, setDayOffset] = useState(0);
+    const [active, setActive] = useState(null);
+    const scroller = useRef(null);
     useEffect(() => {
       const esc = e => {
         if (e.key === 'Escape') onClose();
@@ -5911,343 +6081,647 @@ function _extends() {
     const p = rdProfile(child);
     const sub = 'var(--sd-colour-text-secondary)';
     const line = '1px solid var(--sd-colour-border-default)';
+    const hair = '1px solid var(--sd-colour-border-subtle)';
     const roomName = (RD_ROOMS.find(r => r.key === child.room) || {}).name || '—';
+    const first = child.name.split(' ')[0];
     const meds = child.meds || [];
     const ongoing = meds.filter(m => m.ongoing);
-    const courses = meds.filter(m => !m.ongoing);
-    const [override, setOverride] = useState({});
-    const isOpen = title => title in override ? override[title] : true;
-    const toggle = title => setOverride(o => ({
-      ...o,
-      [title]: !isOpen(title)
-    }));
-    const section = (title, body, badge) => {
-      const open = isOpen(title);
+    const tags = child.tags || [];
+    const shortName = n => String(n).replace(/\s*\([^)]*\)\s*$/, '');
+    const allergens = tags.filter(t => /allerg(y|ies)/i.test(t)).map(t => t.replace(/\s*allerg(y|ies)\s*$/i, '').toLowerCase()).filter(Boolean);
+    const rescue = ongoing.find(m => /anaphylaxis|000/i.test(m.window || '')) || null;
+    const medFor = tag => {
+      const key = String(tag).split(' ')[0].replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      return key ? ongoing.find(m => new RegExp(key, 'i').test(m.auth || '')) || null : null;
+    };
+    const flags = [];
+    if (child.anaphylaxis) {
+      const bits = rescue ? [`${rescue.auth} on file`, `${shortName(rescue.name)} travels with ${first}`, ...(/000/.test(rescue.window || '') ? ['call 000 after giving'] : [])] : ['Action plan on file'];
+      flags.push({
+        tone: 'crit',
+        mark: RD_SHIELD_D,
+        title: `Anaphylaxis${allergens.length ? ' — ' + allergens.join(' and ') : ''}`,
+        meta: bits.join(' · '),
+        action: null
+      });
+    }
+    if (child.collect) {
+      const k = child.collect;
+      flags.push({
+        tone: 'restrict',
+        mark: RD_LOCK_D,
+        title: `${rdCollectLabel(k)} — ${k.who} can’t collect`,
+        meta: [k.note, k.courtOrder ? `Court order held by the office${k.onFile ? ` · ${k.onFile}` : ''}.` : null].filter(Boolean).join(' '),
+        action: null
+      });
+    }
+    tags.forEach(t => {
+      if (child.anaphylaxis && /allerg(y|ies)/i.test(t)) return;
+      const m = medFor(t);
+      flags.push({
+        tone: 'warn',
+        mark: m ? RD_ICONS.med : RD_SHIELD_D,
+        title: t,
+        meta: m ? `${m.auth} on file · ${shortName(m.name)}${m.kept ? ' ' + m.kept : ''} — travels with ${first}, between rooms and on every excursion` : null,
+        action: null
+      });
+    });
+    if (child.disability) flags.push({
+      tone: 'calm',
+      mark: RD_STAFF_D,
+      title: 'Additional needs',
+      meta: 'Recorded on the enrolment record.',
+      action: null
+    });
+    if (p.special) {
+      const cut = p.special.indexOf('. ');
+      const tone = p.specialTone === 'warn' ? 'warn' : 'calm';
+      flags.push({
+        tone,
+        mark: tone === 'warn' ? RD_WARN_D : RD_NOTE_D,
+        title: cut > 0 ? p.special.slice(0, cut) : p.special,
+        meta: cut > 0 ? p.special.slice(cut + 2) : null,
+        action: null
+      });
+    }
+    const flagVariant = {
+      crit: ' ds-message-box--red',
+      warn: ' ds-message-box--orange',
+      restrict: ''
+    };
+    const flagRow = (f, i) => f.tone === 'calm' ? React.createElement("div", {
+      key: i,
+      style: {
+        display: 'flex',
+        alignItems: 'flex-start',
+        gap: 10,
+        padding: '6px 2px'
+      }
+    }, React.createElement("span", {
+      style: {
+        flexShrink: 0,
+        marginTop: 1,
+        color: sub,
+        display: 'inline-flex'
+      }
+    }, React.createElement(RdGlyph, {
+      d: f.mark,
+      size: 18
+    })), React.createElement("span", {
+      style: {
+        flex: 1,
+        minWidth: 0,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 2
+      }
+    }, React.createElement("span", {
+      style: {
+        fontSize: 14,
+        fontWeight: 700,
+        lineHeight: 1.4
+      }
+    }, f.title), f.meta && React.createElement("span", {
+      style: {
+        fontSize: 13,
+        lineHeight: 1.45,
+        color: sub
+      }
+    }, f.meta))) : React.createElement("div", {
+      key: i,
+      className: `ds-message-box${flagVariant[f.tone]}`
+    }, React.createElement("div", {
+      className: "ds-message-box__row"
+    }, React.createElement("span", {
+      className: "ds-message-box__icon",
+      "aria-hidden": "true"
+    }, React.createElement(RdGlyph, {
+      d: f.mark,
+      size: 24
+    })), React.createElement("div", {
+      className: "ds-message-box__text"
+    }, React.createElement("div", {
+      className: "ds-message-box__title-row"
+    }, React.createElement("p", {
+      className: "ds-message-box__title"
+    }, f.title))), f.meta && React.createElement("p", {
+      className: "ds-message-box__body"
+    }, f.meta)), f.action && React.createElement("button", {
+      type: "button",
+      className: "ds-message-box__action",
+      onClick: () => jump('docs')
+    }, f.action));
+    const emptyBlock = text => React.createElement("div", {
+      style: {
+        padding: '13px 15px',
+        borderRadius: 'var(--sd-radius-lg)',
+        background: 'var(--sd-colour-surface-grey)',
+        fontSize: 13.5,
+        lineHeight: 1.5,
+        color: sub
+      }
+    }, text);
+    const medCard = m => {
+      const e = rdMedExpiry(m);
+      const bad = !!(e && (e.expired || e.soon));
+      const statusText = bad ? e.label : m.ongoing ? 'Ongoing' : 'Short course';
+      const statusCls = bad ? 'ds-pill--orange' : m.ongoing ? 'ds-pill--orange' : 'ds-pill--grey';
+      const critWindow = /anaphylaxis|000/i.test(m.window || '');
+      const prov = [m.auth, `${m.authBy}, ${m.authOn}`, !bad && e ? e.label.charAt(0).toLowerCase() + e.label.slice(1) : null].filter(Boolean).join(' · ');
       return React.createElement("div", {
+        key: m.name,
+        style: {
+          border: line,
+          borderRadius: 'var(--sd-radius-lg)',
+          padding: '13px 15px',
+          display: 'flex',
+          flexDirection: 'column'
+        }
+      }, React.createElement("div", {
+        style: {
+          display: 'flex',
+          alignItems: 'baseline',
+          justifyContent: 'space-between',
+          gap: 10
+        }
+      }, React.createElement("span", {
+        style: {
+          fontSize: 15,
+          fontWeight: 700
+        }
+      }, m.name), React.createElement("span", {
+        className: `ds-pill ds-pill--xs ${statusCls} ds-pill--minimal`
+      }, statusText)), React.createElement("span", {
+        style: {
+          marginTop: 3,
+          fontSize: 14,
+          fontWeight: 600,
+          color: 'var(--sd-colour-text-primary)'
+        }
+      }, m.dose, m.route ? React.createElement("span", {
+        style: {
+          fontWeight: 500,
+          color: sub
+        }
+      }, " \xB7 ", m.route) : ''), m.ongoing && m.kept && React.createElement("span", {
+        style: {
+          marginTop: 9,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 7,
+          fontSize: 13,
+          color: sub
+        }
+      }, React.createElement("span", {
+        style: {
+          flexShrink: 0,
+          display: 'inline-flex',
+          opacity: 0.6
+        }
+      }, React.createElement(RdGlyph, {
+        d: RD_BAG_D,
+        size: 15
+      })), `${m.kept.charAt(0).toUpperCase() + m.kept.slice(1)} — travels with ${first}`), m.window && React.createElement("span", {
+        style: {
+          marginTop: 10,
+          padding: '8px 11px',
+          borderRadius: 'var(--sd-radius-m)',
+          fontSize: 13.5,
+          fontWeight: 600,
+          background: critWindow ? 'var(--sd-colour-surface-red)' : 'var(--sd-colour-surface-orange)',
+          color: critWindow ? 'var(--sd-colour-text-on-red)' : 'var(--sd-colour-text-on-orange)'
+        }
+      }, m.window), React.createElement("span", {
+        style: {
+          marginTop: 9,
+          fontSize: 12,
+          lineHeight: 1.45,
+          color: sub
+        }
+      }, prov), bad && React.createElement("span", {
+        style: {
+          marginTop: 4,
+          fontSize: 12.5,
+          fontWeight: 700,
+          lineHeight: 1.45,
+          color: 'var(--sd-colour-text-on-orange)'
+        }
+      }, e.expired ? 'A dose can still be recorded, and will be flagged.' : 'Ask the office to renew it.'));
+    };
+    const medExpired = meds.filter(m => (rdMedExpiry(m) || {}).expired).length;
+    const medSoon = meds.filter(m => (rdMedExpiry(m) || {}).soon).length;
+    const medPill = medExpired ? `${medExpired} expired` : medSoon ? `${medSoon} expiring` : null;
+    const tile = split ? {
+      display: 'grid',
+      gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
+      gap: 10,
+      alignItems: 'start'
+    } : {
+      display: 'flex',
+      flexDirection: 'column',
+      gap: 10
+    };
+    const logPast = dayOffset > 0;
+    const logCount = rdTimeline(child, dayOffset).length;
+    const logDay = (RD_LOG_DAYS[dayOffset] || RD_LOG_DAYS[0]).day;
+    const logTitle = logPast ? `${logDay} · log` : 'Today’s log';
+    const glance = logPast ? [] : child.last || [];
+    const glanceLabel = k => k === 'meal' ? 'Last meal' : k === 'nappy' ? 'Last nappy' : RD_EVENT_LABEL[k] || k;
+    const logBody = React.createElement("div", {
+      style: {
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 16
+      }
+    }, !!glance.length && React.createElement("div", {
+      style: {
+        display: 'grid',
+        gridTemplateColumns: split ? 'repeat(auto-fit, minmax(150px, 1fr))' : '1fr 1fr',
+        gap: 9
+      }
+    }, glance.map(([kind, at, detail]) => React.createElement("div", {
+      key: kind,
+      style: {
+        border: line,
+        borderRadius: 'var(--sd-radius-lg)',
+        padding: '10px 12px',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 2
+      }
+    }, React.createElement("span", {
+      style: {
+        fontSize: 11.5,
+        color: sub
+      }
+    }, glanceLabel(kind)), React.createElement("span", {
+      style: {
+        fontSize: 15,
+        fontWeight: 700
+      }
+    }, RD_AMPM(at)), detail && React.createElement("span", {
+      style: {
+        fontSize: 12.5,
+        color: sub
+      }
+    }, detail)))), React.createElement(RdEventLog, {
+      child: child,
+      history: p.history,
+      dayOffset: dayOffset,
+      onEdit: readOnly ? undefined : onEdit,
+      hideHeading: true
+    }));
+    const secs = [{
+      id: 'health',
+      mark: RD_SHIELD_D,
+      nav: 'Health & safety',
+      title: 'Health & safety',
+      badge: flags.length || '—',
+      dot: ['crit', 'warn', 'restrict'].find(t => flags.some(f => f.tone === t)) || null,
+      body: flags.length ? React.createElement("div", {
         style: {
           display: 'flex',
           flexDirection: 'column',
-          gap: 9
+          gap: 8
         }
-      }, React.createElement("button", {
+      }, flags.map(flagRow)) : emptyBlock('No allergies, medical conditions or additional needs recorded.')
+    }, {
+      id: 'meds',
+      mark: RD_ICONS.med,
+      nav: 'Medication',
+      title: 'Medication & action plans',
+      pill: medPill,
+      badge: meds.length || '—',
+      dot: medPill ? 'warn' : null,
+      body: React.createElement("div", {
+        style: {
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 10
+        }
+      }, meds.length ? React.createElement("div", {
+        style: tile
+      }, meds.map(medCard)) : React.createElement("div", {
+        style: {
+          display: 'flex',
+          gap: 10,
+          padding: '13px 15px',
+          borderRadius: 'var(--sd-radius-lg)',
+          background: 'var(--sd-colour-surface-grey)'
+        }
+      }, React.createElement("span", {
+        style: {
+          color: sub,
+          flexShrink: 0
+        }
+      }, React.createElement(RdGlyph, {
+        d: RD_ATTACH_D,
+        size: 17
+      })), React.createElement("span", {
+        style: {
+          fontSize: 13.5,
+          lineHeight: 1.45,
+          fontWeight: child.medication ? 600 : 400,
+          color: child.medication ? undefined : sub
+        }
+      }, child.medication ? 'No authorisation on file here. A dose can still be recorded — the service may hold a paper form.' : 'No medication on file.')), React.createElement("span", {
+        style: {
+          fontSize: 12,
+          lineHeight: 1.45,
+          color: sub
+        }
+      }, "Authorisations are added in Office. This profile reads them."))
+    }, {
+      id: 'guardians',
+      mark: RD_STAFF_D,
+      nav: 'Guardians',
+      title: 'Parents & guardians',
+      badge: p.guardians.length,
+      dot: child.collect ? 'restrict' : null,
+      body: React.createElement("div", {
+        style: tile
+      }, p.guardians.map(g => React.createElement("div", {
+        key: g.name,
+        className: "ds-accordion ds-accordion--separated"
+      }, React.createElement(RdContactCard, {
+        person: g,
+        open: openContact === g.name,
+        onToggle: () => setOpenContact(o => o === g.name ? null : g.name)
+      }))))
+    }, {
+      id: 'emergency',
+      mark: RD_PHONE_D,
+      nav: 'Emergency contact',
+      title: 'Emergency contact',
+      badge: 1,
+      body: React.createElement("div", {
+        style: {
+          maxWidth: 480
+        }
+      }, React.createElement("div", {
+        className: "ds-accordion ds-accordion--separated"
+      }, React.createElement(RdContactCard, {
+        person: p.emergency,
+        open: openContact === p.emergency.name,
+        onToggle: () => setOpenContact(o => o === p.emergency.name ? null : p.emergency.name)
+      })))
+    }, {
+      id: 'about',
+      mark: RD_NOTE_D,
+      nav: `About ${first}`,
+      title: `About ${first}`,
+      body: React.createElement("div", {
+        style: {
+          maxWidth: 660,
+          padding: '13px 15px',
+          borderRadius: 'var(--sd-radius-lg)',
+          background: 'var(--sd-colour-surface-grey)',
+          fontSize: 14.5,
+          lineHeight: 1.55
+        }
+      }, p.about)
+    }, {
+      id: 'docs',
+      mark: RD_ATTACH_D,
+      nav: 'Documents',
+      title: 'Documents',
+      badge: p.attachments.length,
+      body: React.createElement("div", {
+        style: {
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 10
+        }
+      }, React.createElement("div", {
+        style: tile
+      }, p.attachments.map(a => {
+        const missing = a.type === 'Missing';
+        return React.createElement("div", {
+          key: a.name,
+          style: {
+            display: 'flex',
+            alignItems: 'center',
+            gap: 11,
+            padding: '11px 13px',
+            borderRadius: 'var(--sd-radius-lg)',
+            border: line,
+            opacity: missing ? 0.7 : 1
+          }
+        }, React.createElement("span", {
+          style: {
+            color: missing ? sub : 'var(--sd-colour-action-primary)',
+            flexShrink: 0
+          }
+        }, React.createElement(RdGlyph, {
+          d: RD_ATTACH_D,
+          size: 18
+        })), React.createElement("span", {
+          style: {
+            fontSize: 13.5,
+            fontWeight: 600,
+            flex: 1,
+            minWidth: 0
+          }
+        }, a.name), React.createElement("span", {
+          style: {
+            fontSize: 12,
+            fontWeight: 600,
+            color: sub,
+            whiteSpace: 'nowrap'
+          }
+        }, a.type, a.updated !== '—' ? ` · ${a.updated}` : ''));
+      })), React.createElement("span", {
+        style: {
+          fontSize: 12,
+          color: sub
+        }
+      }, "Preview and download aren\u2019t wired up in the prototype."))
+    }, {
+      id: 'log',
+      mark: RD_CLOCK_D,
+      nav: logTitle,
+      title: logTitle,
+      rule: true,
+      badge: logCount,
+      notes: (logCount ? [`${logCount} events`] : []).concat(logPast ? ['Closed record'] : []),
+      body: logBody
+    }];
+    useEffect(() => {
+      const el = scroller.current;
+      if (!el) return;
+      const spy = () => {
+        const base = el.getBoundingClientRect().top;
+        const nodes = el.querySelectorAll('[data-sec]');
+        if (!nodes.length) return;
+        let cur = nodes[0].getAttribute('data-sec');
+        nodes.forEach(n => {
+          if (n.getBoundingClientRect().top - base <= 48) cur = n.getAttribute('data-sec');
+        });
+        if (el.scrollTop + el.clientHeight >= el.scrollHeight - 4) cur = nodes[nodes.length - 1].getAttribute('data-sec');
+        setActive(cur);
+      };
+      spy();
+      el.addEventListener('scroll', spy, {
+        passive: true
+      });
+      return () => el.removeEventListener('scroll', spy);
+    }, [split, child, dayOffset, openContact]);
+    const jump = id => {
+      const el = scroller.current;
+      const n = el && el.querySelector(`[data-sec="${id}"]`);
+      if (!n) return;
+      const still = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      el.scrollTo({
+        top: el.scrollTop + (n.getBoundingClientRect().top - el.getBoundingClientRect().top) - 4,
+        behavior: still ? 'auto' : 'smooth'
+      });
+      setActive(id);
+    };
+    const RD_NAV_MARK = {
+      crit: 'critical',
+      warn: 'needs attention',
+      restrict: 'collection restricted'
+    };
+    const navRow = s => {
+      const on = active === s.id;
+      return React.createElement("button", {
+        key: s.id,
         type: "button",
-        onClick: () => toggle(title),
-        "aria-expanded": open,
         className: "fp-btn",
+        onClick: () => jump(s.id),
+        "aria-current": on ? 'true' : undefined,
+        "aria-label": `${s.nav}${s.dot ? `, ${RD_NAV_MARK[s.dot]}` : ''}`,
         style: {
           all: 'unset',
           boxSizing: 'border-box',
           cursor: 'pointer',
           display: 'flex',
           alignItems: 'center',
-          gap: 8,
+          gap: 10,
           width: '100%',
-          minHeight: 32
+          minHeight: 44,
+          padding: '9px 11px',
+          borderRadius: 'var(--sd-radius-lg)',
+          background: on ? 'var(--sd-colour-surface-cyan)' : 'transparent',
+          color: on ? 'var(--sd-colour-text-primary)' : sub,
+          fontSize: 13.5,
+          fontWeight: on ? 700 : 600
         }
       }, React.createElement("span", {
         style: {
-          transform: open ? 'rotate(90deg)' : 'none',
-          transition: 'transform .15s',
-          color: sub,
+          flexShrink: 0,
           display: 'inline-flex',
-          flexShrink: 0
+          color: on ? 'var(--sd-colour-action-primary)' : 'inherit',
+          opacity: on ? 1 : 0.65
         }
       }, React.createElement(RdGlyph, {
-        d: RD_CHEV_D,
-        size: 15,
-        width: 2
-      })), React.createElement(RdLabel, null, title), !!badge && React.createElement("span", {
-        className: "ds-pill ds-pill--xs ds-pill--orange ds-pill--minimal"
-      }, badge), React.createElement("span", {
+        d: s.mark,
+        size: 16
+      })), React.createElement("span", {
         style: {
-          flex: 1
+          flex: 1,
+          minWidth: 0,
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap'
         }
-      })), open && body);
+      }, s.nav), s.dot === 'crit' && React.createElement("span", {
+        "aria-hidden": "true",
+        style: {
+          flexShrink: 0,
+          display: 'inline-flex',
+          color: 'var(--sd-colour-feedback-error-default)'
+        }
+      }, React.createElement(RdGlyph, {
+        d: RD_SHIELD_D,
+        size: 14,
+        width: 2.4
+      })), (s.dot === 'warn' || s.dot === 'restrict') && React.createElement("span", {
+        "aria-hidden": "true",
+        style: {
+          width: 7,
+          height: 7,
+          flexShrink: 0,
+          borderRadius: 'var(--sd-radius-full)',
+          background: s.dot === 'warn' ? 'var(--sd-colour-feedback-warning-default)' : 'var(--sd-colour-surface-inverse)'
+        }
+      }), s.badge != null && React.createElement("span", {
+        style: {
+          fontSize: 11.5,
+          fontWeight: 700,
+          color: sub,
+          flexShrink: 0
+        }
+      }, s.badge));
     };
-    const noteBlock = text => React.createElement("div", {
+    const crit = flags.find(f => f.tone === 'crit') || null;
+    const critStrip = crit && React.createElement("div", {
       style: {
-        padding: '11px 13px',
+        flexShrink: 0,
+        display: 'flex',
+        flexWrap: split ? 'nowrap' : 'wrap',
+        alignItems: 'center',
+        columnGap: 10,
+        rowGap: 2,
+        margin: split ? '0 22px 12px' : '0 16px 12px',
+        padding: '9px 14px',
         borderRadius: 'var(--sd-radius-lg)',
-        background: 'var(--sd-colour-surface-grey)',
-        fontSize: 13,
-        lineHeight: 1.5
-      }
-    }, text);
-    const details = React.createElement("div", {
-      style: {
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 20
-      }
-    }, section('Health & safety', React.createElement("div", {
-      style: {
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 8
-      }
-    }, child.anaphylaxis && React.createElement("div", {
-      style: {
-        display: 'flex',
-        gap: 10,
-        padding: '10px 12px',
-        borderRadius: 'var(--sd-radius-lg)',
-        background: 'var(--sd-colour-surface-red)'
+        background: 'var(--sd-colour-surface-red)',
+        color: 'var(--sd-colour-text-on-red)'
       }
     }, React.createElement("span", {
       style: {
         color: 'var(--sd-colour-feedback-error-default)',
-        flexShrink: 0
-      }
-    }, React.createElement(RdGlyph, {
-      d: "M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7l8-4ZM12 9v4M12 16h.01",
-      size: 18
-    })), React.createElement("span", {
-      style: {
-        fontSize: 12.5,
-        fontWeight: 700
-      }
-    }, "Anaphylaxis \u2014 action plan on file")), !!ongoing.length && React.createElement("div", {
-      style: {
-        display: 'flex',
-        gap: 10,
-        padding: '10px 12px',
-        borderRadius: 'var(--sd-radius-lg)',
-        background: 'var(--sd-colour-surface-orange)'
-      }
-    }, React.createElement("span", {
-      style: {
-        color: 'var(--sd-colour-text-on-orange)',
         flexShrink: 0,
-        marginTop: 1
-      }
-    }, React.createElement(RdColourIcon, {
-      kind: "med",
-      size: 18
-    })), React.createElement("span", {
-      style: {
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 4,
-        minWidth: 0
-      }
-    }, React.createElement("span", {
-      style: {
-        fontSize: 12.5,
-        fontWeight: 700,
-        color: 'var(--sd-colour-text-on-orange)'
-      }
-    }, "Ongoing medication \u2014 travels with ", child.name.split(' ')[0]), React.createElement("span", {
-      style: {
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 2
-      }
-    }, ongoing.map(m => React.createElement("span", {
-      key: m.name,
-      style: {
-        fontSize: 12.5,
-        fontWeight: 600,
-        color: 'var(--sd-colour-text-on-orange)'
-      }
-    }, m.name, " \xB7 ", m.dose, m.route ? ` · ${m.route}` : '', m.kept ? ` · ${m.kept}` : ''))), React.createElement("span", {
-      style: {
-        fontSize: 12,
-        lineHeight: 1.45,
-        fontWeight: 600,
-        color: 'var(--sd-colour-text-on-orange)'
-      }
-    }, "These are physical items. They move with ", child.name.split(' ')[0], " between rooms and go on every excursion."))), React.createElement("div", {
-      style: {
-        display: 'flex',
-        gap: 6,
-        flexWrap: 'wrap'
-      }
-    }, (child.tags || []).map(t => React.createElement(RdTag, {
-      key: t
-    }, t)), child.disability && React.createElement("span", {
-      style: {
-        fontSize: 11,
-        fontWeight: 700,
-        padding: '2px 9px',
-        borderRadius: 'var(--sd-radius-full)',
-        background: 'var(--sd-colour-surface-cyan)',
-        color: 'var(--sd-colour-text-on-cyan)'
-      }
-    }, "Additional needs"), !(child.tags || []).length && !child.disability && React.createElement("span", {
-      style: {
-        fontSize: 13,
-        color: sub
-      }
-    }, "No allergies or additional needs recorded.")))), p.special && section('Special circumstances', React.createElement("div", {
-      style: {
-        display: 'flex',
-        gap: 10,
-        padding: '11px 13px',
-        borderRadius: 'var(--sd-radius-lg)',
-        background: 'var(--sd-colour-surface-orange)'
-      }
-    }, React.createElement("span", {
-      style: {
-        color: 'var(--sd-colour-text-on-orange)',
-        flexShrink: 0,
-        marginTop: 1
+        display: 'inline-flex'
       }
     }, React.createElement(RdGlyph, {
-      d: "M12 3l9 16H3L12 3ZM12 9v5M12 17h.01",
-      size: 18
-    })), React.createElement("span", {
-      style: {
-        fontSize: 12.5,
-        lineHeight: 1.5,
-        fontWeight: 600,
-        color: 'var(--sd-colour-text-on-orange)'
-      }
-    }, p.special))), section(`About ${child.name.split(' ')[0]}`, noteBlock(p.about)), section('Medication authorisations', React.createElement("div", {
-      style: {
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 8
-      }
-    }, meds.length ? meds.map(m => React.createElement("div", {
-      key: m.name,
-      style: {
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 3,
-        padding: '11px 13px',
-        borderRadius: 'var(--sd-radius-lg)',
-        border: line
-      }
-    }, React.createElement("span", {
-      style: {
-        display: 'flex',
-        alignItems: 'center',
-        gap: 8,
-        flexWrap: 'wrap'
-      }
-    }, React.createElement("span", {
-      style: {
-        fontSize: 14,
-        fontWeight: 700
-      }
-    }, m.name, " ", React.createElement("span", {
-      style: {
-        fontWeight: 600,
-        color: sub
-      }
-    }, "\xB7 ", m.dose, m.route ? ` · ${m.route}` : '')), React.createElement("span", {
-      className: `ds-pill ds-pill--sm ${m.ongoing ? 'ds-pill--orange' : 'ds-pill--grey'} ds-pill--minimal`
-    }, m.ongoing ? 'Ongoing' : 'Short course')), React.createElement("span", {
-      style: {
-        fontSize: 12.5,
-        fontWeight: 600,
-        color: sub
-      }
-    }, m.auth, " \xB7 ", m.authBy, " \xB7 ", m.authOn), m.window && React.createElement("span", {
-      style: {
-        fontSize: 12.5,
-        color: sub
-      }
-    }, "When: ", m.window), (() => {
-      const e = rdMedExpiry(m);
-      if (!e) return null;
-      const warn = e.expired || e.soon;
-      return React.createElement("span", {
-        style: {
-          fontSize: 12.5,
-          fontWeight: warn ? 700 : 500,
-          color: warn ? 'var(--sd-colour-text-on-orange)' : sub
-        }
-      }, e.label, e.expired ? ' — a dose can still be recorded, and will be flagged' : e.soon ? ' — ask the office to renew it' : '');
-    })())) : React.createElement("div", {
-      style: {
-        display: 'flex',
-        gap: 10,
-        padding: '11px 12px',
-        borderRadius: 'var(--sd-radius-lg)',
-        background: 'var(--sd-colour-surface-grey)'
-      }
-    }, React.createElement("span", {
-      style: {
-        color: sub,
-        flexShrink: 0
-      }
-    }, React.createElement(RdGlyph, {
-      d: RD_ATTACH_D,
+      d: RD_SHIELD_D,
       size: 17
     })), React.createElement("span", {
       style: {
-        fontSize: 12.5,
-        lineHeight: 1.45,
-        fontWeight: 600
+        fontSize: 13.5,
+        fontWeight: 700,
+        flexShrink: 0
       }
-    }, "No authorisation on file here. A dose can still be recorded \u2014 the service may hold a paper form (PAR-48).")), React.createElement("span", {
+    }, crit.title), rescue && React.createElement("span", {
       style: {
-        fontSize: 12,
-        lineHeight: 1.45,
-        color: sub
-      }
-    }, "Authorisations are added in Office. This profile reads them.")), meds.some(m => (rdMedExpiry(m) || {}).expired) ? 'Expired' : meds.some(m => (rdMedExpiry(m) || {}).soon) ? 'Expiring' : null), section('Parents & guardians', React.createElement("div", {
-      className: "ds-accordion ds-accordion--separated"
-    }, p.guardians.map(g => React.createElement(RdContactCard, {
-      key: g.name,
-      person: g,
-      open: openContact === g.name,
-      onToggle: () => setOpenContact(o => o === g.name ? null : g.name)
-    })))), section('Emergency contact', React.createElement("div", {
-      className: "ds-accordion ds-accordion--separated"
-    }, React.createElement(RdContactCard, {
-      person: p.emergency,
-      open: openContact === p.emergency.name,
-      onToggle: () => setOpenContact(o => o === p.emergency.name ? null : p.emergency.name)
-    }))), section('Documents', React.createElement("div", {
-      style: {
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 6
-      }
-    }, p.attachments.map(a => {
-      const missing = a.type === 'Missing';
-      return React.createElement("div", {
-        key: a.name,
-        style: {
-          display: 'flex',
-          alignItems: 'center',
-          gap: 11,
-          padding: '10px 12px',
-          borderRadius: 'var(--sd-radius-lg)',
-          border: line,
-          opacity: missing ? 0.7 : 1
-        }
-      }, React.createElement("span", {
-        style: {
-          color: missing ? sub : 'var(--sd-colour-action-primary)',
-          flexShrink: 0
-        }
-      }, React.createElement(RdGlyph, {
-        d: RD_ATTACH_D,
-        size: 18
-      })), React.createElement("span", {
-        style: {
-          fontSize: 13.5,
-          fontWeight: 600,
-          flex: 1,
-          minWidth: 0
-        }
-      }, a.name), React.createElement("span", {
-        style: {
-          fontSize: 12,
-          fontWeight: 600,
-          color: sub,
+        fontSize: 13.5,
+        fontWeight: 500,
+        minWidth: 0,
+        ...(split ? {
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
           whiteSpace: 'nowrap'
-        }
-      }, a.type, a.updated !== '—' ? ` · ${a.updated}` : ''));
-    }), React.createElement("span", {
-      style: {
-        fontSize: 12,
-        color: sub
+        } : {})
       }
-    }, "Preview and download aren\u2019t wired up in the prototype."))));
+    }, "\xB7 ", `${shortName(rescue.name)} ${rescue.kept || 'on file'}`, /000/.test(rescue.window || '') ? ' · call 000' : ''), React.createElement("span", {
+      style: {
+        flex: 1
+      }
+    }), split && React.createElement("button", {
+      type: "button",
+      className: "fp-btn",
+      onClick: () => jump('health'),
+      style: {
+        all: 'unset',
+        boxSizing: 'border-box',
+        cursor: 'pointer',
+        flexShrink: 0,
+        display: 'inline-flex',
+        alignItems: 'center',
+        minHeight: 44,
+        margin: '-10px 0'
+      }
+    }, React.createElement("span", {
+      style: {
+        padding: '3px 11px',
+        borderRadius: 'var(--sd-radius-full)',
+        border: '1px solid currentColor',
+        fontSize: 12,
+        fontWeight: 700
+      }
+    }, "Details")));
     return React.createElement("div", {
       style: {
         position: 'absolute',
@@ -6259,11 +6733,12 @@ function _extends() {
       }
     }, React.createElement("div", {
       style: {
-        padding: '16px 22px',
-        borderBottom: line,
+        padding: split ? '16px 22px 14px' : '14px 16px 12px',
         display: 'flex',
+        flexWrap: split ? 'nowrap' : 'wrap',
         alignItems: 'center',
-        gap: 14,
+        columnGap: 14,
+        rowGap: 10,
         flexShrink: 0
       }
     }, React.createElement(RdKid, {
@@ -6279,25 +6754,46 @@ function _extends() {
       }
     }, React.createElement("span", {
       style: {
-        fontSize: 20,
+        fontSize: 21,
         fontWeight: 700,
-        whiteSpace: 'nowrap',
-        overflow: 'hidden',
-        textOverflow: 'ellipsis'
+        letterSpacing: '-0.01em',
+        ...(split ? {
+          whiteSpace: 'nowrap',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis'
+        } : {
+          overflowWrap: 'anywhere'
+        })
       }
     }, child.name), React.createElement("span", {
       style: {
         fontSize: 13,
         fontWeight: 600,
         color: sub,
-        whiteSpace: 'nowrap',
-        overflow: 'hidden',
-        textOverflow: 'ellipsis'
+        ...(split ? {
+          whiteSpace: 'nowrap',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis'
+        } : {})
       }
-    }, child.age != null ? `${child.age} yrs` : 'Age not specified', " \xB7 ", roomName, dayOffset > 0 ? '' : child.status === 'here' ? ` · here since ${RD_AMPM(child.at)}` : child.status === 'gone' ? ` · signed out ${RD_AMPM(child.at)}` : '')), React.createElement(RdDayPicker, {
+    }, child.age != null ? `${child.age} yrs` : 'Age not specified', " \xB7 ", roomName, dayOffset > 0 ? '' : child.status === 'here' ? ` · here since ${RD_AMPM(child.at)}` : child.status === 'gone' ? ` · signed out ${RD_AMPM(child.at)}` : '')), React.createElement("span", {
+      style: {
+        display: 'flex',
+        alignItems: 'center',
+        gap: 10,
+        flexShrink: 0,
+        ...(split ? {} : {
+          flexBasis: '100%'
+        })
+      }
+    }, React.createElement(RdDayPicker, {
       value: dayOffset,
       history: p.history,
       onPick: setDayOffset
+    }), !split && React.createElement("span", {
+      style: {
+        flex: 1
+      }
     }), React.createElement("button", {
       type: "button",
       "aria-label": "Close full profile",
@@ -6322,48 +6818,68 @@ function _extends() {
       d: RD_CLOSE_D,
       size: 16,
       width: 2
-    }), "Close")), React.createElement("div", {
-      style: split ? {
+    }), "Close"))), critStrip, React.createElement("div", {
+      style: {
         flex: 1,
         minHeight: 0,
         display: 'flex',
-        flexDirection: 'row'
-      } : {
-        flex: 1,
+        flexDirection: 'row',
+        borderTop: hair
+      }
+    }, split && React.createElement("nav", {
+      "aria-label": `${child.name}’s profile`,
+      style: {
+        width: 218,
+        boxSizing: 'border-box',
+        flexShrink: 0,
         minHeight: 0,
         overflowY: 'auto',
+        padding: '14px 12px 24px',
+        borderRight: hair,
+        background: 'var(--sd-colour-surface-subtle)',
         display: 'flex',
-        flexDirection: 'column'
+        flexDirection: 'column',
+        gap: 2
+      }
+    }, secs.map(s => s.rule ? React.createElement(React.Fragment, {
+      key: s.id + '-rule'
+    }, React.createElement("hr", {
+      style: {
+        border: 0,
+        borderTop: hair,
+        margin: '10px 6px',
+        width: '100%'
+      }
+    }), navRow(s)) : navRow(s))), React.createElement("div", {
+      ref: scroller,
+      style: {
+        flex: 1,
+        minWidth: 0,
+        minHeight: 0,
+        overflowY: 'auto',
+        padding: split ? '4px 26px 40px' : '4px 22px 40px'
+      }
+    }, secs.map((s, i) => React.createElement("section", {
+      key: s.id,
+      "data-sec": s.id,
+      style: {
+        padding: '20px 0 4px',
+        borderBottom: i === secs.length - 1 ? 0 : hair
       }
     }, React.createElement("div", {
-      style: split ? {
-        flex: '1 1 0',
-        minWidth: 0,
-        maxWidth: 400,
-        minHeight: 0,
-        overflowY: 'auto',
-        padding: '18px 22px 24px',
-        borderRight: line
-      } : {
-        padding: '18px 22px',
-        borderBottom: line
+      style: {
+        display: 'flex',
+        alignItems: 'center',
+        gap: 9,
+        marginBottom: 14,
+        minHeight: 20
       }
-    }, details), React.createElement("div", {
-      style: split ? {
-        flex: '1.35 1 0',
-        minWidth: 0,
-        minHeight: 0,
-        overflowY: 'auto',
-        padding: '18px 22px 24px'
-      } : {
-        padding: '18px 22px 24px'
-      }
-    }, React.createElement(RdEventLog, {
-      child: child,
-      history: p.history,
-      dayOffset: dayOffset,
-      onEdit: readOnly ? undefined : onEdit
-    }))));
+    }, React.createElement(RdLabel, null, s.title), !!s.pill && React.createElement("span", {
+      className: "ds-pill ds-pill--xs ds-pill--orange ds-pill--minimal"
+    }, s.pill), (s.notes || []).map(n => React.createElement("span", {
+      key: n,
+      className: "ds-pill ds-pill--xs ds-pill--grey ds-pill--minimal"
+    }, n))), s.body)))));
   }
   function RdPaneRoom({
     r,
@@ -7925,13 +8441,14 @@ function _extends() {
     const [time, setTime] = useState(RD_NOW);
     const [rows, setRows] = useState(() => people.map((c, i) => ({
       id: c.id,
-      value: cfg.perChild && cfg.perChild.multi ? [...(cfg.perChild.value || [])] : c.prefs && cfg.prefKey && c.prefs[cfg.prefKey] || cfg.perChild && cfg.perChild.value || cfg.shared && cfg.shared.value || null,
+      value: cfg.attendance === 'out' && c.collect ? null : cfg.perChild && cfg.perChild.multi ? [...(cfg.perChild.value || [])] : c.prefs && cfg.prefKey && c.prefs[cfg.prefKey] || cfg.perChild && cfg.perChild.value || cfg.shared && cfg.shared.value || null,
       detailOpen: false,
       at: cfg.seedBySelection ? RD_HHMM(RD_MINS(RD_NOW) - (people.length - 1 - i)) : null,
       checks: advancedOn ? Object.fromEntries(RD_SLEEP_CHECKS.map(k => [k.key, k.options[0]])) : null,
       fromPref: !!(c.prefs && cfg.prefKey && c.prefs[cfg.prefKey]),
-      note: '',
-      noteOpen: false,
+      named: cfg.attendance === 'out' && !!c.collect,
+      note: c.prefNotes && cfg.prefKey && c.prefNotes[cfg.prefKey] || '',
+      noteOpen: !!(c.prefNotes && cfg.prefKey && c.prefNotes[cfg.prefKey]),
       softReason: rdCohortReason(eventKey, c, cfg),
       excluded: !!rdCohortReason(eventKey, c, cfg)
     })).sort((a, b) => {
@@ -7946,6 +8463,11 @@ function _extends() {
     const included = rows.filter(r => !r.excluded && !blockedReason(people.find(x => x.id === r.id) || {}));
     const blockedCount = rows.length - rows.filter(r => !blockedReason(people.find(x => x.id === r.id) || {})).length;
     const missing = cfg.perChild && cfg.perChild.multi ? included.filter(r => !(r.value || []).length) : [];
+    const pc = cfg.perChild || {};
+    const isNotApplied = v => !!pc.notApplied && (v === pc.notApplied || (pc.reasonFor || []).includes(v));
+    const needsReason = r => isNotApplied(r.value);
+    const noReason = included.filter(r => needsReason(r) && (r.value === pc.notApplied || !(r.note || '').trim()));
+    const noWho = included.filter(r => r.named && !r.value);
     const [result, setResult] = useState(null);
     const sharedLabel = () => {
       if (cfg.shared && cfg.shared.select) return (cfg.shared.select.find(o => o.key === shared) || {}).label || null;
@@ -7992,7 +8514,7 @@ function _extends() {
     };
     const applyShared = v => {
       setShared(v);
-      if (cfg.shared && cfg.shared.carry) setRows(rs => rs.map(r => r.fromPref || r.touched ? r : {
+      if (cfg.shared && cfg.shared.carry) setRows(rs => rs.map(r => r.fromPref || r.touched || r.named ? r : {
         ...r,
         value: v
       }));
@@ -8314,7 +8836,13 @@ function _extends() {
             fontWeight: 700,
             color: 'var(--sd-colour-text-secondary)'
           }
-        }, r.softReason || 'Not included') : r.fromPref ? React.createElement("span", {
+        }, r.softReason || 'Not included') : r.fromPref ? c.prefs && r.value !== c.prefs[cfg.prefKey] ? React.createElement("span", {
+          style: {
+            fontSize: 11,
+            fontWeight: 700,
+            color: 'var(--sd-colour-text-on-orange)'
+          }
+        }, "Changed from profile (", String(c.prefs[cfg.prefKey]).toLowerCase(), ")") : React.createElement("span", {
           style: {
             fontSize: 11,
             fontWeight: 700,
@@ -8328,15 +8856,10 @@ function _extends() {
           }
         }, "Added \xB7 ", r.softReason.replace(/ —.*$/, ''))), React.createElement("span", {
           style: {
-            display: 'flex',
-            gap: 5,
-            flexWrap: 'wrap',
             flex: 1,
             minWidth: 0
           }
-        }, (c.tags || []).map(t => React.createElement(RdTag, {
-          key: t
-        }, t))), !!r.note && !r.noteOpen && React.createElement("span", {
+        }), !!r.note && !r.noteOpen && React.createElement("span", {
           style: {
             fontSize: 12,
             fontStyle: 'italic',
@@ -8391,15 +8914,40 @@ function _extends() {
           d: RD_CHEV_D,
           size: 15,
           width: 2.2
-        }))) : React.createElement(RdSegmented, {
-          options: perOptions,
+        }))) : r.named ? React.createElement(RdChoiceChips, {
+          options: rdCollectOptions(c),
           value: r.value,
           onChange: v => set(r.id, {
             value: v,
             touched: true
           }),
+          ariaLabel: `Collected by for ${c.name}`
+        }) : React.createElement(React.Fragment, null, React.createElement(RdSegmented, {
+          options: perOptions,
+          value: isNotApplied(r.value) ? null : r.value,
+          onChange: v => set(r.id, {
+            value: v,
+            touched: true,
+            ...(isNotApplied(r.value) ? {
+              note: '',
+              noteOpen: false
+            } : {})
+          }),
           ariaLabel: `${cfg.perChild ? cfg.perChild.label : cfg.label} for ${c.name}`
-        })), advancedOn && !off && (() => {
+        }), pc.notApplied && React.createElement(RdNotAppliedToggle, {
+          on: isNotApplied(r.value),
+          name: c.name,
+          onToggle: () => set(r.id, isNotApplied(r.value) ? {
+            value: shared || (pc.options[0] || [])[0],
+            touched: true,
+            note: '',
+            noteOpen: false
+          } : {
+            value: pc.notApplied,
+            touched: true,
+            noteOpen: true
+          })
+        }))), advancedOn && !off && (() => {
           const bad = RD_SLEEP_CHECKS.filter(k => (r.checks || {})[k.key] && (r.checks || {})[k.key] !== k.options[0]);
           if (!bad.length) return null;
           return React.createElement("span", {
@@ -8532,12 +9080,46 @@ function _extends() {
         }, React.createElement(RdGlyph, {
           d: RD_CLOSE_D,
           size: 17
-        }))), r.noteOpen && React.createElement("input", {
+        }))), (cfg.attendance === 'out' && c.collect || !!(c.tags || []).length) && React.createElement("span", {
+          style: {
+            flexBasis: '100%',
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: 5,
+            paddingLeft: 46,
+            opacity: off ? 0.45 : 1
+          }
+        }, cfg.attendance === 'out' && React.createElement(RdCollectPill, {
+          collect: c.collect,
+          full: true
+        }), (c.tags || []).map(t => React.createElement(RdTag, {
+          key: t
+        }, t))), needsReason(r) && !off && React.createElement("span", {
+          style: {
+            flexBasis: '100%',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 10,
+            marginTop: 4,
+            flexWrap: 'wrap',
+            paddingLeft: 46
+          }
+        }, React.createElement(RdLabel, null, "Why not"), React.createElement(RdChoiceChips, {
+          options: pc.reasonFor,
+          value: r.value === pc.notApplied ? null : r.value,
+          onChange: v => set(r.id, {
+            value: v,
+            touched: true,
+            noteOpen: true
+          }),
+          ariaLabel: `Why sunscreen was not applied for ${c.name}`
+        })), r.noteOpen && React.createElement("input", {
           className: "fp-input",
-          autoFocus: true,
+          autoFocus: !needsReason(r),
           type: "text",
           value: r.note,
-          placeholder: "Note for this child",
+          placeholder: needsReason(r) ? 'Reason — required, saved with this child’s time' : 'Note for this child',
+          "aria-required": needsReason(r) || undefined,
           onChange: e => set(r.id, {
             note: e.target.value
           }),
@@ -8717,9 +9299,9 @@ function _extends() {
       key: "confirm",
       primary: true,
       glyph: RD_TICK_D,
-      muted: !included.length || !!missing.length,
-      onClick: included.length && !missing.length ? doConfirm : undefined
-    }, !included.length ? 'Nobody to log for' : missing.length ? React.createElement(React.Fragment, null, "Pick what was found \xB7 ", missing.length, " left") : React.createElement(React.Fragment, null, cfg.verb, " for ", single ? people[0].name.split(' ')[0] : included.length))])));
+      muted: !included.length || !!missing.length || !!noReason.length || !!noWho.length,
+      onClick: included.length && !missing.length && !noReason.length && !noWho.length ? doConfirm : undefined
+    }, !included.length ? 'Nobody to log for' : missing.length ? React.createElement(React.Fragment, null, "Pick what was found \xB7 ", missing.length, " left") : noReason.length ? React.createElement(React.Fragment, null, "Say why not applied \xB7 ", noReason.length, " left") : noWho.length ? React.createElement(React.Fragment, null, "Say who collected \xB7 ", noWho.length, " left") : React.createElement(React.Fragment, null, included.some(needsReason) ? 'Recorded' : cfg.verb, " for ", single ? people[0].name.split(' ')[0] : included.length))])));
   }
   const RD_MED_ROUTES = ['Oral', 'Inhaled', 'Topical', 'Other'];
   const RD_MED_EXPIRY_SOON = 21;
@@ -10082,7 +10664,25 @@ function _extends() {
         flexDirection: 'column',
         gap: 16
       }
+    }, out && child.collect && React.createElement("div", {
+      className: "ds-message-box"
+    }, React.createElement("div", {
+      className: "ds-message-box__row"
     }, React.createElement("span", {
+      className: "ds-message-box__icon",
+      "aria-hidden": "true"
+    }, React.createElement(RdGlyph, {
+      d: RD_LOCK_D,
+      size: 24
+    })), React.createElement("div", {
+      className: "ds-message-box__text"
+    }, React.createElement("div", {
+      className: "ds-message-box__title-row"
+    }, React.createElement("p", {
+      className: "ds-message-box__title"
+    }, rdCollectLabel(child.collect), " \u2014 ", child.collect.who, " can\u2019t collect"))), React.createElement("p", {
+      className: "ds-message-box__body"
+    }, child.collect.note))), React.createElement("span", {
       style: {
         display: 'flex',
         flexDirection: 'column',
@@ -10098,7 +10698,12 @@ function _extends() {
         flexDirection: 'column',
         gap: 7
       }
-    }, React.createElement(RdLabel, null, out ? 'Collected by' : 'Delivered by'), React.createElement(RdSegmented, {
+    }, React.createElement(RdLabel, null, out ? 'Collected by' : 'Delivered by'), out && child.collect ? React.createElement(RdChoiceChips, {
+      options: rdCollectOptions(child),
+      value: who,
+      onChange: setWho,
+      ariaLabel: "Who collected them"
+    }) : React.createElement(RdSegmented, {
       options: out ? RD_COLLECTED_BY : RD_DELIVERED_BY,
       value: who,
       onChange: setWho,
@@ -10145,7 +10750,8 @@ function _extends() {
     const cfg = RD_BULK[kind];
     const valueOptions = cfg && cfg.perChild && cfg.perChild.options || null;
     const valueLabel = cfg && cfg.perChild && cfg.perChild.label || 'Details';
-    const optionValues = valueOptions ? valueOptions.map(o => Array.isArray(o) ? o[0] : o) : [];
+    const naCfg = cfg && cfg.perChild && cfg.perChild.notApplied ? cfg.perChild : null;
+    const optionValues = valueOptions ? [...valueOptions.map(o => Array.isArray(o) ? o[0] : o), ...(naCfg ? naCfg.reasonFor : [])] : [];
     const asOption = !!(detail && optionValues.includes(detail));
     const [newAt, setNewAt] = useState(at);
     const [newValue, setNewValue] = useState(asOption ? detail : null);
@@ -10163,7 +10769,9 @@ function _extends() {
     const timeChanged = newAt !== at;
     const valueChanged = resolvedDetail !== (detail || null);
     const noteChanged = (newNote.trim() || '') !== (note || '');
-    const ready = timeChanged || valueChanged || noteChanged;
+    const naValue = !!naCfg && (newValue === naCfg.notApplied || naCfg.reasonFor.includes(newValue));
+    const naIncomplete = naValue && (newValue === naCfg.notApplied || !newNote.trim());
+    const ready = (timeChanged || valueChanged || noteChanged) && !naIncomplete;
     return (React.createElement("div", {
         style: {
           position: 'absolute',
@@ -10287,12 +10895,46 @@ function _extends() {
           flexDirection: 'column',
           gap: 7
         }
-      }, React.createElement(RdLabel, null, valueLabel), React.createElement(RdSegmented, {
+      }, React.createElement(RdLabel, null, valueLabel), naCfg ? React.createElement("span", {
+        style: {
+          display: 'flex',
+          flexWrap: 'wrap',
+          alignItems: 'center',
+          gap: 8
+        }
+      }, React.createElement(RdSegmented, {
+        options: valueOptions,
+        value: naValue ? null : newValue,
+        onChange: setNewValue,
+        ariaLabel: `Amended ${valueLabel.toLowerCase()}`
+      }), React.createElement(RdNotAppliedToggle, {
+        on: naValue,
+        name: child.name,
+        onToggle: () => setNewValue(naValue ? (valueOptions[0] || [])[0] : naCfg.notApplied)
+      })) : React.createElement(RdSegmented, {
         options: valueOptions,
         value: newValue,
         onChange: setNewValue,
         ariaLabel: `Amended ${valueLabel.toLowerCase()}`
-      })) : React.createElement("label", {
+      }), naValue && React.createElement("span", {
+        style: {
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 6,
+          marginTop: 4
+        }
+      }, React.createElement(RdLabel, null, "Why not"), React.createElement(RdChoiceChips, {
+        options: naCfg.reasonFor,
+        value: newValue === naCfg.notApplied ? null : newValue,
+        onChange: setNewValue,
+        ariaLabel: `Why sunscreen was not applied for ${child.name}`
+      }), naIncomplete && React.createElement("span", {
+        style: {
+          fontSize: 12.5,
+          fontWeight: 600,
+          color: 'var(--sd-colour-feedback-error-default)'
+        }
+      }, newValue === naCfg.notApplied ? 'Pick why, then give the reason in the note below.' : 'Give the reason in the note below.'))) : React.createElement("label", {
         style: {
           display: 'flex',
           flexDirection: 'column',
@@ -11656,7 +12298,7 @@ function _extends() {
         };
       })(),
       openDueChild: c => {
-        const hit = !readOnly && c.alert && RD_ALERT_EVENT.find(([k, re]) => re.test(c.alert.label) && (!roomEvents || roomEvents[k]) && care.events.includes(k));
+        const hit = !readOnly && c.alert && RD_ALERT_EVENT.find(([k, re]) => re.test(c.alert.label) && (!roomEvents || roomEvents[k]) && (k === 'med' || care.events.includes(k)));
         if (hit) openBulk(hit[0], [c.id]);else openChild(c);
       },
       dueGroups: readOnly ? [] : RD_ALERT_EVENT.filter(([k]) => k !== 'med' && (!roomEvents || roomEvents[k]) && care.events.includes(k)).map(([k, re]) => ({

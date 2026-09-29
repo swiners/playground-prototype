@@ -1,24 +1,6 @@
-/*
- * Stardust Design System — Accordion
- * Single source of truth for .ds-accordion styles. Extracted from the
- * office-migration structure workbench (legacy component: ExpansionPanels);
- * loaded by the accordion doc page and the sandbox. All values reference
- * --sd- tokens from tokens.css — never hardcode hex here.
- */
 
-/* ── Accordion (ds-accordion) ─────────────────────────────
-   A vertical stack of expand/collapse sections. Each item is a real
-   <button> header inside a heading wrapper (APG accordion pattern) that
-   toggles a panel below it. Height animates via grid-template-rows 0fr→1fr
-   — content-height agnostic, no JS measuring — and the consuming layer marks
-   collapsed panels inert. Single mode keeps one panel open at a time;
-   multiple lets several stay open. The --separated modifier turns the group
-   into free-standing cards.
-   Contract: ds-accordion (--separated) > ds-accordion__item (--disabled) >
-   ds-accordion__heading > ds-accordion__header (ds-accordion__title +
-   ds-accordion__chevron) + ds-accordion__panel (--open) >
-   ds-accordion__panel-inner > ds-accordion__body.
-──────────────────────────────────────────────────────── */
+
+
 
 .ds-accordion {
   display: flex;
@@ -30,13 +12,13 @@
   background: var(--sd-colour-surface-default);
   border: 1px solid var(--sd-colour-border-default);
   border-radius: var(--sd-radius-m);
-  overflow: hidden; /* clips header hover fill to the rounded corners */
+  overflow: hidden; 
 }
 .ds-accordion__item + .ds-accordion__item {
   border-top: 1px solid var(--sd-colour-border-default);
 }
 
-/* semantic heading wrapper around the header button — neutralise h* defaults */
+
 .ds-accordion__heading {
   margin: 0;
   font-size: inherit;
@@ -51,7 +33,7 @@
   justify-content: space-between;
   gap: var(--sd-spacing-stack-gap-default);
   width: 100%;
-  min-height: 48px; /* ≥44px touch target */
+  min-height: 48px; 
   padding: var(--sd-spacing-3) var(--sd-spacing-4);
   margin: 0;
   border: 0;
@@ -76,7 +58,7 @@
   outline: 2px solid var(--sd-colour-border-focus);
   outline-offset: -2px;
 }
-/* disabled items stay focusable (aria-disabled) so they remain discoverable */
+
 .ds-accordion__header[aria-disabled="true"] {
   color: var(--sd-colour-text-disabled);
   cursor: not-allowed;
@@ -86,7 +68,7 @@
 }
 
 .ds-accordion__title {
-  min-width: 0; /* long titles wrap rather than push the chevron out */
+  min-width: 0; 
 }
 
 .ds-accordion__chevron {
@@ -99,9 +81,7 @@
   transform: rotate(180deg);
 }
 
-/* Height animation via grid-template-rows 0fr→1fr — content-height agnostic,
-   no JS measuring; the inner wrapper's min-height:0 + overflow:hidden do the
-   clipping. Collapsed panels are also made inert by the JS layer. */
+
 .ds-accordion__panel {
   display: grid;
   grid-template-rows: 0fr;
@@ -120,10 +100,7 @@
 }
 .ds-accordion__body > :last-child { margin-bottom: 0; }
 
-/* ── Separated (--separated) ───────────────────────────────
-   Legacy "separated" drew a literal light-purple panel border. Mapping
-   decision: that literal dies here — separated items take the closest
-   semantic tokens instead: border/default (purple-200) + radius/m. */
+
 .ds-accordion--separated {
   background: transparent;
   border: 0;
@@ -135,10 +112,10 @@
   background: var(--sd-colour-surface-default);
   border: 1px solid var(--sd-colour-border-default);
   border-radius: var(--sd-radius-m);
-  overflow: hidden; /* corner clip moves from the group to each item */
+  overflow: hidden; 
 }
 
-/* ── Reduced motion — everything lands instantly ──────────── */
+
 @media (prefers-reduced-motion: reduce) {
   .ds-accordion__header,
   .ds-accordion__chevron,
