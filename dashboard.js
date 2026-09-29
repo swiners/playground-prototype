@@ -159,10 +159,18 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     }
   };
   const RD_SLEEP_INTERVAL = 10;
-  const rdDueLabel = (event, mins, late) => late ? `${event} · ${mins} min overdue` : mins < 2 ? `${event} · due now` : `${event} · due ${mins} min ago`;
+  const RD_DUE_SOON = 10;
+  const RD_SLEEP_SOON = 3;
+  const rdDueLabel = (event, dueIn) => dueIn < 0 ? `${event} · due ${-dueIn} min ago` : dueIn === 0 ? `${event} · due now` : `${event} · due in ${dueIn} min`;
+  const rdDueAlert = (event, dueIn, kind = 'due') => ({
+    kind,
+    overdue: dueIn < 0,
+    dueIn,
+    label: rdDueLabel(event, dueIn)
+  });
   const RD_HC_DONE = {
     ok: '12:48',
-    late: '12:34'
+    lateBy: 2
   };
   const RD_NOW = '12:55';
   const RD_MINS = s => {
@@ -498,7 +506,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     at: '7:02',
     status: 'here',
     state: 'Sleeping',
-    last: [['sleep', '12:40', 'Asleep'], ['nappy', '12:05', 'Wet'], ['meal', '11:30', 'Most']],
+    last: [['sleep', '12:47', 'Asleep'], ['nappy', '12:05', 'Wet'], ['meal', '11:30', 'Most']],
     corrected: ['nappy'],
     audit: [{
       at: '12:06',
@@ -531,12 +539,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     at: '7:06',
     status: 'here',
     state: 'Awake',
-    alert: {
-      kind: 'urgent',
-      overdue: true,
-      mins: 10,
-      label: rdDueLabel('Medication', 10, true)
-    },
+    alert: rdDueAlert('Medication', -2, 'urgent'),
     last: [['meal', '11:30', 'Half', 'Off his food today'], ['nappy', '11:10', 'Soiled'], ['sun', '10:15', 'SPF 30']],
     meds: [{
       name: 'Amoxicillin',
@@ -632,7 +635,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     prefs: {
       sun: 'SPF 50'
     },
-    last: [['sleep', '12:48', 'Asleep'], ['meal', '11:30', 'Half', 'Packed the rest to take home'], ['sun', '10:15', 'SPF 50']]
+    last: [['sleep', '12:50', 'Asleep'], ['meal', '11:30', 'Half', 'Packed the rest to take home'], ['sun', '10:15', 'SPF 50']]
   }, {
     id: 9,
     name: 'Ava Martin',
@@ -691,7 +694,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     status: 'here',
     state: 'Resting',
     tags: ['Egg allergy'],
-    last: [['sleep', '12:48', 'Resting'], ['meal', '11:30', 'Most']]
+    last: [['sleep', '12:50', 'Resting'], ['meal', '11:30', 'Most']]
   }, {
     id: 16,
     name: 'Amira Haddad',
@@ -799,28 +802,28 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
   };
   const RD_ROOM_SCENARIO = {
     nursery: {
-      sleep: [['Sleeping', 17], ['Sleeping', 11], ['Sleeping', 15], ['Sleeping', 5], ['Sleeping', 3], ['Sleeping', 8], ['Resting', 6], ['Awake', null], ['Awake', null]],
+      sleep: [['Sleeping', 11], ['Sleeping', 8], ['Sleeping', 4], ['Sleeping', 5], ['Sleeping', 3], ['Sleeping', 7], ['Resting', 2], ['Awake', null], ['Awake', null]],
       alerts: {
-        7: 'nappy',
-        8: 'nappy'
+        7: ['nappy', 6],
+        8: ['nappy', 4]
       }
     },
     possum: {
-      sleep: [['Sleeping', 12], ['Sleeping', 7], ['Sleeping', 5], ['Sleeping', 3], ['Sleeping', 8], ['Sleeping', 6], ['Resting', 6], ['Unsettled', 4], ['Awake', null], ['Awake', null], ['Awake', null], ['Awake', null], ['Awake', null]],
+      sleep: [['Sleeping', 11], ['Sleeping', 5], ['Sleeping', 5], ['Sleeping', 3], ['Sleeping', 6], ['Sleeping', 6], ['Resting', 6], ['Unsettled', 4], ['Awake', null], ['Awake', null], ['Awake', null], ['Awake', null], ['Awake', null]],
       alerts: {
-        9: 'sun'
+        9: ['sun', 6]
       }
     },
     kangaroo: {
       sleep: [['Awake', null], ['Resting', 8], ['Resting', 5], ['Awake', null], ['Awake', null], ['Awake', null], ['Awake', null], ['Awake', null], ['Awake', null], ['Awake', null], ['Awake', null], ['Awake', null]],
       alerts: {
-        0: 'sun'
+        0: ['sun', -1]
       }
     },
     wombat: {
       alerts: {
-        1: 'sun',
-        10: 'sun'
+        1: ['sun', -2],
+        10: ['sun', 7]
       }
     },
     bilby: {
@@ -829,7 +832,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     brushtail: {
       sleep: Array.from({
         length: RD_SIGNED.brushtail
-      }, (_, i) => i % 3 === 0 ? ['Sleeping', i % 7 === 0 ? 11 + i % 13 : 2 + i % 7] : i % 3 === 1 ? ['Resting', 4 + i % 5] : ['Awake', null]),
+      }, (_, i) => i % 3 === 0 ? ['Sleeping', i % 21 === 0 ? [12, 8, 11, 9, 7][i / 21] : 1 + i % 5] : i % 3 === 1 ? ['Resting', 2 + i % 4] : ['Awake', null]),
       alerts: Object.fromEntries(Array.from({
         length: 12
       }, (_, k) => [k * 7 + 3, k % 2 ? 'sun' : 'nappy']))
@@ -843,16 +846,11 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       event: 'Sunscreen'
     }
   };
-  const rdSeededAlert = (key, i) => {
+  const rdSeededAlert = (spec, i) => {
+    const [key, pinned] = Array.isArray(spec) ? spec : [spec, null];
     const a = RD_SCENARIO_ALERTS[key];
     if (!a) return null;
-    const mins = 4 + i * 7 % 26;
-    return {
-      kind: 'due',
-      overdue: false,
-      mins,
-      label: rdDueLabel(a.event, mins, false)
-    };
+    return rdDueAlert(a.event, pinned != null ? pinned : 2 + i * 3 % 8);
   };
   const RD_ALLERGEN_TAGS = ['Egg allergy', 'Dairy allergy', 'Seasonal allergies', 'Gluten sensitivity', 'Sesame allergy'];
   const RD_ANAPHYLAXIS_TAGS = ['Peanut allergy', 'Tree nut allergy', 'Shellfish allergy'];
@@ -3889,7 +3887,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         fontSize: 18,
         fontWeight: 700
       }
-    }, "Due now"), React.createElement("span", {
+    }, "Due soon"), React.createElement("span", {
       style: {
         fontSize: 13,
         fontWeight: 600,
@@ -5050,7 +5048,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         flexDirection: 'column',
         gap: 8
       }
-    }, React.createElement(RdLabel, null, "Due now"), d.dueChildren.map(c => React.createElement(RdDueItem, {
+    }, React.createElement(RdLabel, null, "Due soon"), d.dueChildren.map(c => React.createElement(RdDueItem, {
       key: c.id,
       c: c,
       showRoom: d.scope === 'service',
@@ -11986,14 +11984,9 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     const last = (c.last || []).find(([k]) => k === 'sleep');
     if (!last) return null;
     const since = RD_MINS(RD_NOW) - RD_MINS(last[1]);
-    if (since < RD_SLEEP_INTERVAL) return null;
-    const late = since - RD_SLEEP_INTERVAL;
-    return {
-      kind: 'due',
-      overdue: late > 0,
-      mins: late,
-      label: rdDueLabel('Sleep check', late, late > 0)
-    };
+    const dueIn = RD_SLEEP_INTERVAL - since;
+    if (dueIn > RD_SLEEP_SOON) return null;
+    return rdDueAlert('Sleep check', dueIn);
   };
   const rdLiveAlert = (c, events) => {
     const kept = c.alert && rdAlertAllowed(c.alert, events) ? c.alert : null;
@@ -12007,7 +12000,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     const events = eventsByRoom[n.room] || rdEventsDefault(careByRoom[n.room] || room.care, room.sleepTrack);
     const late = roster.filter(c => c.room === n.room).map(c => rdLiveAlert(c, events)).filter(a => a && a.overdue && /sleep/i.test(a.label));
     if (!late.length) return null;
-    const worst = Math.max(...late.map(a => a.mins || 0));
+    const worst = Math.max(...late.map(a => -(a.dueIn || 0)));
     return {
       ...n,
       title: late.length === 1 ? 'Sleep check overdue' : `${late.length} sleep checks overdue`,
@@ -12117,7 +12110,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     const q = query.trim().toLowerCase();
     const matchChild = c => !q || c.name.toLowerCase().includes(q) || (c.tags || []).some(t => t.toLowerCase().includes(q)) || roomNameOf(c).toLowerCase().includes(q);
     const showTest = c => rdFacetPass(c, facets);
-    const due = rdSortItems(pool.filter(c => c.alert), sortKey).sort((a, b) => (b.alert.kind === 'urgent') - (a.alert.kind === 'urgent') || !!b.alert.overdue - !!a.alert.overdue || (b.alert.mins || 0) - (a.alert.mins || 0));
+    const due = rdSortItems(pool.filter(c => c.alert), sortKey).sort((a, b) => (b.alert.kind === 'urgent') - (a.alert.kind === 'urgent') || !!b.alert.overdue - !!a.alert.overdue || (a.alert.dueIn ?? 99) - (b.alert.dueIn ?? 99));
     const rooms = RD_ROOM_STATS.map(r => calm ? {
       ...r,
       due: 0
@@ -12345,12 +12338,12 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         return [nBooked ? ['in', nBooked] : null, nHere ? ['out', nHere] : null, nBooked ? ['absent', nBooked] : null].filter(Boolean);
       })(),
       headcount: readOnly || !canCount ? null : (() => {
-        const since = RD_MINS(RD_NOW) - RD_MINS(hcOverdue ? RD_HC_DONE.late : RD_HC_DONE.ok) + hcTick;
+        const since = (hcOverdue ? care.hcInterval + RD_HC_DONE.lateBy : RD_MINS(RD_NOW) - RD_MINS(RD_HC_DONE.ok)) + hcTick;
         const left = care.hcInterval - since;
         return {
           expected: room.signed,
           overdue: left <= 0,
-          note: left > 0 ? `Next count due in ${left} min · last\u00a0done\u00a0${RD_AMPM(RD_AGO(since))}` : `${-left} min overdue · every ${care.hcInterval} min`
+          note: left > 0 ? `Next count due in ${left} min · last\u00a0done\u00a0${RD_AMPM(RD_AGO(since))}` : `Due ${-left} min ago · every ${care.hcInterval} min`
         };
       })(),
       work: rdGroupChildren(matched, grouping, sortKey),
