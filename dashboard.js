@@ -6863,7 +6863,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       key: s.id,
       "data-sec": s.id,
       style: {
-        padding: '20px 0 4px',
+        padding: '20px 0',
         borderBottom: i === secs.length - 1 ? 0 : hair
       }
     }, React.createElement("div", {

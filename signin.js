@@ -4,6 +4,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
   const DEMO_USER = 'LittleBugs';
   const DEMO_PASS = 'bugs123';
   const DEMO_PIN = '1234';
+  const DEMO_EMAIL = 'office@littlebugs.example.com';
   const LOGIN_ERR = "We couldn't sign in to that service, please try again. For password reset please contact the service administrator.";
   const C = ['var(--sd-colour-cyan-600)', 'var(--sd-colour-orange-500)', 'var(--sd-colour-purple-500)', 'var(--sd-colour-green-500)', 'var(--sd-colour-cyan-700)'];
   const EDUCATORS = [{
@@ -429,7 +430,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     educator,
     size
   }) {
-    if (step === 'service' || step === 'e-creds' || step === 'e-offline' || step === 'e-bootstrap') return React.createElement(PLogo, {
+    if (step === 'service' || step === 'forgot' || step === 'forgot-sent' || step === 'e-creds' || step === 'e-offline' || step === 'e-bootstrap') return React.createElement(PLogo, {
       size: size
     });
     if (step === 'pin' || step === 'edupass' || step === 'rooms' || step === 'sameday' || step === 'e-locked' || step === 'e-password' || step === 'e-lock') {
@@ -718,16 +719,19 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     sz,
     label,
     type = 'text',
+    inputMode,
     placeholder,
     value,
     onChange,
     lead,
     trail,
     onTrail,
+    clearable,
     invalid,
     error
   }) {
     const border = invalid ? 'var(--sd-colour-feedback-error-default)' : 'var(--sd-colour-border-default)';
+    const inputRef = useRef(null);
     return React.createElement("div", {
       style: {
         display: 'flex',
@@ -764,10 +768,14 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         flexShrink: 0
       }
     }), React.createElement("input", {
+      ref: inputRef,
       type: type,
+      inputMode: inputMode,
       placeholder: placeholder,
       value: value,
       onChange: e => onChange(e.target.value),
+      "aria-label": label,
+      "aria-invalid": invalid ? 'true' : undefined,
       style: {
         all: 'unset',
         flex: 1,
@@ -794,13 +802,50 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         height: 18,
         opacity: 0.5
       }
-    }))), error && React.createElement("span", {
+    })), clearable && value && React.createElement("button", {
+      type: "button",
+      onClick: () => {
+        onChange('');
+        inputRef.current && inputRef.current.focus();
+      },
+      "aria-label": `Clear ${label || 'field'}`,
+      style: {
+        all: 'unset',
+        cursor: 'pointer',
+        flexShrink: 0,
+        display: 'flex',
+        color: 'var(--sd-colour-text-primary)'
+      }
+    }, React.createElement(ClearGlyph, null))), error && React.createElement("span", {
       style: {
         fontSize: 12.5,
         color: 'var(--sd-colour-feedback-error-default)',
         lineHeight: 1.45
       }
     }, error));
+  }
+  function ClearGlyph({
+    size = 20
+  }) {
+    return React.createElement("svg", {
+      viewBox: "0 0 20 20",
+      width: size,
+      height: size,
+      "aria-hidden": "true",
+      style: {
+        display: 'block'
+      }
+    }, React.createElement("circle", {
+      cx: "10",
+      cy: "10",
+      r: "9",
+      fill: "currentColor"
+    }), React.createElement("path", {
+      d: "M7 7l6 6M13 7l-6 6",
+      stroke: "var(--sd-colour-surface-default)",
+      strokeWidth: "1.8",
+      strokeLinecap: "round"
+    }));
   }
   function Btn({
     sz,
@@ -863,11 +908,12 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     }, children));
   }
   function Terms({
-    sz
+    sz,
+    lead = 'By clicking sign in'
   }) {
     const a = {
       color: LINK,
-      textDecoration: 'underline'
+      whiteSpace: 'nowrap'
     };
     return React.createElement("p", {
       style: {
@@ -875,11 +921,12 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         fontSize: 12.5,
         lineHeight: 1.5,
         color: 'var(--sd-colour-text-secondary)',
-        textAlign: 'left'
+        textAlign: 'center',
+        textWrap: 'balance'
       }
-    }, "By clicking sign in, you agree to our ", React.createElement("span", {
+    }, lead, ", you agree to our ", React.createElement("span", {
       style: a
-    }, "Terms of Service"), " and ", React.createElement("span", {
+    }, "Terms of Service"), React.createElement("br", null), "and ", React.createElement("span", {
       style: a
     }, "Privacy Policy"));
   }
@@ -1412,7 +1459,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     sz,
     text,
     action,
-    onAction
+    onAction,
+    info
   }) {
     return React.createElement("div", {
       style: {
@@ -1428,7 +1476,14 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         color: 'var(--sd-colour-text-on-red)',
         fontSize: 13.5
       }
-    }, React.createElement("span", null, text), action && React.createElement("button", {
+    }, React.createElement("span", {
+      style: {
+        display: 'flex',
+        alignItems: 'flex-start',
+        gap: 10,
+        lineHeight: 1.45
+      }
+    }, info && React.createElement(InfoGlyph, null), text), action && React.createElement("button", {
       type: "button",
       onClick: onAction,
       style: {
@@ -1439,6 +1494,82 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         flexShrink: 0
       }
     }, action));
+  }
+  function InfoGlyph({
+    size = 16
+  }) {
+    return React.createElement("svg", {
+      viewBox: "0 0 16 16",
+      width: size,
+      height: size,
+      fill: "none",
+      "aria-hidden": "true",
+      style: {
+        display: 'block',
+        flexShrink: 0,
+        marginTop: 1
+      }
+    }, React.createElement("circle", {
+      cx: "8",
+      cy: "8",
+      r: "6.6",
+      stroke: "currentColor",
+      strokeWidth: "1.1"
+    }), React.createElement("path", {
+      d: "M8 4.6v4.4",
+      stroke: "currentColor",
+      strokeWidth: "1.2",
+      strokeLinecap: "round"
+    }), React.createElement("circle", {
+      cx: "8",
+      cy: "11.2",
+      r: "0.75",
+      fill: "currentColor"
+    }));
+  }
+  function SentGlyph({
+    size = 44
+  }) {
+    const ray = [0, 45, 90, 135, 180, 225, 270, 315];
+    return React.createElement("svg", {
+      viewBox: "0 0 48 48",
+      width: size,
+      height: size,
+      fill: "none",
+      "aria-hidden": "true",
+      style: {
+        display: 'block'
+      }
+    }, ray.map(a => React.createElement("line", {
+      key: a,
+      x1: "24",
+      y1: "7",
+      x2: "24",
+      y2: "10.5",
+      stroke: "var(--sd-colour-action-primary)",
+      strokeWidth: "1.6",
+      strokeLinecap: "round",
+      transform: `rotate(${a} 24 26)`
+    })), React.createElement("circle", {
+      cx: "24",
+      cy: "26",
+      r: "10.5",
+      fill: "var(--sd-colour-surface-cyan)",
+      stroke: "var(--sd-colour-text-primary)",
+      strokeWidth: "2"
+    }), React.createElement("path", {
+      d: "M19.5 26.2l3.2 3.2 6.2-6.6",
+      stroke: "var(--sd-colour-text-primary)",
+      strokeWidth: "2.2",
+      strokeLinecap: "round",
+      strokeLinejoin: "round"
+    }), React.createElement("path", {
+      d: "M31 19l9-9m0 0l-5 .8m5-.8l-.8 5",
+      stroke: "var(--sd-colour-text-primary)",
+      strokeWidth: "1.8",
+      strokeLinecap: "round",
+      strokeLinejoin: "round"
+    }));
   }
   function LockGlyph({
     size = 30
@@ -2383,7 +2514,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       submit
     };
   }
-  function serviceCfg(sz, creds, onSignIn) {
+  function serviceCfg(sz, creds, onSignIn, onForgot) {
     const {
       userProps,
       pwProps,
@@ -2410,8 +2541,141 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       }, "Sign in")),
       footer: React.createElement(TextLink, {
         sz: sz,
-        onClick: () => {}
+        onClick: onForgot
       }, "Forgot Password?")
+    };
+  }
+  const RESET_NOT_FOUND = "We couldn't find an account with that email address. Please try again.";
+  const RESET_NOT_FOUND_HELP = 'Invalid email lookup. Try registering a new educator profile or contact Playground support.';
+  const RESET_BAD_FORMAT = 'Enter an email address, like name@example.com.';
+  const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  function useForgot() {
+    const [email, setEmail] = useState(DEMO_EMAIL);
+    const [err, setErr] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [resent, setResent] = useState(false);
+    const change = v => {
+      setEmail(v);
+      setErr(null);
+    };
+    const submit = onSent => {
+      const v = email.trim();
+      if (!EMAIL_RE.test(v)) {
+        setErr('format');
+        return;
+      }
+      setLoading(true);
+      setTimeout(() => {
+        setLoading(false);
+        if (v.toLowerCase() !== DEMO_EMAIL) setErr('missing');else {
+          setResent(false);
+          onSent();
+        }
+      }, 1150);
+    };
+    const resend = () => setResent(true);
+    const reset = () => {
+      setEmail(DEMO_EMAIL);
+      setErr(null);
+      setLoading(false);
+      setResent(false);
+    };
+    return {
+      email,
+      change,
+      err,
+      loading,
+      submit,
+      resent,
+      resend,
+      reset
+    };
+  }
+  function forgotCfg(sz, fp, onBack, onSent) {
+    const {
+      email,
+      change,
+      err,
+      loading,
+      submit
+    } = fp;
+    return {
+      title: 'Reset your password',
+      subtitle: 'Please enter your email for a reset link',
+      nav: 'back',
+      onNav: onBack,
+      center: true,
+      children: React.createElement(React.Fragment, null, React.createElement(Field, {
+        sz: sz,
+        label: "Email address",
+        type: "email",
+        inputMode: "email",
+        placeholder: "Enter your email",
+        value: email,
+        onChange: change,
+        clearable: true,
+        invalid: !!err,
+        error: err === 'missing' ? RESET_NOT_FOUND : err === 'format' ? RESET_BAD_FORMAT : null
+      }), err === 'missing' ? React.createElement(Alert, {
+        sz: sz,
+        info: true,
+        text: RESET_NOT_FOUND_HELP
+      }) : React.createElement(Terms, {
+        sz: sz,
+        lead: "By requesting a link"
+      }), React.createElement(Btn, {
+        sz: sz,
+        disabled: !email.trim(),
+        loading: loading,
+        loadingLabel: "Sending\u2026",
+        onClick: () => submit(onSent)
+      }, "Send reset link"))
+    };
+  }
+  function forgotSentCfg(sz, fp, onBack, onDone) {
+    const small = {
+      fontSize: 13,
+      color: 'var(--sd-colour-text-secondary)',
+      textAlign: 'center'
+    };
+    const link = {
+      all: 'unset',
+      cursor: 'pointer',
+      fontWeight: 500,
+      color: 'var(--sd-colour-action-primary)'
+    };
+    return {
+      title: 'Check your inbox',
+      subtitle: 'We’ve sent a reset link to your email',
+      nav: 'back',
+      onNav: onBack,
+      center: true,
+      children: React.createElement(React.Fragment, null, React.createElement(StatePanel, {
+        sz: sz,
+        node: React.createElement(SentGlyph, {
+          size: sz.split ? 46 : 40
+        }),
+        title: "Reset link sent",
+        body: fp.email.trim() ? React.createElement(React.Fragment, null, "A password reset link has been sent to ", React.createElement("strong", {
+          style: {
+            color: 'var(--sd-colour-text-primary)',
+            fontWeight: 600
+          }
+        }, fp.email.trim()), ". Please check your inbox and follow the instructions.") : 'A password reset link has been sent to your email address. Please check your inbox and follow the instructions.'
+      }), React.createElement(Btn, {
+        sz: sz,
+        onClick: onDone
+      }, "Back to sign in"), React.createElement("p", {
+        style: {
+          margin: 0,
+          ...small
+        },
+        "aria-live": "polite"
+      }, fp.resent ? 'Sent again. It can take a few minutes to arrive.' : React.createElement(React.Fragment, null, "Didn\u2019t receive the email? ", React.createElement("button", {
+        type: "button",
+        onClick: fp.resend,
+        style: link
+      }, "Resend email"))))
     };
   }
   function LockOverlay({
@@ -2574,6 +2838,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     const [splash, setSplash] = useState(!bare && _s0 === 'service');
     const [splashId, setSplashId] = useState(0);
     const creds = useCreds();
+    const forgot = useForgot();
     const launch = () => {
       if (bare) return;
       setSplashId(n => n + 1);
@@ -2700,7 +2965,11 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         onLogout: resetFlow
       });
     } else {
-      const cfg = step === 'service' ? serviceCfg(sz, creds, () => setStep('educators')) : buildStepCfg(step, ctx);
+      const toService = () => {
+        forgot.reset();
+        setStep('service');
+      };
+      const cfg = step === 'service' ? serviceCfg(sz, creds, () => setStep('educators'), () => setStep('forgot')) : step === 'forgot' ? forgotCfg(sz, forgot, toService, () => setStep('forgot-sent')) : step === 'forgot-sent' ? forgotSentCfg(sz, forgot, () => setStep('forgot'), toService) : buildStepCfg(step, ctx);
       screen = React.createElement(V1Shell, _extends({
         sz: sz,
         step: step,
@@ -2731,6 +3000,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     DEMO_USER,
     DEMO_PASS,
     DEMO_PIN,
+    DEMO_EMAIL,
     LOGIN_ERR
   };
 })();
