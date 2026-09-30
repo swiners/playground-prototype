@@ -100,7 +100,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
   }, {
     key: 'koala',
     name: 'Koala Room',
-    ages: '3 yrs',
+    ages: '3–4 yrs',
     educators: 2,
     booked: 20,
     limit: 11,
@@ -267,6 +267,9 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     key: 'sleep',
     label: 'Sleep / rest'
   }, {
+    key: 'age',
+    label: 'Age'
+  }, {
     key: 'school',
     label: 'School'
   }, {
@@ -280,10 +283,9 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     label: 'All'
   }];
   const RD_UNGROUPED = 'all';
-  const RD_FIELD_GROUPINGS = ['school', 'grade', 'kinder'];
+  const RD_FIELD_GROUPINGS = ['age', 'school', 'grade', 'kinder'];
   const RD_GROUPING_LEGACY = {
-    class: 'kinder',
-    age: 'grade'
+    class: 'kinder'
   };
   const rdReadGrouping = v => {
     const k = RD_GROUPING_LEGACY[v] || v;
@@ -337,6 +339,35 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     key: 'disability',
     label: 'Additional needs'
   }];
+  const RD_AGE_BANDS = [{
+    key: 'u2',
+    label: 'Under 2',
+    test: a => a < 2
+  }, {
+    key: '2',
+    label: '2 years',
+    test: a => a >= 2 && a < 3
+  }, {
+    key: '3',
+    label: '3 years',
+    test: a => a >= 3 && a < 4
+  }, {
+    key: '4',
+    label: '4 years',
+    test: a => a >= 4 && a < 5
+  }, {
+    key: '5',
+    label: '5 years',
+    test: a => a >= 5 && a < 6
+  }, {
+    key: '6-8',
+    label: '6–8 years',
+    test: a => a >= 6 && a < 9
+  }, {
+    key: '9-12',
+    label: '9–12 years',
+    test: a => a >= 9
+  }];
   const RD_GRADE_ORDER = ['Preschool', 'Prep', 'Grade 1', 'Grade 2', 'Grade 3', 'Grade 4', 'Grade 5', 'Grade 6'];
   const rdLastName = name => name.trim().split(/\s+/).slice(-1)[0];
   const rdSortItems = (arr, sortKey) => [...arr].sort((a, b) => {
@@ -345,6 +376,19 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     return av.localeCompare(bv);
   });
   function rdSubGroup(kids, grouping) {
+    if (grouping === 'age') {
+      const g = RD_AGE_BANDS.map(b => ({
+        key: 'age-' + b.key,
+        label: b.label,
+        items: kids.filter(c => c.age != null && b.test(c.age))
+      }));
+      g.push({
+        key: 'age-none',
+        label: 'Age not specified',
+        items: kids.filter(c => c.age == null)
+      });
+      return g.filter(x => x.items.length);
+    }
     if (grouping === 'grade') {
       const vals = [...new Set(kids.map(c => c.grade).filter(Boolean))].sort((a, b) => RD_GRADE_ORDER.indexOf(a) - RD_GRADE_ORDER.indexOf(b));
       const g = vals.map(v => ({
@@ -592,7 +636,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     id: 5,
     name: 'Liam Smith',
     img: 52,
-    age: 3,
+    age: 4,
     allergy: true,
     at: '7:12',
     status: 'here',
@@ -603,7 +647,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     id: 6,
     name: 'Sophia Martinez',
     img: 41,
-    age: 3,
+    age: 4,
     allergy: true,
     at: '7:14',
     status: 'here',
@@ -628,7 +672,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     id: 8,
     name: 'Darrin Webb',
     img: 60,
-    age: 3,
+    age: 4,
     disability: true,
     at: '7:40',
     status: 'here',
@@ -641,7 +685,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     id: 9,
     name: 'Ava Martin',
     img: 47,
-    age: 3,
+    age: 4,
     at: '8:30',
     status: 'expected'
   }, {
@@ -689,7 +733,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     id: 15,
     name: 'Finn O’Donnell',
     img: 17,
-    age: 3,
+    age: 4,
     allergy: true,
     at: '7:26',
     status: 'here',
@@ -709,7 +753,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     id: 17,
     name: 'Leo Whitaker',
     img: 55,
-    age: 3,
+    age: 4,
     disability: true,
     collect: {
       who: 'Mother',
@@ -724,7 +768,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     id: 18,
     name: 'Ruth Okonjo',
     img: 43,
-    age: 3,
+    age: 4,
     at: '7:48',
     status: 'here',
     state: 'Sleeping',
@@ -733,7 +777,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     id: 19,
     name: 'Nina Kovac',
     img: 19,
-    age: 3,
+    age: 4,
     at: '8:45',
     status: 'expected'
   }, {
