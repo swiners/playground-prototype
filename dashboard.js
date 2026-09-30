@@ -73,6 +73,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
   const RD_SYNC_BG = 'var(--sd-colour-surface-purple)';
   const RD_SYNC_DOT = 'var(--sd-colour-text-on-purple)';
   const RD_OFFLINE_D = 'M3 3l18 18M8.5 16.4a5 5 0 0 1 7 0M5.5 13.1a9 9 0 0 1 3-2M18.5 13.1a9 9 0 0 0-6-2.6M2.5 9.5a14 14 0 0 1 4-2.6M21.5 9.5a14 14 0 0 0-8-3.4M12 20h.01';
+  const RD_ONLINE_D = 'M8.5 16.4a5 5 0 0 1 7 0M5.5 13.1a9 9 0 0 1 13 0M2.5 9.5a14 14 0 0 1 19 0M12 20h.01';
   const RD_SYNC_D = 'M20 11a8 8 0 0 0-14-4.5L4 8m0-4v4h4M4 13a8 8 0 0 0 14 4.5L20 16m0 4v-4h-4';
   const RD_CLOCK_D = 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18ZM12 7v5l3.5 2';
   const RD_STAFF_D = 'M12 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7ZM5 20a7 7 0 0 1 14 0';
@@ -13635,6 +13636,11 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     RD_EDUCATOR,
     RD_DATES,
     roomStats,
-    RD_ALL_CHILDREN
+    RD_ALL_CHILDREN,
+    RdGlyph,
+    RD_ONLINE_D,
+    RD_OFFLINE_D,
+    RD_SYNC_BG,
+    RD_SYNC_FG
   };
 })();

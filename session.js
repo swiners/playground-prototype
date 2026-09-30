@@ -13,7 +13,12 @@
     FlowApp,
     RD_ROOMS,
     roomStats,
-    RD_ALL_CHILDREN
+    RD_ALL_CHILDREN,
+    RdGlyph,
+    RD_ONLINE_D,
+    RD_OFFLINE_D,
+    RD_SYNC_BG,
+    RD_SYNC_FG
   } = window.PgDash;
   const toDashEducator = e => ({
     name: e.name,
@@ -519,13 +524,17 @@
       className: "pg-bleed"
     }, stage);
     const shellOn = false;
+    const connSwitch = !shellOn && !bare && !!framed && session.phase === 'dash';
     return React.createElement(React.Fragment, null, shellOn ? React.createElement(ReviewShell, {
       params: params,
       setParam: setParam,
       setConn: setConn,
       runScenario: runScenario,
       session: session
-    }, stageEl) : stageEl, !bare && React.createElement(React.Fragment, null, params.rail !== 'hide' && !railLocked && !railOpen && React.createElement("button", {
+    }, stageEl) : stageEl, connSwitch && React.createElement(ConnectionSwitch, {
+      conn: params.conn === 'offline' ? 'offline' : 'online',
+      setConn: setConn
+    }), !bare && React.createElement(React.Fragment, null, params.rail !== 'hide' && !railLocked && !railOpen && React.createElement("button", {
       type: "button",
       onClick: () => setRailOpen(true),
       "aria-label": "Open test rail",
@@ -569,6 +578,41 @@
       session: session,
       layout: layout
     })));
+  }
+  function ConnectionSwitch({
+    conn,
+    setConn
+  }) {
+    const off = conn === 'offline';
+    return React.createElement("button", {
+      type: "button",
+      "aria-label": "Tablet offline",
+      "aria-pressed": off,
+      title: off ? 'Tablet is offline. Click to reconnect' : 'Take the tablet offline',
+      onClick: () => setConn(off ? 'online' : 'offline'),
+      style: {
+        all: 'unset',
+        position: 'fixed',
+        top: 10,
+        right: 10,
+        zIndex: 80,
+        boxSizing: 'border-box',
+        cursor: 'pointer',
+        width: 28,
+        height: 28,
+        borderRadius: 'var(--sd-radius-full)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        border: '1px solid ' + (off ? 'transparent' : 'var(--sd-colour-border-default)'),
+        background: off ? RD_SYNC_BG : 'var(--sd-colour-surface-default)',
+        color: off ? RD_SYNC_FG : 'var(--sd-colour-text-secondary)'
+      }
+    }, React.createElement(RdGlyph, {
+      d: off ? RD_OFFLINE_D : RD_ONLINE_D,
+      size: 15,
+      width: 1.9
+    }));
   }
   function ReviewShell({
     params,
