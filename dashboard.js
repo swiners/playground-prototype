@@ -4921,7 +4921,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         onClick: a.onClick,
         muted: !a.onClick
       }, a.label))
-    }, d.headcount && d.headcount.overdue && hcCard, !!d.bulkEvents.length && React.createElement("div", {
+    }, d.headcount && d.headcount.overdue && hcCard, !!d.bulkEvents.length && d.bulkScope.narrowed && React.createElement("div", {
       style: {
         display: 'flex',
         flexDirection: 'column',
@@ -4934,7 +4934,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         color: 'var(--sd-colour-text-secondary)',
         marginTop: -2
       }
-    }, d.bulkScope.narrowed ? d.bulkScope.count ? 'Follows the filter — only the children on the list right now. Adjust the exceptions in the sheet.' : 'Nobody on the list right now is signed in, so there is no one to log for. Clear the filter to log for the room.' : 'Each round starts with the children it applies to — a sleep check with those asleep, sunscreen with those awake. The rest are in the sheet, ready to add. Filter or group the list first to log for fewer.'), React.createElement("div", {
+    }, d.bulkScope.narrowed ? d.bulkScope.count ? 'Follows the filter — only the children on the list right now. Adjust the exceptions in the sheet.' : 'Nobody on the list right now is signed in, so there is no one to log for.' : 'Each round starts with the children it applies to — a sleep check with those asleep, sunscreen with those awake. The rest are in the sheet, ready to add. Filter or group the list first to log for fewer.'), React.createElement("div", {
       style: {
         display: 'grid',
         gridTemplateColumns: '1fr 1fr',
