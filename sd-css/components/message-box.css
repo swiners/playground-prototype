@@ -17,18 +17,24 @@
 }
 
 
+
+
+.ds-message-box--success,
 .ds-message-box--green {
   background: var(--sd-colour-feedback-success-subtle);
   border-color: var(--sd-colour-feedback-success-default);
 }
+.ds-message-box--warning,
 .ds-message-box--orange {
   background: var(--sd-colour-feedback-warning-subtle);
   border-color: var(--sd-colour-feedback-warning-default);
 }
+.ds-message-box--error,
 .ds-message-box--red {
   background: var(--sd-colour-surface-red);
   border-color: var(--sd-colour-border-error);
 }
+.ds-message-box--info,
 .ds-message-box--purple {
   background: var(--sd-colour-surface-purple);
   border-color: var(--sd-colour-accent-secondary);
@@ -62,9 +68,13 @@
 }
 
 
+.ds-message-box--success  .ds-message-box__icon,
 .ds-message-box--green  .ds-message-box__icon { color: var(--sd-colour-action-primary); }
+.ds-message-box--warning .ds-message-box__icon,
 .ds-message-box--orange .ds-message-box__icon { color: var(--sd-colour-feedback-warning-default); }
+.ds-message-box--error    .ds-message-box__icon,
 .ds-message-box--red    .ds-message-box__icon { color: var(--sd-colour-feedback-error-default); }
+.ds-message-box--info .ds-message-box__icon,
 .ds-message-box--purple .ds-message-box__icon { color: var(--sd-colour-accent-secondary); }
 
 
@@ -104,12 +114,29 @@
   padding: 0;
   border: none;
   background: none;
+  
+  background-image: linear-gradient(transparent, transparent);
+  
   cursor: pointer;
   color: var(--sd-colour-text-primary);
   border-radius: var(--sd-radius-sm);
-  transition: opacity var(--sd-motion-duration-fast) var(--sd-motion-easing-default);
 }
-.ds-message-box__close:hover { opacity: 0.6; }
+
+
+.ds-message-box__close::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: var(--sd-spacing-touch-target);
+  height: var(--sd-spacing-touch-target);
+  transform: translate(-50%, -50%);
+}
+
+.ds-message-box__close:hover {
+  opacity: 1;
+  background-image: linear-gradient(var(--sd-colour-state-hover), var(--sd-colour-state-hover));
+}
 .ds-message-box__close:focus-visible {
   outline: 2px solid var(--sd-colour-border-focus);
   outline-offset: 2px;
@@ -117,9 +144,13 @@
 .ds-message-box__close svg { width: 16px; height: 16px; display: block; }
 
 
+.ds-message-box--success  .ds-message-box__close,
 .ds-message-box--green  .ds-message-box__close { color: var(--sd-colour-action-primary); }
+.ds-message-box--warning .ds-message-box__close,
 .ds-message-box--orange .ds-message-box__close { color: var(--sd-colour-feedback-warning-default); }
+.ds-message-box--error    .ds-message-box__close,
 .ds-message-box--red    .ds-message-box__close { color: var(--sd-colour-feedback-error-default); }
+.ds-message-box--info .ds-message-box__close,
 .ds-message-box--purple .ds-message-box__close { color: var(--sd-colour-accent-secondary); }
 
 
@@ -144,6 +175,9 @@
   border: 1px solid;
   border-radius: var(--sd-radius-lg);
   background: none;
+  
+  background-image: linear-gradient(transparent, transparent);
+  
   cursor: pointer;
   font-family: var(--sd-font-family);
   font-size: var(--sd-font-size-base);       
@@ -155,27 +189,34 @@
   box-sizing: border-box;
   border-color: var(--sd-colour-surface-inverse);
   color: var(--sd-colour-surface-inverse);
-  transition: opacity var(--sd-motion-duration-fast) var(--sd-motion-easing-default);
 }
-.ds-message-box__action:hover { opacity: 0.75; }
+
+.ds-message-box__action:hover {
+  opacity: 1;
+  background-image: linear-gradient(var(--sd-colour-state-hover), var(--sd-colour-state-hover));
+}
 .ds-message-box__action:focus-visible {
   outline: 2px solid var(--sd-colour-border-focus);
   outline-offset: 2px;
 }
 
 
+.ds-message-box--success  .ds-message-box__action,
 .ds-message-box--green  .ds-message-box__action {
   border-color: var(--sd-colour-action-primary);
   color: var(--sd-colour-action-primary);
 }
+.ds-message-box--warning .ds-message-box__action,
 .ds-message-box--orange .ds-message-box__action {
   border-color: var(--sd-colour-feedback-warning-default);
   color: var(--sd-colour-feedback-warning-default);
 }
+.ds-message-box--error    .ds-message-box__action,
 .ds-message-box--red    .ds-message-box__action {
   border-color: var(--sd-colour-feedback-error-default);
   color: var(--sd-colour-feedback-error-default);
 }
+.ds-message-box--info .ds-message-box__action,
 .ds-message-box--purple .ds-message-box__action {
   border-color: var(--sd-colour-accent-secondary);
   color: var(--sd-colour-accent-secondary);

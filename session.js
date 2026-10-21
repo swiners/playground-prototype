@@ -206,6 +206,7 @@
   function railSelectRule(params) {
     return params.rule === 'b' || params.rule === 'c' ? 'b' : 'a';
   }
+  const RAIL_DUE_LISTS = [['current', 'Today'], ['a', 'A · By event'], ['b', 'B · Quiet list'], ['c', 'C · Next up']];
   function readParams() {
     const p = new URLSearchParams(window.location.search);
     const o = {};
@@ -365,7 +366,7 @@
     }
     const runScenario = sc => {
       const keep = {};
-      ['frame', 'orient', 'theme', 'rail', 'idle', 'pane', 'bare'].forEach(k => {
+      ['frame', 'orient', 'theme', 'rail', 'idle', 'pane', 'bare', 'duelist'].forEach(k => {
         if (params[k]) keep[k] = params[k];
       });
       const next = {
@@ -421,6 +422,10 @@
     const setConn = conn => applyParams({
       ...params,
       conn: conn === 'online' ? '' : conn
+    });
+    const setDueList = v => applyParams({
+      ...params,
+      duelist: v === 'current' ? '' : v
     });
     const setRoom = roomKey => {
       applyParams({
@@ -490,6 +495,7 @@
       conn: params.conn === 'offline' ? 'offline' : 'online',
       selectArm: railSelectArm(params),
       selectRule: railSelectRule(params),
+      dueList: params.duelist || 'current',
       initialSplash: splashLabel,
       onSignOut: signOut,
       onSwitchEducator: switchEducator,
@@ -574,6 +580,7 @@
       setScope: setScope,
       setRoom: setRoom,
       setConn: setConn,
+      setDueList: setDueList,
       runScenario: runScenario,
       session: session,
       layout: layout
@@ -845,6 +852,7 @@
     setScope,
     setRoom,
     setConn,
+    setDueList,
     runScenario,
     session,
     layout
@@ -1042,8 +1050,24 @@
       }
     }, {
       a: '⚑ 29 Sep: this arm is now the product — A, plus a select-all on every heading whenever a grouping is chosen (OD-15 resolved). Filtering drives it — the incumbent, grown up (D36 / D37). Any filter on → the bar’s select-all becomes “Clear all filters” and the headings carry selection. No filters → one global “Select all N”. ⚑ Watch the default view: unfiltered in Possum it offers “Select all 17”, which takes 13 loggable children plus 1 booked in, 1 signed out, 1 absent and 1 on holiday — D57 greys four rows in the sheet.',
-      b: 'No trigger. R-RM-4 already makes this a two-level tree, so attendance gets its own heading and the bar never selects: “Select all 13 signed in” on the band, “Select all 6” on each section inside it, nothing on a state you can’t record against. The band control names the set — with Sleeping filtered it reads “Select all 6 sleeping”. Group: All is gone: under bands it would be identical to Attendance. ⚑ The task that separates the arms: set Group: Sleep/rest AND filter to Signed in, then ask for sunscreen — grouping alone does not move selection under A, so without the filter both arms are one tap and the task reports nothing. See CUSTOMER-TESTING.md §5.'
+      b: 'No trigger. R-RM-4 already makes this a two-level tree, so attendance gets its own heading and the bar never selects: “Select all 13 signed in” on the band, “Select all 6” on each section inside it, nothing on a state you can’t record against. The band control names the set — with Sleeping filtered it reads “Select all 6 sleeping”. Sort into: All is gone (in both arms now): under bands it would be identical to Attendance. ⚑ The task that separates the arms: set Sort into: Sleep/rest AND Show only: Signed in, then ask for sunscreen — grouping alone does not move selection under A, so without the filter both arms are one tap and the task reports nothing. See CUSTOMER-TESTING.md §5.'
     }[railSelectRule(params)], railSelectArm(params) === 'check' && ' ⚑ Also running ?sel=check: the retired always-on row checkbox.')), React.createElement("div", {
+      style: group
+    }, React.createElement("p", {
+      style: label
+    }, "Due list \xB7 big rooms"), seg(RAIL_DUE_LISTS, RAIL_DUE_LISTS.some(([k]) => k === params.duelist) ? params.duelist : 'current', setDueList), React.createElement("p", {
+      style: {
+        fontSize: 11.5,
+        lineHeight: 1.5,
+        color: 'var(--sd-colour-text-secondary)',
+        margin: '6px 0 0'
+      }
+    }, {
+      current: 'Today’s: one tinted card per child. Brushtail’s 17 make a wall.',
+      a: 'One line per event — Sleep checks 5 · 2 late. Tap to see who. Doses stay on their own rows, on top.',
+      b: 'One quiet line per child: face, name, the row’s badge. No card, no tint.',
+      c: 'The 3 most urgent as cards, then “14 more due” — red “late” if any are folded.'
+    }[RAIL_DUE_LISTS.some(([k]) => k === params.duelist) ? params.duelist : 'current'], ' ', "Compare in Brushtail (17 due) and the Nursery (5).")), React.createElement("div", {
       style: group
     }, React.createElement("p", {
       style: label

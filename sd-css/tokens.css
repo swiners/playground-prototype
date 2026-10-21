@@ -215,6 +215,9 @@
   --sd-spacing-component-lg: var(--sd-spacing-6);  
 
   
+  
+  --sd-spacing-touch-target: 44px;
+
   --sd-spacing-stack-gap-tight:   var(--sd-spacing-1);  
   --sd-spacing-stack-gap-default: var(--sd-spacing-2);  
   --sd-spacing-stack-gap-loose:   var(--sd-spacing-3);  
@@ -236,9 +239,11 @@
   --sd-font-weight-bold:     700;
 
   
-  --sd-motion-duration-fast: 80ms;   
-  --sd-motion-duration-base: 150ms;  
-  --sd-motion-duration-slow: 200ms;  
+  --sd-motion-duration-snap:  75ms;   
+  --sd-motion-duration-fast:  80ms;   
+  --sd-motion-duration-quick: 100ms;  
+  --sd-motion-duration-base:  150ms;  
+  --sd-motion-duration-slow:  200ms;  
 
   
   --sd-motion-easing-standard:   cubic-bezier(0.2, 0, 0, 1);
@@ -251,11 +256,16 @@
   --sd-colour-scrim: #00000066;
 
   
+  --sd-shadow-overlay: 0 8px 24px var(--sd-colour-scrim);
+
+  
   --sd-z-base:     0;
   --sd-z-sticky:   100;   
   --sd-z-sidenav:  200;   
   --sd-z-dropdown: 300;
   --sd-z-modal:    400;
+  
+  --sd-z-popover:  450;
   --sd-z-toast:    500;
 
   
@@ -340,4 +350,30 @@
 
   
   --sd-colour-scrim: #000000B3;  
+
+  
+  --sd-shadow-overlay: 0 4px 12px var(--sd-colour-scrim);
+}
+
+
+
+
+::selection {
+  background: var(--sd-colour-surface-cyan);
+  color: var(--sd-colour-text-on-cyan);
+}
+
+
+input,
+textarea,
+[contenteditable] {
+  caret-color: var(--sd-colour-action-primary);
+}
+
+
+@media (forced-colors: active) {
+  :focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+  }
 }

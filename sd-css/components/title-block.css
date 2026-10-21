@@ -40,6 +40,10 @@
   text-overflow: ellipsis;
 }
 
+
+.ds-title-block--wrap .ds-title-block__title { white-space: normal; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; }
+.ds-title-block--wrap .ds-title-block__subtitle { white-space: normal; overflow: visible; overflow-wrap: anywhere; }
+
 .ds-title-block__pills {
   display: flex;
   align-items: center;

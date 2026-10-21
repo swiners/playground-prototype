@@ -279,10 +279,17 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     key: 'kinder',
     label: 'Kinder program'
   }, {
+    key: 'tags',
+    label: 'Tags'
+  }, {
     key: 'all',
     label: 'All'
   }];
+  const RD_TAG_GROUPING = 'tags';
   const RD_UNGROUPED = 'all';
+  const RD_GROUP_MENU = RD_GROUPINGS.filter(g => g.key !== RD_UNGROUPED);
+  const RD_GROUP_DEFAULT = 'attendance';
+  const RD_GROUP_OFF_LABEL = 'None';
   const RD_FIELD_GROUPINGS = ['age', 'school', 'grade', 'kinder'];
   const RD_GROUPING_LEGACY = {
     class: 'kinder'
@@ -478,6 +485,20 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       });
       return g;
     }
+    if (grouping === RD_TAG_GROUPING) {
+      const vals = [...new Map(kids.filter(c => c.childTag).map(c => [c.childTag.id, c.childTag])).values()].sort((a, b) => a.name.localeCompare(b.name));
+      const g = vals.map(v => ({
+        key: `tag-${v.id}`,
+        label: v.name,
+        items: kids.filter(c => c.childTag && c.childTag.id === v.id)
+      }));
+      g.push({
+        key: 'tag-none',
+        label: 'No tag',
+        items: kids.filter(c => !c.childTag)
+      });
+      return g;
+    }
     return [{
       key: 'all',
       label: null,
@@ -542,7 +563,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     return bands;
   }
   const RD_BULKABLE = ['here', 'expected'];
-  const RD_GROUPINGS_C = RD_GROUPINGS.filter(g => g.key !== RD_UNGROUPED);
+  const RD_GROUPINGS_C = RD_GROUP_MENU;
   const RD_KOALA = [{
     id: 1,
     name: 'Alex Turner',
@@ -988,7 +1009,25 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       kinder: c.kinder || RD_KINDER_PROGRAMS[Math.min(Math.max(c.age - 3, 0), RD_KINDER_PROGRAMS.length - 1)]
     };
   };
-  const RD_ALL_CHILDREN = [...RD_KOALA, ...RD_OTHERS].map(rdWithKinder);
+  const RD_CONSIDERATIONS = ['Grandparents do the Thursday pickup — they are on the authorised list, no need to call ahead.', 'Recently bereaved (grandparent, June). May need extra reassurance at drop-off.', 'Family speaks Cantonese at home. Mum is the confident English speaker of the two.', 'Older sibling in Kangaroo Room — they settle much faster if they see each other at drop-off.'];
+  const RD_KOALA_CONSIDERATIONS = {
+    5: 0,
+    9: 1,
+    16: 3,
+    18: 2
+  };
+  const rdWithConsiderations = c => {
+    if (c.considerations !== undefined) return c;
+    const k = c.room === 'koala' ? RD_KOALA_CONSIDERATIONS[c.id] : (() => {
+      const n = parseInt(String(c.id).split('-').pop(), 10);
+      return Number.isFinite(n) && n % 6 === 2 ? (n + c.room.length) % RD_CONSIDERATIONS.length : undefined;
+    })();
+    return k === undefined ? c : {
+      ...c,
+      considerations: RD_CONSIDERATIONS[k]
+    };
+  };
+  const RD_ALL_CHILDREN = [...RD_KOALA, ...RD_OTHERS].map(rdWithKinder).map(rdWithConsiderations);
   RD_ROOMS.forEach(r => {
     r.booked = RD_ALL_CHILDREN.filter(c => c.room === r.key).length;
   });
@@ -1186,19 +1225,6 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     key: 'excursion',
     label: 'Consent to excursions'
   }];
-  const RD_SPECIAL_NOTES = [{
-    text: 'Grandparents do the Thursday pickup — they are on the authorised list, no need to call ahead.',
-    tone: 'calm'
-  }, {
-    text: 'Recently bereaved (grandparent, June). May need extra reassurance at drop-off.',
-    tone: 'calm'
-  }, {
-    text: 'Family speaks Cantonese at home. Mum is the confident English speaker of the two.',
-    tone: 'calm'
-  }, {
-    text: 'Older sibling in Kangaroo Room — they settle much faster if they see each other at drop-off.',
-    tone: 'calm'
-  }];
   const RD_ABOUT_NOTES = ['Loves the sandpit and anything with wheels. Will not wear a hat without a fuss — offer the blue one.', 'Very settled once she has her comforter. Doesn’t like loud group singing; happier at the edge.', 'Big eater, but slow. Needs a bit longer at lunch rather than being rushed.', 'Napping is hit and miss — often just rests. Doesn’t need to be woken.', 'Chatty and confident with adults, more cautious with new children. Warms up by about morning tea.'];
   function rdProfile(c) {
     const surname = rdLastName(c.name);
@@ -1232,12 +1258,17 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       phone: phone(4),
       auths: auths(4)
     };
-    const drawn = seed % 3 === 0 ? null : RD_SPECIAL_NOTES[seed % RD_SPECIAL_NOTES.length];
-    const kept = c.collect && drawn && /collect/i.test(drawn.text) ? null : drawn;
-    const special = kept ? kept.text : null;
-    const specialTone = kept ? kept.tone : null;
+    const special = c.considerations || null;
     const about = RD_ABOUT_NOTES[(seed + 2) % RD_ABOUT_NOTES.length];
     const attachments = [];
+    if (c.collect && c.collect.courtOrder) {
+      const [kind, on] = String(c.collect.onFile || '').split(/,\s*/);
+      attachments.push({
+        name: `Court order${kind ? ` · ${kind}` : ''}`,
+        type: 'Held by the office',
+        updated: on || '—'
+      });
+    }
     if (c.allergy || c.anaphylaxis) attachments.push({
       name: 'Allergy / anaphylaxis action plan',
       type: 'PDF',
@@ -1282,7 +1313,6 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       attachments,
       history,
       special,
-      specialTone,
       about
     };
   }
@@ -1431,25 +1461,24 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     in: 'Signed in',
     out: 'Signed out'
   };
-  const RD_SLEEP_TYPE = {
-    'Sleep': {
-      Asleep: 'sleep',
+  const rdLastSleepType = c => {
+    const e = (c.last || []).find(([k]) => k === 'sleep');
+    if (e && e[5]) return e[5];
+    return {
+      Sleeping: 'sleep',
       Resting: 'rest_start',
-      Awake: 'wake_up',
       Unsettled: 'unsettled',
-      Crying: 'crying'
-    },
-    'Rest': {
-      Asleep: 'sleep',
-      Resting: 'rest_start',
-      Awake: 'rest_end',
-      Unsettled: 'unsettled',
-      Crying: 'crying'
-    }
+      Crying: 'crying',
+      Awake: 'wake_up'
+    }[c.state] || null;
   };
-  const RD_SLEEP_ROUND = {
-    Sleep: 'check',
-    Rest: 'rest_check'
+  const rdSleepType = (last, found, roomTrack) => {
+    if (found === 'Unsettled') return 'unsettled';
+    if (found === 'Crying') return 'crying';
+    const period = last === 'sleep' || last === 'check' ? 'Sleep' : last === 'rest_start' || last === 'rest_check' ? 'Rest' : null;
+    if (found === 'Awake') return (period || roomTrack) === 'Rest' ? 'rest_end' : 'wake_up';
+    if (found === 'Resting') return period === 'Rest' ? 'rest_check' : 'rest_start';
+    return period === 'Rest' ? 'rest_check' : period === 'Sleep' ? 'check' : 'sleep';
   };
   const RD_FOUND_STATE = {
     Asleep: 'Sleeping',
@@ -1707,25 +1736,54 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
   }];
   const rdMultiLabel = (opts, keys) => (opts || []).filter(o => (keys || []).includes(o.key)).map(o => o.log).join(' · ') || null;
   const rdMultiCats = (opts, keys) => [...new Set((opts || []).filter(o => (keys || []).includes(o.key)).map(o => o.cat))];
+  const RD_MEAL_SLOTS = [{
+    key: 'breakfast',
+    label: 'Breakfast'
+  }, {
+    key: 'morning_tea',
+    label: 'Morning tea'
+  }, {
+    key: 'lunch',
+    label: 'Lunch'
+  }, {
+    key: 'afternoon_tea',
+    label: 'Afternoon tea'
+  }, {
+    key: 'snack',
+    label: 'Late snack'
+  }, {
+    key: 'dinner',
+    label: 'Dinner'
+  }];
   const RD_MENU = [{
     key: 'mt-fruit',
-    label: 'Morning tea · Fruit and yoghurt'
+    label: 'Morning tea · Fruit and yoghurt',
+    slot: 'morning_tea'
   }, {
     key: 'l-bol',
-    label: 'Lunch · Spaghetti bolognese'
+    label: 'Lunch · Spaghetti bolognese',
+    slot: 'lunch'
   }, {
     key: 'l-rice',
-    label: 'Lunch · Chicken and vegetable rice'
+    label: 'Lunch · Chicken and vegetable rice',
+    slot: 'lunch'
   }, {
     key: 'l-pie',
-    label: 'Lunch · Shepherd’s pie'
+    label: 'Lunch · Shepherd’s pie',
+    slot: 'lunch'
   }, {
     key: 'at-cheese',
-    label: 'Afternoon tea · Cheese, crackers and fruit'
+    label: 'Afternoon tea · Cheese, crackers and fruit',
+    slot: 'afternoon_tea'
   }, {
     key: 'ls-toast',
-    label: 'Late snack · Toast and fruit'
+    label: 'Late snack · Toast and fruit',
+    slot: 'snack'
+  }, {
+    key: 'other',
+    label: 'Other…'
   }];
+  const RD_MENU_OTHER = 'other';
   const RD_DELIVERED_BY = ['Parent / guardian', 'Authorised contact', 'School', 'Walked in'];
   const RD_COLLECTED_BY = ['Parent / guardian', 'Authorised contact', 'School', 'Walked home'];
   const rdCollectOptions = c => {
@@ -1757,7 +1815,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       shared: {
         label: 'Served',
         select: RD_MENU,
-        value: RD_MENU[1].key
+        value: RD_MENU[1].key,
+        other: RD_MENU_OTHER
       },
       perChild: {
         label: 'Ate',
@@ -1779,11 +1838,6 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     sleep: {
       label: 'Sleep check',
       verb: 'Checked',
-      shared: {
-        label: 'This round is',
-        options: [['Sleep', 'Sleep'], ['Rest', 'Rest']],
-        value: 'Sleep'
-      },
       perChild: {
         label: 'Found',
         options: ['Asleep', 'Resting', 'Awake', 'Unsettled', 'Crying'],
@@ -1869,6 +1923,15 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       label: f.label,
       test: c => !!c[f.key]
     }))
+  }, {
+    key: 'office',
+    label: 'From the office',
+    values: [{
+      key: 'considerations',
+      label: 'Has special considerations',
+      narrow: 'with special considerations',
+      test: c => !!c.considerations
+    }]
   }];
   const rdFacetTest = (facetKey, valueKey) => {
     const f = RD_FACETS.find(x => x.key === facetKey);
@@ -1884,7 +1947,10 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     facet: f,
     value: f.values.find(v => v.key === k)
   })).filter(x => x.value));
-  const rdNarrowWords = on => RD_FACETS.filter(f => f.key !== 'att').flatMap(f => (on[f.key] || []).map(k => (f.values.find(v => v.key === k) || {}).label)).filter(Boolean).map(l => l.toLowerCase());
+  const rdNarrowWords = on => RD_FACETS.filter(f => f.key !== 'att').flatMap(f => (on[f.key] || []).map(k => {
+    const v = f.values.find(x => x.key === k) || {};
+    return v.narrow || v.label;
+  })).filter(Boolean).map(l => l.toLowerCase());
   const RD_SHOW_LEGACY = {
     here: {
       att: ['here']
@@ -1902,7 +1968,66 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
   const RD_HC_INTERVAL = 10;
   const RD_NOTE_D = 'M4 5.5A2.5 2.5 0 0 1 6.5 3H19v15H6.5A2.5 2.5 0 0 0 4 20.5V5.5Z';
   const RD_CAL_D = 'M4 8h16M7 3v3M17 3v3M5 5h14v15H5V5Z';
-  const RD_DATES = ['Today', 'Yesterday', 'Two days ago', 'Three days ago'];
+  const RD_PAST_DAYS = 3;
+  const RD_FUTURE_SPAN = 7;
+  const RD_WDAY = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const RD_MONTH = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  const rdAddDays = (d, n) => {
+    const x = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+    x.setDate(x.getDate() + n);
+    return x;
+  };
+  const rdOpenDay = d => d.getDay() !== 0 && d.getDay() !== 6;
+  const rdSameDay = (a, b) => a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+  const rdShortDate = d => `${RD_WDAY[d.getDay()]} ${d.getDate()} ${RD_MONTH[d.getMonth()].slice(0, 3)}`;
+  const RD_TODAY = rdAddDays(new Date(), 0);
+  const RD_DATES = (() => {
+    const day = (index, offset) => {
+      const date = rdAddDays(RD_TODAY, offset);
+      const label = offset === 0 ? 'Today' : offset === -1 ? 'Yesterday' : offset === 1 ? 'Tomorrow' : rdShortDate(date);
+      return {
+        index,
+        offset,
+        date,
+        label
+      };
+    };
+    const out = [day(0, 0)];
+    for (let off = -1, n = 1; n <= RD_PAST_DAYS; off--) if (rdOpenDay(rdAddDays(RD_TODAY, off))) out.unshift(day(n++, off));
+    for (let off = 1, n = -1; off <= RD_FUTURE_SPAN; off++) if (rdOpenDay(rdAddDays(RD_TODAY, off))) out.push(day(n--, off));
+    return out;
+  })();
+  const rdDateAt = i => RD_DATES.find(x => x.index === i) || null;
+  const RD_DATE_MAX = RD_DATES[0].index;
+  const RD_DATE_MIN = RD_DATES[RD_DATES.length - 1].index;
+  function rdFutureRoster(roster, day) {
+    return roster.filter(c => {
+      if (day.index === -1 && c.anaphylaxis) return true;
+      if (day.index === -1 && c.status === 'holiday') return false;
+      return (rdKinderSeed(c.id) + day.offset * 7) % 5 !== 0;
+    }).map(c => {
+      const h = rdKinderSeed(c.id);
+      const usual = (c.status === 'here' || c.status === 'expected') && c.at && c.at !== '—';
+      const {
+        state,
+        last,
+        alert,
+        by,
+        deliveredBy,
+        loggedBy,
+        absentNote,
+        audit,
+        corrected,
+        ...child
+      } = c;
+      return {
+        ...child,
+        status: 'expected',
+        at: usual ? c.at : `${7 + h % 2}:${String(h % 4 * 15).padStart(2, '0')}`
+      };
+    });
+  }
+  const rdNotifToday = n => (n.day || 0) === 0;
   const RD_BELL_D = 'M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.5 21a1.5 1.5 0 0 0 3 0';
   const RD_NOTIFS = [{
     id: 'n1',
@@ -1950,6 +2075,15 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     title: 'Roster updated by the office',
     body: 'Noa Feldman marked absent today',
     at: '7:45'
+  }, {
+    id: 'n7',
+    scope: 'room',
+    room: 'koala',
+    kind: 'booking',
+    day: 1,
+    title: 'New booking added',
+    body: 'Remy Fisher — casual day on the next operating day',
+    at: '9:10'
   }];
   const RD_NOTIF_ICON = {
     booking: 'M16 3v4M8 3v4M4 8h16M5 5h14v15H5V5ZM9 14l2 2 4-4',
@@ -2133,13 +2267,66 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       style: base
     });
   }
+  const RD_ALLERGY_RE = /allerg(y|ies)/i;
+  const RD_TONE = {
+    crit: {
+      pill: 'ds-pill--red',
+      box: ' ds-message-box--red',
+      mark: 'var(--sd-colour-feedback-error-default)',
+      nav: 'critical'
+    },
+    warn: {
+      pill: 'ds-pill--orange',
+      box: ' ds-message-box--orange',
+      mark: 'var(--sd-colour-feedback-warning-default)',
+      nav: 'needs attention'
+    },
+    restrict: {
+      pill: 'ds-pill--grey',
+      box: '',
+      mark: 'var(--sd-colour-text-primary)',
+      nav: 'collection restricted'
+    }
+  };
+  const rdTone = (fact, c) => {
+    if (!fact) return null;
+    if (fact.collect) return 'restrict';
+    if (fact.alert) return rdIsLate(fact.alert) ? 'crit' : 'warn';
+    if (fact.anaphylaxis) return 'crit';
+    if (fact.tag) return c && c.anaphylaxis && RD_ALLERGY_RE.test(fact.tag) ? 'crit' : 'warn';
+    return null;
+  };
+  const rdHealthPills = c => {
+    const out = (c.tags || []).map(t => ({
+      label: t,
+      tone: rdTone({
+        tag: t
+      }, c)
+    }));
+    if (c.anaphylaxis && !out.some(p => p.tone === 'crit')) out.unshift({
+      label: 'Anaphylaxis',
+      tone: 'crit'
+    });
+    return out;
+  };
   function RdTag({
-    children
+    children,
+    tone = 'warn'
   }) {
+    const t = RD_TONE[tone] || RD_TONE.warn;
     return React.createElement("span", {
-      className: "ds-pill ds-pill--sm ds-pill--orange ds-pill--minimal"
-    }, children);
+      className: `ds-pill ds-pill--sm ${t.pill} ds-pill--minimal`,
+      "data-tone": tone
+    }, children, tone === 'crit' && !/anaphyla/i.test(String(children)) && React.createElement("span", {
+      style: RD_SR_ONLY
+    }, " (anaphylaxis)"));
   }
+  const RdHealthPills = ({
+    c
+  }) => rdHealthPills(c).map(p => React.createElement(RdTag, {
+    key: p.label,
+    tone: p.tone
+  }, p.label));
   function RdChoiceChips({
     options,
     value,
@@ -2196,7 +2383,10 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     if (!collect) return null;
     const label = full ? `${rdCollectLabel(collect)} · ${collect.who} can’t collect` : rdCollectLabel(collect);
     return React.createElement("span", {
-      className: "ds-pill ds-pill--sm ds-pill--grey ds-pill--minimal",
+      className: `ds-pill ds-pill--sm ${RD_TONE.restrict.pill} ds-pill--minimal`,
+      "data-tone": rdTone({
+        collect
+      }),
       title: `${collect.who} is not permitted to collect`
     }, label);
   }
@@ -2244,6 +2434,101 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         background: urgent ? 'var(--sd-colour-feedback-error-default)' : 'var(--sd-colour-text-on-orange)'
       }
     }), alert.label);
+  }
+  const RD_SR_ONLY = {
+    position: 'absolute',
+    width: 1,
+    height: 1,
+    padding: 0,
+    margin: -1,
+    overflow: 'hidden',
+    clip: 'rect(0 0 0 0)',
+    whiteSpace: 'nowrap',
+    border: 0
+  };
+  function RdRowDue({
+    alert,
+    full,
+    glyph: showGlyph = true,
+    text
+  }) {
+    const hit = alert && typeof alert.dueIn === 'number' && RD_ALERT_EVENT.find(([, re]) => re.test(alert.label));
+    if (!hit) return React.createElement(RdAlert, {
+      alert: alert
+    });
+    const late = alert.dueIn < 0;
+    const tone = rdTone({
+      alert
+    });
+    const red = tone === 'crit';
+    const paint = {
+      background: red ? 'var(--sd-colour-feedback-error-default)' : 'var(--sd-colour-surface-orange)',
+      color: red ? 'var(--sd-colour-action-foreground)' : 'var(--sd-colour-text-primary)'
+    };
+    const glyph = React.createElement("span", {
+      "aria-hidden": "true",
+      style: {
+        display: 'inline-flex',
+        flexShrink: 0,
+        color: red ? 'inherit' : 'var(--sd-colour-text-on-orange)'
+      }
+    }, React.createElement(RdGlyph, {
+      d: RD_ICONS[hit[0]],
+      size: 14,
+      width: 2.2
+    }));
+    if (full) {
+      const parts = [...(late ? ['Late'] : []), ...alert.label.split(' · ')];
+      return React.createElement("span", {
+        "data-tone": tone,
+        "data-due": "full",
+        style: {
+          display: 'inline-flex',
+          alignItems: 'flex-start',
+          gap: 5,
+          maxWidth: '100%',
+          padding: '4px 10px 4px 8px',
+          boxSizing: 'border-box',
+          borderRadius: 'var(--sd-radius-lg)',
+          fontSize: 12.5,
+          fontWeight: 700,
+          lineHeight: '18px',
+          ...paint
+        }
+      }, React.createElement("span", {
+        style: {
+          display: 'inline-flex',
+          marginTop: 2
+        }
+      }, glyph), React.createElement("span", null, parts.map((p, i) => React.createElement(React.Fragment, {
+        key: i
+      }, React.createElement("span", {
+        style: {
+          whiteSpace: 'nowrap'
+        }
+      }, p, i < parts.length - 1 ? ' ·' : ''), i < parts.length - 1 ? ' ' : ''))));
+    }
+    return React.createElement("span", {
+      "data-tone": tone,
+      style: {
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: 4,
+        height: 22,
+        padding: showGlyph ? '0 8px 0 6px' : '0 8px',
+        boxSizing: 'border-box',
+        borderRadius: 'var(--sd-radius-full)',
+        whiteSpace: 'nowrap',
+        flexShrink: 0,
+        fontSize: 12,
+        fontWeight: 700,
+        ...paint
+      }
+    }, showGlyph && glyph, React.createElement("span", {
+      "aria-hidden": "true"
+    }, text || (late ? 'Late' : alert.dueIn === 0 ? 'Now' : `${alert.dueIn}m`)), React.createElement("span", {
+      style: RD_SR_ONLY
+    }, alert.label));
   }
   function RdStat({
     value,
@@ -2641,6 +2926,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
   }
   const RD_CAL_DOW = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
   function RdCalendarPopover({
+    value,
+    onPick,
     onClose
   }) {
     useEffect(() => {
@@ -2650,12 +2937,31 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       window.addEventListener('keydown', esc);
       return () => window.removeEventListener('keydown', esc);
     }, [onClose]);
-    const lead = 6;
-    const days = 31;
-    const today = 17;
+    const shown = (rdDateAt(value) || rdDateAt(0)).date;
+    const [month, setMonth] = useState(new Date(shown.getFullYear(), shown.getMonth(), 1));
+    const y = month.getFullYear(),
+      m = month.getMonth();
+    const lead = new Date(y, m, 1).getDay();
+    const days = new Date(y, m + 1, 0).getDate();
     const cells = [...Array(lead).fill(null), ...Array.from({
       length: days
-    }, (_, i) => i + 1)];
+    }, (_, i) => new Date(y, m, i + 1))];
+    const monthHas = dm => RD_DATES.some(x => x.date.getFullYear() === dm.getFullYear() && x.date.getMonth() === dm.getMonth());
+    const monthBtn = (glyph, target, label) => monthHas(target) ? React.createElement("button", {
+      type: "button",
+      "aria-label": label,
+      onClick: () => setMonth(target),
+      style: {
+        all: 'unset',
+        cursor: 'pointer',
+        color: 'var(--sd-colour-text-secondary)',
+        display: 'inline-flex',
+        padding: 2
+      }
+    }, React.createElement(RdGlyph, {
+      d: glyph,
+      size: 18
+    })) : null;
     return React.createElement("div", {
       onClick: onClose,
       style: {
@@ -2669,6 +2975,9 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       }
     }, React.createElement("div", {
       className: "rd-sheet",
+      role: "dialog",
+      "aria-label": "Pick a date",
+      onClick: e => e.stopPropagation(),
       style: {
         width: 300,
         background: 'var(--sd-colour-surface-default)',
@@ -2685,21 +2994,13 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         alignItems: 'center',
         gap: 8
       }
-    }, React.createElement("span", {
+    }, monthBtn('M15 6l-6 6 6 6', new Date(y, m - 1, 1), 'Previous month'), React.createElement("span", {
       style: {
         fontSize: 15,
         fontWeight: 700,
         flex: 1
       }
-    }, "August 2026"), React.createElement("span", {
-      style: {
-        fontSize: 11,
-        fontWeight: 700,
-        letterSpacing: '0.04em',
-        textTransform: 'uppercase',
-        color: 'var(--sd-colour-text-secondary)'
-      }
-    }, "Example"), React.createElement("button", {
+    }, RD_MONTH[m], " ", y), monthBtn('M9 6l6 6-6 6', new Date(y, m + 1, 1), 'Next month'), React.createElement("button", {
       type: "button",
       "aria-label": "Close",
       onClick: onClose,
@@ -2727,32 +3028,49 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         color: 'var(--sd-colour-text-secondary)',
         padding: '2px 0'
       }
-    }, d)), cells.map((n, i) => {
-      const isToday = n === today;
-      const future = n && n > today;
-      return React.createElement("span", {
+    }, d)), cells.map((dt, i) => {
+      if (!dt) return React.createElement("span", {
+        key: i
+      });
+      const day = RD_DATES.find(x => rdSameDay(x.date, dt));
+      const isToday = rdSameDay(dt, RD_TODAY);
+      const on = !!day && day.index === value;
+      const tail = !day ? rdOpenDay(dt) ? ' — not available' : ' — closed' : isToday ? ' — today' : ' — read-only';
+      return React.createElement("button", {
         key: i,
+        type: "button",
+        disabled: !day,
+        "aria-pressed": on,
+        "aria-label": `${rdShortDate(dt)}${tail}`,
+        onClick: day ? () => {
+          onPick(day.index);
+          onClose();
+        } : undefined,
         style: {
+          all: 'unset',
+          boxSizing: 'border-box',
+          cursor: day ? 'pointer' : 'default',
           textAlign: 'center',
           fontSize: 13,
-          fontWeight: isToday ? 700 : 500,
+          fontWeight: isToday || on ? 700 : 500,
           height: 32,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           borderRadius: 'var(--sd-radius-m)',
-          background: isToday ? 'var(--sd-colour-action-primary)' : 'transparent',
-          color: isToday ? '#fff' : future ? 'var(--sd-colour-text-secondary)' : 'var(--sd-colour-text-primary)',
-          opacity: future ? 0.45 : 1
+          background: isToday ? 'var(--sd-colour-action-primary)' : on ? 'var(--sd-colour-surface-cyan)' : 'transparent',
+          border: `1.5px solid ${on && !isToday ? 'var(--sd-colour-action-primary)' : 'transparent'}`,
+          color: isToday ? 'var(--sd-colour-action-foreground)' : day ? 'var(--sd-colour-text-primary)' : 'var(--sd-colour-text-secondary)',
+          opacity: day ? 1 : 0.4
         }
-      }, n || '');
+      }, dt.getDate());
     })), React.createElement("span", {
       style: {
         fontSize: 12,
         lineHeight: 1.4,
         color: 'var(--sd-colour-text-secondary)'
       }
-    }, "Placeholder \u2014 the real date picker isn\u2019t wired up yet. Click anywhere to close.")));
+    }, "Other days are read-only.")));
   }
   function RdEducatorSheet({
     educators,
@@ -3160,7 +3478,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         fontWeight: 600,
         color: 'var(--sd-colour-text-secondary)'
       }
-    }, "Bookings, roster changes and room checks")), React.createElement("button", {
+    }, "Today\u2019s room and service notices")), React.createElement("button", {
       type: "button",
       "aria-label": "Close",
       onClick: onClose,
@@ -3504,7 +3822,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         fontSize: 12.5,
         color: 'var(--sd-colour-text-secondary)'
       }
-    }, "Total slept is reported separately from total rested")), React.createElement(RdSegmented, {
+    }, "Names this room\u2019s check. Each child\u2019s last entry decides sleep or rest")), React.createElement(RdSegmented, {
       options: [['Sleep', 'Sleep'], ['Rest', 'Rest']],
       value: events.sleepTrack || 'Sleep',
       onChange: v => setEvents(m => ({
@@ -4003,19 +4321,11 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         fontWeight: 600,
         color: 'var(--sd-colour-feedback-error-default)'
       }
-    }, "1:", r.ratio, " \xB7 needs 1:", r.limit))))), !!d.dueChildren.length && React.createElement("div", {
-      style: {
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 8
-      }
-    }, React.createElement(RdLabel, null, d.dueChildren.length === 1 ? '1 child' : `${d.dueChildren.length} children`), d.dueChildren.map(c => React.createElement(RdDueItem, {
-      key: c.id,
-      c: c,
-      showRoom: d.scope === 'service',
-      roomName: d.roomNameOf(c),
-      onPick: pick
-    }))), hc && !hc.overdue && hcCard, nothing && React.createElement("div", {
+    }, "1:", r.ratio, " \xB7 needs 1:", r.limit))))), !!d.dueChildren.length && React.createElement(RdDueList, {
+      d: d,
+      onPick: pick,
+      label: React.createElement(RdLabel, null, d.dueChildren.length === 1 ? '1 child' : `${d.dueChildren.length} children`)
+    }), hc && !hc.overdue && hcCard, nothing && React.createElement("div", {
       style: {
         display: 'flex',
         flexDirection: 'column',
@@ -4153,7 +4463,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     rowDetail,
     onOpen,
     onTick,
-    onLongPress
+    onLongPress,
+    hideTag
   }) {
     const sub = 'var(--sd-colour-text-secondary)';
     const on = selected || ticked;
@@ -4239,7 +4550,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         }
       }, showRoom && React.createElement(RdRoomChip, {
         name: roomName
-      }), c.alert && React.createElement(RdAlert, {
+      }), c.alert && React.createElement(RdRowDue, {
         alert: c.alert
       }), c.state && React.createElement(RdStatePill, {
         state: c.state,
@@ -4258,9 +4569,11 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         size: 13
       }), "Signed in elsewhere"), c.collect && React.createElement(RdCollectPill, {
         collect: c.collect
-      }), detail.health && (c.tags || []).map(t => React.createElement(RdTag, {
-        key: t
-      }, t)));
+      }), detail.health && React.createElement(RdHealthPills, {
+        c: c
+      }), c.childTag && !hideTag && React.createElement(RdTagChip, {
+        tag: c.childTag
+      }));
       if (!compact) return React.createElement(React.Fragment, null, nameEl, statusEl);
       return React.createElement("span", {
         style: {
@@ -4541,22 +4854,12 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     total,
     action,
     sub,
-    compact
+    compact,
+    open,
+    onToggle
   }) {
     const narrowed = typeof total === 'number' && total > count;
-    return React.createElement("div", {
-      style: {
-        display: 'flex',
-        alignItems: 'baseline',
-        gap: 8,
-        padding: sub ? '4px 4px 3px' : '6px 4px 4px',
-        paddingLeft: sub ? compact ? 12 : 14 : 4,
-        position: 'sticky',
-        top: sub ? RD_HEAD_H : 0,
-        zIndex: sub ? 1 : 2,
-        background: 'var(--sd-colour-surface-default)'
-      }
-    }, React.createElement("span", {
+    const words = React.createElement(React.Fragment, null, React.createElement("span", {
       style: {
         fontSize: sub ? 12.5 : 13,
         fontWeight: 700,
@@ -4569,7 +4872,59 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         fontWeight: 600,
         color: 'var(--sd-colour-text-secondary)'
       }
-    }, narrowed ? `${count} of ${total}` : count), action && React.createElement(React.Fragment, null, React.createElement("span", {
+    }, narrowed ? `${count} of ${total}` : count));
+    return React.createElement("div", {
+      style: {
+        display: 'flex',
+        alignItems: 'baseline',
+        gap: 8,
+        padding: sub ? '4px 4px 3px' : '6px 4px 4px',
+        paddingLeft: sub ? compact ? 12 : 14 : 4,
+        position: 'sticky',
+        top: sub ? RD_HEAD_H : 0,
+        zIndex: sub ? 1 : 2,
+        background: 'var(--sd-colour-surface-default)'
+      }
+    }, onToggle ? React.createElement("button", {
+      type: "button",
+      onClick: onToggle,
+      "aria-expanded": !!open,
+      style: {
+        all: 'unset',
+        boxSizing: 'border-box',
+        cursor: 'pointer',
+        position: 'relative',
+        display: 'flex',
+        alignItems: 'baseline',
+        gap: 8,
+        flex: 1,
+        minWidth: 0
+      }
+    }, React.createElement("span", {
+      "aria-hidden": "true",
+      style: {
+        position: 'absolute',
+        left: -4,
+        right: 0,
+        top: -10,
+        bottom: -5
+      }
+    }), React.createElement("span", {
+      "aria-hidden": "true",
+      style: {
+        alignSelf: 'center',
+        display: 'inline-flex',
+        marginLeft: -4,
+        marginRight: -2,
+        color: 'var(--sd-colour-text-secondary)',
+        transform: open ? 'rotate(90deg)' : 'none',
+        transition: 'transform .15s'
+      }
+    }, React.createElement(RdGlyph, {
+      d: RD_CHEV_D,
+      size: 16,
+      width: 2
+    })), words) : words, action && React.createElement(React.Fragment, null, !onToggle && React.createElement("span", {
       style: {
         flex: 1
       }
@@ -4607,6 +4962,30 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       state: action.state,
       size: 22
     }), action.label))));
+  }
+  function rdOpenGroups(d, g) {
+    const heads = (d.bands ? [] : d.work || []).filter(x => x.label);
+    if (!heads.length) return {
+      groupCount: 0
+    };
+    const key = g.narrow ? `${g.listKey}|${g.narrow}` : g.listKey;
+    const stored = g.openGroups[key];
+    const openSet = g.narrow ? new Set(heads.map(x => x.key).filter(k => !(stored || []).includes(k))) : new Set(stored || (g.grouping === 'attendance' ? ['here'] : []));
+    const write = open => g.setOpenGroups(m => ({
+      ...m,
+      [key]: g.narrow ? heads.map(x => x.key).filter(k => !open.has(k)) : [...open]
+    }));
+    return {
+      groupCount: heads.length,
+      groupOpen: k => openSet.has(k),
+      allGroupsOpen: heads.every(x => openSet.has(x.key)),
+      toggleGroup: k => {
+        const next = new Set(openSet);
+        if (next.has(k)) next.delete(k);else next.add(k);
+        write(next);
+      },
+      setAllGroups: open => write(new Set(open ? heads.map(x => x.key) : []))
+    };
   }
   function RdPaneShell({
     title,
@@ -4706,9 +5085,11 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     c,
     roomName,
     showRoom,
-    onPick
+    onPick,
+    aa
   }) {
     const urgent = rdIsLate(c.alert);
+    const sub = aa ? urgent ? 'var(--sd-colour-text-on-red)' : 'var(--sd-colour-text-secondary)' : urgent ? 'var(--sd-colour-feedback-error-default)' : 'var(--sd-colour-text-on-orange)';
     return React.createElement("button", {
       type: "button",
       onClick: () => onPick(c),
@@ -4745,7 +5126,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       style: {
         fontSize: 12,
         fontWeight: 600,
-        color: urgent ? 'var(--sd-colour-feedback-error-default)' : 'var(--sd-colour-text-on-orange)'
+        color: sub
       }
     }, c.alert.label, showRoom ? ` · ${roomName}` : '')), React.createElement("span", {
       style: {
@@ -4756,6 +5137,329 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       d: RD_CHEV_D,
       size: 16,
       width: 2
+    })));
+  }
+  const RD_DUE_LISTS = ['current', 'a', 'b', 'c'];
+  const rdReadDueList = v => RD_DUE_LISTS.includes(v) ? v : 'current';
+  const RD_DUE_NEXT = 3;
+  const RD_DUE_OPEN_AT = 6;
+  const rdDueKey = a => {
+    const hit = a && RD_ALERT_EVENT.find(([, re]) => re.test(a.label));
+    return hit ? hit[0] : null;
+  };
+  function RdDueLine({
+    c,
+    roomName,
+    showRoom,
+    onPick,
+    glyph = true
+  }) {
+    return React.createElement("button", {
+      type: "button",
+      onClick: () => onPick(c),
+      className: "rd-quiet",
+      style: {
+        all: 'unset',
+        boxSizing: 'border-box',
+        cursor: 'pointer',
+        display: 'flex',
+        alignItems: 'center',
+        gap: 10,
+        minHeight: 44,
+        padding: '4px 8px',
+        margin: '0 -8px',
+        borderRadius: 'var(--sd-radius-m)'
+      }
+    }, React.createElement(RdKid, {
+      c: c,
+      size: 28
+    }), React.createElement("span", {
+      style: {
+        flex: 1,
+        minWidth: 0,
+        display: 'flex',
+        alignItems: 'baseline',
+        gap: 6
+      }
+    }, React.createElement("span", {
+      style: {
+        fontSize: 14,
+        fontWeight: 600,
+        color: 'var(--sd-colour-text-primary)',
+        minWidth: 0,
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap'
+      }
+    }, c.name), showRoom && React.createElement("span", {
+      style: {
+        fontSize: 12,
+        fontWeight: 600,
+        color: 'var(--sd-colour-text-secondary)',
+        whiteSpace: 'nowrap'
+      }
+    }, roomName)), React.createElement(RdRowDue, {
+      alert: c.alert,
+      glyph: glyph
+    }));
+  }
+  function RdDueList({
+    d,
+    onPick,
+    label,
+    count,
+    rounds
+  }) {
+    const mode = d.dueList || 'current';
+    const kids = d.dueChildren;
+    const showRoom = d.scope === 'service';
+    const [open, setOpen] = useState({});
+    const toggle = (k, dflt) => setOpen(o => ({
+      ...o,
+      [k]: !(o[k] ?? dflt)
+    }));
+    const item = (c, aa) => React.createElement(RdDueItem, {
+      key: c.id,
+      c: c,
+      showRoom: showRoom,
+      roomName: d.roomNameOf(c),
+      onPick: onPick,
+      aa: aa
+    });
+    const line = (c, glyph) => React.createElement(RdDueLine, {
+      key: c.id,
+      c: c,
+      showRoom: showRoom,
+      roomName: d.roomNameOf(c),
+      onPick: onPick,
+      glyph: glyph
+    });
+    const groups = rounds ? d.dueGroups || [] : [];
+    const roundBtn = g => React.createElement("button", {
+      key: g.key,
+      type: "button",
+      onClick: () => d.openBulk(g.key, g.ids),
+      className: "fp-btn",
+      style: {
+        all: 'unset',
+        boxSizing: 'border-box',
+        cursor: 'pointer',
+        display: 'flex',
+        alignItems: 'center',
+        gap: 6,
+        height: 34,
+        padding: '0 11px',
+        borderRadius: 'var(--sd-radius-lg)',
+        fontSize: 13,
+        fontWeight: 600,
+        background: 'var(--sd-colour-surface-cyan)',
+        color: 'var(--sd-colour-action-primary)'
+      }
+    }, React.createElement(RdColourIcon, {
+      kind: g.key,
+      size: 15
+    }), g.label, " for these ", g.ids.length);
+    const roundsRow = groups.length ? React.createElement("div", {
+      style: {
+        display: 'flex',
+        flexWrap: 'wrap',
+        gap: 7,
+        marginTop: 2
+      }
+    }, groups.map(roundBtn)) : null;
+    const col = {
+      display: 'flex',
+      flexDirection: 'column',
+      gap: 8
+    };
+    if (mode === 'current') return React.createElement("div", {
+      style: col,
+      "data-duelist": mode
+    }, label, kids.map(c => item(c, false)), roundsRow);
+    const head = !count ? label : React.createElement("span", {
+      style: {
+        display: 'flex',
+        alignItems: 'baseline',
+        gap: 8
+      }
+    }, label, React.createElement("span", {
+      style: {
+        flex: 1
+      }
+    }), React.createElement("span", {
+      style: {
+        fontSize: 12,
+        fontWeight: 700,
+        color: 'var(--sd-colour-text-secondary)',
+        fontVariantNumeric: 'tabular-nums'
+      }
+    }, kids.length));
+    const chev = (on, tone) => React.createElement("span", {
+      style: {
+        color: tone,
+        display: 'inline-flex',
+        flexShrink: 0,
+        transform: on ? 'rotate(90deg)' : 'none',
+        transition: 'transform .15s'
+      }
+    }, React.createElement(RdGlyph, {
+      d: RD_CHEV_D,
+      size: 16,
+      width: 2
+    }));
+    if (mode === 'b') return React.createElement("div", {
+      style: col,
+      "data-duelist": mode
+    }, head, React.createElement("div", {
+      style: {
+        display: 'flex',
+        flexDirection: 'column'
+      }
+    }, kids.map(c => line(c, true))), roundsRow);
+    if (mode === 'c') {
+      const whole = kids.length <= RD_DUE_NEXT + 2;
+      const top = whole ? kids : kids.slice(0, RD_DUE_NEXT);
+      const rest = whole ? [] : kids.slice(RD_DUE_NEXT);
+      const lateRest = rest.filter(c => rdIsLate(c.alert));
+      const more = !!open.more;
+      return React.createElement("div", {
+        style: col,
+        "data-duelist": mode
+      }, head, top.map(c => item(c, true)), !!rest.length && React.createElement("button", {
+        type: "button",
+        "aria-expanded": more,
+        onClick: () => toggle('more', false),
+        className: "rd-quiet",
+        "aria-label": `${rest.length} more due${lateRest.length ? `, ${lateRest.length} late` : ''}`,
+        style: {
+          all: 'unset',
+          boxSizing: 'border-box',
+          cursor: 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 8,
+          minHeight: 44,
+          padding: '0 12px',
+          borderRadius: 'var(--sd-radius-lg)'
+        }
+      }, React.createElement("span", {
+        style: {
+          fontSize: 14,
+          fontWeight: 700,
+          color: 'var(--sd-colour-action-primary)'
+        }
+      }, rest.length, " more due"), !!lateRest.length && React.createElement(RdRowDue, {
+        alert: lateRest[0].alert,
+        glyph: false,
+        text: `${lateRest.length} late`
+      }), React.createElement("span", {
+        style: {
+          flex: 1
+        }
+      }), chev(more, 'var(--sd-colour-action-primary)')), more && rest.map(c => item(c, true)), roundsRow);
+    }
+    const singles = kids.filter(c => {
+      const k = rdDueKey(c.alert);
+      return !k || k === 'med';
+    });
+    const byEvent = [];
+    kids.forEach(c => {
+      const k = rdDueKey(c.alert);
+      if (!k || k === 'med') return;
+      let g = byEvent.find(x => x.key === k);
+      if (!g) {
+        g = {
+          key: k,
+          kids: []
+        };
+        byEvent.push(g);
+      }
+      g.kids.push(c);
+    });
+    const dflt = kids.length <= RD_DUE_OPEN_AT;
+    return React.createElement("div", {
+      style: col,
+      "data-duelist": mode
+    }, head, React.createElement("div", {
+      style: {
+        display: 'flex',
+        flexDirection: 'column'
+      }
+    }, singles.map(c => line(c, true)), byEvent.map(g => {
+      if (g.kids.length === 1) return line(g.kids[0], true);
+      const isOpen = open[g.key] ?? dflt;
+      const late = g.kids.filter(c => rdIsLate(c.alert)).length;
+      const ev = g.key === 'sleep' && d.roomEvents ? rdEventTitle('sleep', d.roomEvents.sleepTrack || 'Sleep') : g.kids[0].alert.label.split(' · ')[0];
+      const title = /check$/i.test(ev) ? `${ev}s` : ev;
+      const round = groups.find(x => x.key === g.key);
+      return React.createElement("div", {
+        key: g.key,
+        style: {
+          display: 'flex',
+          flexDirection: 'column'
+        }
+      }, React.createElement("button", {
+        type: "button",
+        "aria-expanded": isOpen,
+        onClick: () => toggle(g.key, dflt),
+        className: "rd-quiet",
+        "aria-label": `${title}, ${g.kids.length} due${late ? `, ${late} late` : ''}`,
+        style: {
+          all: 'unset',
+          boxSizing: 'border-box',
+          cursor: 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 10,
+          minHeight: 44,
+          padding: '4px 8px',
+          margin: '0 -8px',
+          borderRadius: 'var(--sd-radius-m)'
+        }
+      }, React.createElement("span", {
+        style: {
+          width: 28,
+          display: 'inline-flex',
+          justifyContent: 'center',
+          flexShrink: 0
+        }
+      }, React.createElement(RdColourIcon, {
+        kind: g.key,
+        size: 22
+      })), React.createElement("span", {
+        style: {
+          fontSize: 14,
+          fontWeight: 700,
+          color: 'var(--sd-colour-text-primary)',
+          whiteSpace: 'nowrap'
+        }
+      }, title), React.createElement("span", {
+        style: {
+          fontSize: 13,
+          fontWeight: 700,
+          color: 'var(--sd-colour-text-secondary)',
+          fontVariantNumeric: 'tabular-nums'
+        }
+      }, g.kids.length), React.createElement("span", {
+        style: {
+          flex: 1
+        }
+      }), React.createElement(RdRowDue, {
+        alert: g.kids[0].alert,
+        glyph: false,
+        text: late ? `${late} late` : undefined
+      }), chev(isOpen, 'var(--sd-colour-text-secondary)')), isOpen && React.createElement("div", {
+        style: {
+          display: 'flex',
+          flexDirection: 'column',
+          paddingLeft: 38
+        }
+      }, g.kids.map(c => line(c, false)), round && React.createElement("div", {
+        style: {
+          display: 'flex',
+          padding: '4px 0 8px'
+        }
+      }, roundBtn(round))));
     })));
   }
   function RdPaneBatch({
@@ -4863,7 +5567,19 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         flexDirection: 'column',
         gap: 7
       }
-    }, React.createElement(RdLabel, null, "Selected"), React.createElement("div", {
+    }, React.createElement("span", {
+      style: {
+        display: 'flex',
+        alignItems: 'center',
+        gap: 8
+      }
+    }, React.createElement(RdLabel, null, "Selected"), React.createElement("span", {
+      style: {
+        flex: 1
+      }
+    }), d.canTag && React.createElement(RdTextAction, {
+      onClick: d.openTagSheet
+    }, "Add to tag")), React.createElement("div", {
       style: {
         display: 'flex',
         flexWrap: 'wrap',
@@ -5087,49 +5803,13 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       d: RD_CHEV_D,
       size: 16,
       width: 2
-    }))))), d.dueChildren.length ? React.createElement("div", {
-      style: {
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 8
-      }
-    }, React.createElement(RdLabel, null, "Due soon"), d.dueChildren.map(c => React.createElement(RdDueItem, {
-      key: c.id,
-      c: c,
-      showRoom: d.scope === 'service',
-      roomName: d.roomNameOf(c),
-      onPick: d.openDueChild
-    })), !!(d.dueGroups || []).length && React.createElement("div", {
-      style: {
-        display: 'flex',
-        flexWrap: 'wrap',
-        gap: 7,
-        marginTop: 2
-      }
-    }, d.dueGroups.map(g => React.createElement("button", {
-      key: g.key,
-      type: "button",
-      onClick: () => d.openBulk(g.key, g.ids),
-      className: "fp-btn",
-      style: {
-        all: 'unset',
-        boxSizing: 'border-box',
-        cursor: 'pointer',
-        display: 'flex',
-        alignItems: 'center',
-        gap: 6,
-        height: 34,
-        padding: '0 11px',
-        borderRadius: 'var(--sd-radius-lg)',
-        fontSize: 13,
-        fontWeight: 600,
-        background: 'var(--sd-colour-surface-cyan)',
-        color: 'var(--sd-colour-action-primary)'
-      }
-    }, React.createElement(RdColourIcon, {
-      kind: g.key,
-      size: 15
-    }), g.label, " for these ", g.ids.length)))) : !d.ratioBreaches.length && React.createElement("div", {
+    }))))), d.dueChildren.length ? React.createElement(RdDueList, {
+      d: d,
+      onPick: d.openDueChild,
+      label: React.createElement(RdLabel, null, "Due soon"),
+      count: true,
+      rounds: true
+    }) : !d.ratioBreaches.length && React.createElement("div", {
       style: {
         display: 'flex',
         flexDirection: 'column',
@@ -5249,7 +5929,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     onCorrect,
     onProfile,
     onClose,
-    onOpenRoom
+    onOpenRoom,
+    onTag
   }) {
     const sub = 'var(--sd-colour-text-secondary)';
     const anyLocked = !can('healthEvents', scope) || !can('medication', scope);
@@ -5311,6 +5992,20 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       size: 16,
       width: 2
     }))) : null;
+    const tagLine = c.childTag || onTag ? React.createElement("span", {
+      style: {
+        display: 'flex',
+        alignItems: 'center',
+        gap: 10,
+        minHeight: 22,
+        marginTop: 2
+      }
+    }, c.childTag && React.createElement(RdTagChip, {
+      tag: c.childTag
+    }), onTag && React.createElement(RdTextAction, {
+      onClick: onTag,
+      ariaLabel: `${c.childTag ? 'Change tag' : 'Add tag'} for ${c.name.split(' ')[0]}`
+    }, c.childTag ? 'Change tag' : 'Add tag')) : null;
     const identity = React.createElement("div", {
       style: {
         display: 'flex',
@@ -5350,23 +6045,32 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       style: {
         color: 'var(--sd-colour-text-primary)'
       }
-    }, RD_AMPM(c.at))) : c.status === 'holiday' ? 'On holiday' : c.status === 'other' ? 'No booking today' : 'Absent today')));
-    const flags = c.alert || c.collect || (c.tags || []).length ? React.createElement("div", {
+    }, RD_AMPM(c.at))) : c.status === 'holiday' ? 'On holiday' : c.status === 'other' ? 'No booking today' : 'Absent today'), tagLine));
+    const hasPills = !!(c.collect || rdHealthPills(c).length);
+    const flags = c.alert || hasPills ? React.createElement("div", {
+      style: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'flex-start',
+        gap: 6
+      }
+    }, c.alert && React.createElement(RdRowDue, {
+      alert: c.alert,
+      full: true
+    }), hasPills && React.createElement("div", {
       style: {
         display: 'flex',
         gap: 6,
         flexWrap: 'wrap'
       }
-    }, c.alert && React.createElement(RdAlert, {
-      alert: c.alert
-    }), React.createElement(RdCollectPill, {
+    }, React.createElement(RdCollectPill, {
       collect: c.collect,
       full: true
-    }), (c.tags || []).map(t => React.createElement(RdTag, {
-      key: t
-    }, t))) : null;
+    }), React.createElement(RdHealthPills, {
+      c: c
+    }))) : null;
     const canCorrect = onCorrect && c.status === 'here';
-    const today = React.createElement("div", {
+    const today = readOnly === 'future' ? null : React.createElement("div", {
       style: {
         display: 'flex',
         flexDirection: 'column',
@@ -5524,7 +6228,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         lineHeight: 1.45,
         color: sub
       }
-    }, c.status === 'expected' ? `${c.name.split(' ')[0]} hasn’t been signed in yet — arrival comes first.` : c.status === 'gone' ? 'Signed out for the day.' : c.status === 'holiday' ? 'On holiday today.' : c.status === 'other' ? 'No booking today — signing in will create one.' : 'Marked absent today.'), anyLocked && React.createElement("span", {
+    }, c.status === 'expected' && readOnly === 'future' ? `${c.name.split(' ')[0]} is booked in for this day.` : c.status === 'expected' ? `${c.name.split(' ')[0]} hasn’t been signed in yet — arrival comes first.` : c.status === 'gone' ? 'Signed out for the day.' : c.status === 'holiday' ? 'On holiday today.' : c.status === 'other' ? 'No booking today — signing in will create one.' : 'Marked absent today.'), anyLocked && React.createElement("span", {
       style: {
         fontSize: 12.5,
         lineHeight: 1.45,
@@ -5566,7 +6270,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         glyph: RD_LOCK_D,
         full: true,
         muted: true
-      }, "Read-only \xB7 past day") : c.blocked ? React.createElement(RdAction, {
+      }, readOnly === 'future' ? 'Read-only · future day' : 'Read-only · past day') : c.blocked ? React.createElement(RdAction, {
         glyph: RD_LOCK_D,
         full: true,
         muted: true
@@ -6138,7 +6842,9 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       return key ? ongoing.find(m => new RegExp(key, 'i').test(m.auth || '')) || null : null;
     };
     const flags = [];
-    if (child.anaphylaxis) {
+    if (rdTone({
+      anaphylaxis: child.anaphylaxis
+    }) === 'crit') {
       const bits = rescue ? [`${rescue.auth} on file`, `${shortName(rescue.name)} travels with ${first}`, ...(/000/.test(rescue.window || '') ? ['call 000 after giving'] : [])] : ['Action plan on file'];
       flags.push({
         tone: 'crit',
@@ -6151,7 +6857,9 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     if (child.collect) {
       const k = child.collect;
       flags.push({
-        tone: 'restrict',
+        tone: rdTone({
+          collect: k
+        }),
         mark: RD_LOCK_D,
         title: `${rdCollectLabel(k)} — ${k.who} can’t collect`,
         meta: [k.note, k.courtOrder ? `Court order held by the office${k.onFile ? ` · ${k.onFile}` : ''}.` : null].filter(Boolean).join(' '),
@@ -6159,10 +6867,13 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       });
     }
     tags.forEach(t => {
-      if (child.anaphylaxis && /allerg(y|ies)/i.test(t)) return;
+      const tone = rdTone({
+        tag: t
+      }, child);
+      if (tone === 'crit') return;
       const m = medFor(t);
       flags.push({
-        tone: 'warn',
+        tone,
         mark: m ? RD_ICONS.med : RD_SHIELD_D,
         title: t,
         meta: m ? `${m.auth} on file · ${shortName(m.name)}${m.kept ? ' ' + m.kept : ''} — travels with ${first}, between rooms and on every excursion` : null,
@@ -6176,22 +6887,6 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       meta: 'Recorded on the enrolment record.',
       action: null
     });
-    if (p.special) {
-      const cut = p.special.indexOf('. ');
-      const tone = p.specialTone === 'warn' ? 'warn' : 'calm';
-      flags.push({
-        tone,
-        mark: tone === 'warn' ? RD_WARN_D : RD_NOTE_D,
-        title: cut > 0 ? p.special.slice(0, cut) : p.special,
-        meta: cut > 0 ? p.special.slice(cut + 2) : null,
-        action: null
-      });
-    }
-    const flagVariant = {
-      crit: ' ds-message-box--red',
-      warn: ' ds-message-box--orange',
-      restrict: ''
-    };
     const flagRow = (f, i) => f.tone === 'calm' ? React.createElement("div", {
       key: i,
       style: {
@@ -6232,7 +6927,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       }
     }, f.meta))) : React.createElement("div", {
       key: i,
-      className: `ds-message-box${flagVariant[f.tone]}`
+      className: `ds-message-box${RD_TONE[f.tone].box}`,
+      "data-tone": f.tone
     }, React.createElement("div", {
       className: "ds-message-box__row"
     }, React.createElement("span", {
@@ -6516,13 +7212,59 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       body: React.createElement("div", {
         style: {
           maxWidth: 660,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 8
+        }
+      }, React.createElement("span", {
+        style: {
+          display: 'flex',
+          alignItems: 'center',
+          gap: 8
+        }
+      }, React.createElement("span", {
+        style: {
+          fontSize: 12.5,
+          fontWeight: 700,
+          color: sub
+        }
+      }, "From the office"), React.createElement("span", {
+        className: "ds-pill ds-pill--xs ds-pill--grey ds-pill--minimal"
+      }, "Read-only")), React.createElement("div", {
+        style: {
           padding: '13px 15px',
           borderRadius: 'var(--sd-radius-lg)',
           background: 'var(--sd-colour-surface-grey)',
           fontSize: 14.5,
           lineHeight: 1.55
         }
-      }, p.about)
+      }, p.about), p.special && React.createElement("div", {
+        style: {
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 3,
+          padding: '12px 15px',
+          borderRadius: 'var(--sd-radius-lg)',
+          background: 'var(--sd-colour-surface-grey)'
+        }
+      }, React.createElement("span", {
+        style: {
+          fontSize: 12.5,
+          fontWeight: 700,
+          color: sub
+        }
+      }, "Special considerations"), React.createElement("span", {
+        style: {
+          fontSize: 14.5,
+          lineHeight: 1.55
+        }
+      }, p.special)), React.createElement("span", {
+        style: {
+          fontSize: 12,
+          lineHeight: 1.45,
+          color: sub
+        }
+      }, "Written in Office. To change it, ask the office."))
     }, {
       id: 'docs',
       mark: RD_ATTACH_D,
@@ -6620,11 +7362,6 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       });
       setActive(id);
     };
-    const RD_NAV_MARK = {
-      crit: 'critical',
-      warn: 'needs attention',
-      restrict: 'collection restricted'
-    };
     const navRow = s => {
       const on = active === s.id;
       return React.createElement("button", {
@@ -6633,7 +7370,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         className: "fp-btn",
         onClick: () => jump(s.id),
         "aria-current": on ? 'true' : undefined,
-        "aria-label": `${s.nav}${s.dot ? `, ${RD_NAV_MARK[s.dot]}` : ''}`,
+        "aria-label": `${s.nav}${s.dot ? `, ${RD_TONE[s.dot].nav}` : ''}`,
         style: {
           all: 'unset',
           boxSizing: 'border-box',
@@ -6670,10 +7407,11 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         }
       }, s.nav), s.dot === 'crit' && React.createElement("span", {
         "aria-hidden": "true",
+        "data-tone": "crit",
         style: {
           flexShrink: 0,
           display: 'inline-flex',
-          color: 'var(--sd-colour-feedback-error-default)'
+          color: RD_TONE.crit.mark
         }
       }, React.createElement(RdGlyph, {
         d: RD_SHIELD_D,
@@ -6681,12 +7419,13 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         width: 2.4
       })), (s.dot === 'warn' || s.dot === 'restrict') && React.createElement("span", {
         "aria-hidden": "true",
+        "data-tone": s.dot,
         style: {
           width: 7,
           height: 7,
           flexShrink: 0,
           borderRadius: 'var(--sd-radius-full)',
-          background: s.dot === 'warn' ? 'var(--sd-colour-feedback-warning-default)' : 'var(--sd-colour-text-secondary)'
+          background: RD_TONE[s.dot].mark
         }
       }), s.badge != null && React.createElement("span", {
         style: {
@@ -6699,6 +7438,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     };
     const crit = flags.find(f => f.tone === 'crit') || null;
     const critStrip = crit && React.createElement("div", {
+      "data-tone": "crit",
       style: {
         flexShrink: 0,
         display: 'flex',
@@ -6714,7 +7454,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       }
     }, React.createElement("span", {
       style: {
-        color: 'var(--sd-colour-feedback-error-default)',
+        color: RD_TONE.crit.mark,
         flexShrink: 0,
         display: 'inline-flex'
       }
@@ -7224,6 +7964,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         roomName: d.roomNameOf(it),
         compact: compact,
         rowDetail: d.rowDetail,
+        hideTag: d.grouping === RD_TAG_GROUPING,
         onOpen: () => d.tickedCount ? d.toggleTick(it) : d.openChild(it),
         onLongPress: d.longPressChild
       });
@@ -7262,19 +8003,24 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
           scope: d.scope
         });
       }
-      return d.work.length ? d.work.map(g => React.createElement("section", {
-        key: g.key,
-        style: {
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 6
-        }
-      }, g.label && React.createElement(RdGroupHead, {
-        label: g.label,
-        count: g.items.length,
-        action: d.groupAction && d.groupAction(g),
-        compact: compact
-      }), rows(g.items))) : React.createElement(RdEmpty, {
+      return d.work.length ? d.work.map(g => {
+        const open = !g.label || !d.groupOpen || d.groupOpen(g.key);
+        return React.createElement("section", {
+          key: g.key,
+          style: {
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 6
+          }
+        }, g.label && React.createElement(RdGroupHead, {
+          label: g.label,
+          count: g.items.length,
+          action: d.groupAction && d.groupAction(g),
+          compact: compact,
+          open: open,
+          onToggle: d.toggleGroup ? () => d.toggleGroup(g.key) : undefined
+        }), open && rows(g.items));
+      }) : React.createElement(RdEmpty, {
         query: d.query,
         scope: d.scope
       });
@@ -7306,7 +8052,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       onCorrect: d.scope === 'room' && !d.readOnly && d.canAmend ? entry => d.openCorrect(d.selected, entry) : undefined,
       onProfile: () => d.openProfile(d.selected),
       onClose: () => d.openChild(null),
-      onOpenRoom: () => d.goRoom(d.selected.room)
+      onOpenRoom: () => d.goRoom(d.selected.room),
+      onTag: d.canTagOne ? () => d.openTagOne(d.selected) : undefined
     }) : d.selectedRoom ? React.createElement(RdPaneRoom, {
       r: d.selectedRoom,
       showStaff: d.showStaff,
@@ -7978,7 +8725,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       style: {
         color: active ? 'var(--sd-colour-action-primary)' : 'var(--sd-colour-text-secondary)'
       }
-    }, label), React.createElement("b", {
+    }, label), value != null && value !== '' && React.createElement("b", {
       style: {
         fontWeight: 700
       }
@@ -8025,10 +8772,16 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     onChange,
     counts,
     plain,
-    wide
+    wide,
+    defaultKey,
+    offLabel
   }) {
-    const current = options.find(o => o.key === value) || options[0];
-    const active = !plain && value !== options[0].key;
+    const found = options.find(o => o.key === value);
+    const current = found || (offLabel ? {
+      key: value,
+      label: offLabel
+    } : options[0]);
+    const active = !plain && value !== (defaultKey || options[0].key);
     return React.createElement(RdDropdownShell, {
       label: label,
       value: current.label,
@@ -8077,7 +8830,13 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
           flex: 1,
           minWidth: 0
         }
-      }, o.label), counts && counts[o.key] !== undefined && React.createElement("span", {
+      }, o.label), defaultKey === o.key && React.createElement("span", {
+        style: {
+          fontSize: 12,
+          fontWeight: 600,
+          color: 'var(--sd-colour-text-secondary)'
+        }
+      }, "Default"), counts && counts[o.key] !== undefined && React.createElement("span", {
         style: {
           fontWeight: 700,
           color: 'var(--sd-colour-text-secondary)'
@@ -8146,11 +8905,13 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       if (next.length) out[f.key] = next;else delete out[f.key];
       return out;
     });
+    const value = !chips.length ? '' : chips.length === 1 ? chips[0].value.label : `${chips.length} filters`;
     return React.createElement(RdDropdownShell, {
       wide: true,
       active: !!chips.length,
-      label: "Filter",
-      value: chips.length ? `${chips.length} active` : 'Everyone'
+      label: chips.length ? 'Show only' : 'Show only…',
+      value: value,
+      ariaLabel: chips.length ? `Show only — ${value}` : 'Show only… — everyone is shown'
     }, () => RD_FACETS.map(f => React.createElement("div", {
       key: f.key
     }, React.createElement("div", {
@@ -8346,16 +9107,35 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       on: d.facets,
       setOn: d.setFacets
     }), d.showGrouping && React.createElement(React.Fragment, null, React.createElement(RdDropdown, {
-      label: "Group",
+      label: "Sort into",
       value: d.grouping,
       options: d.groupingOptions,
-      onChange: d.setGrouping
+      onChange: d.setGrouping,
+      defaultKey: RD_GROUP_DEFAULT,
+      offLabel: d.grouping === RD_UNGROUPED ? RD_GROUP_OFF_LABEL : (RD_GROUPINGS.find(g => g.key === d.grouping) || {}).label
     }), React.createElement(RdDropdown, {
-      label: "Sort",
+      label: "A\u2013Z",
       value: d.sortKey,
       options: d.sortOptions,
       onChange: d.setSortKey
-    })), !compact && React.createElement("span", {
+    }), d.groupCount > 1 && React.createElement("button", {
+      type: "button",
+      onClick: () => d.setAllGroups(!d.allGroupsOpen),
+      style: {
+        all: 'unset',
+        boxSizing: 'border-box',
+        cursor: 'pointer',
+        display: 'inline-flex',
+        alignItems: 'center',
+        height: 40,
+        padding: '0 6px',
+        flexShrink: 0,
+        whiteSpace: 'nowrap',
+        fontSize: 13,
+        fontWeight: 700,
+        color: 'var(--sd-colour-action-primary)'
+      }
+    }, d.allGroupsOpen ? 'Collapse all' : 'Expand all')), !compact && React.createElement("span", {
       style: {
         flex: 1,
         minWidth: 0
@@ -8487,8 +9267,19 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     const single = people.length === 1;
     const advancedOn = !!(advanced && cfg.advanced);
     const [roomTemp, setRoomTemp] = useState('');
-    const [shared, setShared] = useState(eventKey === 'sleep' ? sleepTrack || cfg.shared && cfg.shared.value : cfg.shared && (cfg.shared.options || cfg.shared.select) ? cfg.shared.value : null);
-    const [trackOpen, setTrackOpen] = useState(false);
+    const [shared, setShared] = useState(cfg.shared && (cfg.shared.options || cfg.shared.select) ? cfg.shared.value : null);
+    const menuSlot = k => (cfg.shared && cfg.shared.select && cfg.shared.select.find(o => o.key === k) || {}).slot;
+    const [otherMeal, setOtherMeal] = useState('');
+    const [otherSlot, setOtherSlot] = useState(menuSlot(cfg.shared && cfg.shared.value) || 'lunch');
+    const isOther = !!(cfg.shared && cfg.shared.other && shared === cfg.shared.other);
+    const pickMenu = k => {
+      const s = menuSlot(k);
+      if (s) setOtherSlot(s);
+      setShared(k);
+    };
+    const [roundNote, setRoundNote] = useState('');
+    const roundNoteOn = !single && !cfg.attendance;
+    const noteFor = r => [roundNoteOn ? roundNote.trim() : '', (r.note || '').trim()].filter(Boolean).join(' · ') || null;
     const blockedReason = c => {
       if (cfg.attendance === 'in') {
         return c.status === 'expected' || c.status === 'other' ? null : c.status === 'here' ? 'Already signed in' : c.status === 'gone' ? 'Already signed out' : c.status === 'holiday' ? 'On holiday' : 'Marked absent';
@@ -8529,8 +9320,10 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     const needsReason = r => isNotApplied(r.value);
     const noReason = included.filter(r => needsReason(r) && (r.value === pc.notApplied || !(r.note || '').trim()));
     const noWho = included.filter(r => r.named && !r.value);
+    const noMeal = isOther && !otherMeal.trim();
     const [result, setResult] = useState(null);
     const sharedLabel = () => {
+      if (isOther) return otherMeal.trim() ? `${(RD_MEAL_SLOTS.find(s => s.key === otherSlot) || {}).label} · ${otherMeal.trim()}` : null;
       if (cfg.shared && cfg.shared.select) return (cfg.shared.select.find(o => o.key === shared) || {}).label || null;
       if (cfg.shared && cfg.shared.options) return shared || null;
       return null;
@@ -8539,14 +9332,15 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       const m = {};
       const ctx = sharedLabel();
       rows.filter(r => ids.includes(r.id)).forEach(r => {
+        const child = people.find(p => p.id === r.id);
+        const sleepType = eventKey === 'sleep' && child ? rdSleepType(rdLastSleepType(child), r.value, sleepTrack || 'Sleep') : null;
         m[r.id] = {
           at: r.at || time,
-          type: eventKey === 'sleep' ? (RD_SLEEP_TYPE[shared] || {})[r.value] || null : null,
-          roundType: eventKey === 'sleep' ? RD_SLEEP_ROUND[shared] || null : null,
+          type: sleepType,
           detail: cfg.perChild && cfg.perChild.multi ? rdMultiLabel(cfg.perChild.options, r.value) : r.value || null,
           cats: cfg.perChild && cfg.perChild.multi ? rdMultiCats(cfg.perChild.options, r.value) : null,
-          note: (r.note || '').trim() || null,
-          context: ctx,
+          note: noteFor(r),
+          context: eventKey === 'sleep' ? sleepType && sleepType.startsWith('rest_') ? 'Rest' : 'Sleep' : ctx,
           checks: r.checks || null,
           roomTemp: (roomTemp || '').trim() || null
         };
@@ -8667,7 +9461,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         fontSize: 19,
         fontWeight: 700
       }
-    }, eventKey === 'sleep' ? rdEventTitle('sleep', shared) : cfg.label), React.createElement("span", {
+    }, eventKey === 'sleep' ? rdEventTitle('sleep', sleepTrack) : cfg.label), React.createElement("span", {
       style: {
         fontSize: 13,
         fontWeight: 600,
@@ -8696,53 +9490,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         gap: 18,
         flexWrap: 'wrap'
       }
-    }, eventKey === 'sleep' && cfg.shared && cfg.shared.options && React.createElement("span", {
-      style: {
-        display: 'flex',
-        alignItems: 'center',
-        gap: 10,
-        flexWrap: 'wrap'
-      }
-    }, trackOpen ? React.createElement(React.Fragment, null, React.createElement("span", {
-      style: {
-        fontSize: 13,
-        fontWeight: 600,
-        color: 'var(--sd-colour-text-secondary)'
-      }
-    }, "This round is"), React.createElement(RdSegmented, {
-      options: cfg.shared.options,
-      value: shared,
-      onChange: applyShared,
-      ariaLabel: cfg.shared.label
-    })) : React.createElement(React.Fragment, null, React.createElement("span", {
-      style: {
-        fontSize: 13,
-        fontWeight: 600,
-        color: 'var(--sd-colour-text-secondary)'
-      }
-    }, shared === 'Rest' ? 'A rest round' : 'A sleep round', React.createElement("span", {
-      style: {
-        opacity: 0.75
-      }
-    }, " \xB7 this room's setting")), React.createElement("button", {
-      type: "button",
-      onClick: () => setTrackOpen(true),
-      className: "fp-btn",
-      style: {
-        all: 'unset',
-        boxSizing: 'border-box',
-        cursor: 'pointer',
-        display: 'inline-flex',
-        alignItems: 'center',
-        height: 30,
-        padding: '0 12px',
-        borderRadius: 'var(--sd-radius-full)',
-        border: '1px solid var(--sd-colour-border-default)',
-        fontSize: 12.5,
-        fontWeight: 700,
-        color: 'var(--sd-colour-action-primary)'
-      }
-    }, "Change for this round"))), eventKey !== 'sleep' && cfg.shared && cfg.shared.options && (!single || !cfg.shared.carry) && React.createElement("span", {
+    }, cfg.shared && cfg.shared.options && (!single || !cfg.shared.carry) && React.createElement("span", {
       style: {
         display: 'flex',
         alignItems: 'center',
@@ -8766,16 +9514,52 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       style: {
         display: 'flex',
         flexDirection: 'column',
-        gap: 7
+        gap: 7,
+        minWidth: 0,
+        maxWidth: '100%'
       }
-    }, React.createElement(RdLabel, null, cfg.shared.label), React.createElement(RdDropdown, {
+    }, React.createElement(RdLabel, null, cfg.shared.label), React.createElement("span", {
+      style: {
+        display: 'flex',
+        alignItems: 'center',
+        gap: 8,
+        flexWrap: 'wrap',
+        minWidth: 0
+      }
+    }, React.createElement(RdDropdown, {
       label: "",
       plain: true,
       wide: true,
       value: shared,
       options: cfg.shared.select,
-      onChange: setShared
-    })), cfg.warning && React.createElement("div", {
+      onChange: pickMenu
+    }), isOther && React.createElement(React.Fragment, null, React.createElement(RdDropdown, {
+      label: "Meal",
+      plain: true,
+      value: otherSlot,
+      options: RD_MEAL_SLOTS,
+      onChange: setOtherSlot
+    }), React.createElement("input", {
+      className: "fp-input",
+      autoFocus: true,
+      type: "text",
+      value: otherMeal,
+      onChange: e => setOtherMeal(e.target.value),
+      "aria-label": "What was served",
+      placeholder: "What was served",
+      style: {
+        all: 'unset',
+        boxSizing: 'border-box',
+        width: 220,
+        maxWidth: '100%',
+        height: 40,
+        padding: '0 14px',
+        borderRadius: 'var(--sd-radius-lg)',
+        border: '1px solid var(--sd-colour-border-default)',
+        fontFamily: 'var(--sd-font-family)',
+        fontSize: 14
+      }
+    })))), cfg.warning && React.createElement("div", {
       style: {
         display: 'flex',
         gap: 10,
@@ -8844,7 +9628,31 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         flexDirection: 'column',
         gap: 6
       }
-    }, rows.map(r => {
+    }, roundNoteOn && React.createElement("label", {
+      style: {
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 6,
+        paddingBottom: 6
+      }
+    }, React.createElement(RdLabel, null, "Note for everyone"), React.createElement("input", {
+      className: "fp-input",
+      type: "text",
+      value: roundNote,
+      onChange: e => setRoundNote(e.target.value),
+      placeholder: "Optional",
+      style: {
+        all: 'unset',
+        boxSizing: 'border-box',
+        width: '100%',
+        height: 40,
+        padding: '0 14px',
+        borderRadius: 'var(--sd-radius-lg)',
+        border: '1px solid var(--sd-colour-border-default)',
+        fontFamily: 'var(--sd-font-family)',
+        fontSize: 14
+      }
+    })), rows.map(r => {
       const c = people.find(x => x.id === r.id);
       const blocked = blockedReason(c);
       const off = r.excluded || !!blocked;
@@ -9144,7 +9952,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         }, React.createElement(RdGlyph, {
           d: RD_CLOSE_D,
           size: 17
-        }))), (cfg.attendance === 'out' && c.collect || !!(c.tags || []).length) && React.createElement("span", {
+        }))), (cfg.attendance === 'out' && c.collect || !!rdHealthPills(c).length) && React.createElement("span", {
           style: {
             flexBasis: '100%',
             display: 'flex',
@@ -9156,9 +9964,9 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         }, cfg.attendance === 'out' && React.createElement(RdCollectPill, {
           collect: c.collect,
           full: true
-        }), (c.tags || []).map(t => React.createElement(RdTag, {
-          key: t
-        }, t))), needsReason(r) && !off && React.createElement("span", {
+        }), React.createElement(RdHealthPills, {
+          c: c
+        })), needsReason(r) && !off && React.createElement("span", {
           style: {
             flexBasis: '100%',
             display: 'flex',
@@ -9182,7 +9990,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
           autoFocus: !needsReason(r),
           type: "text",
           value: r.note,
-          placeholder: needsReason(r) ? 'Reason — required, saved with this child’s time' : 'Note for this child',
+          placeholder: needsReason(r) ? 'Reason — required, saved with this child’s time' : roundNoteOn && roundNote.trim() ? 'Adds to the note for everyone' : 'Note for this child',
           "aria-required": needsReason(r) || undefined,
           onChange: e => set(r.id, {
             note: e.target.value
@@ -9363,11 +10171,68 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       key: "confirm",
       primary: true,
       glyph: RD_TICK_D,
-      muted: !included.length || !!missing.length || !!noReason.length || !!noWho.length,
-      onClick: included.length && !missing.length && !noReason.length && !noWho.length ? doConfirm : undefined
-    }, !included.length ? 'Nobody to log for' : missing.length ? React.createElement(React.Fragment, null, "Pick what was found \xB7 ", missing.length, " left") : noReason.length ? React.createElement(React.Fragment, null, "Say why not applied \xB7 ", noReason.length, " left") : noWho.length ? React.createElement(React.Fragment, null, "Say who collected \xB7 ", noWho.length, " left") : React.createElement(React.Fragment, null, included.some(needsReason) ? 'Recorded' : cfg.verb, " for ", single ? people[0].name.split(' ')[0] : included.length))])));
+      muted: !included.length || noMeal || !!missing.length || !!noReason.length || !!noWho.length,
+      onClick: included.length && !noMeal && !missing.length && !noReason.length && !noWho.length ? doConfirm : undefined
+    }, !included.length ? 'Nobody to log for' : noMeal ? 'Say what was served' : missing.length ? React.createElement(React.Fragment, null, "Pick what was found \xB7 ", missing.length, " left") : noReason.length ? React.createElement(React.Fragment, null, "Say why not applied \xB7 ", noReason.length, " left") : noWho.length ? React.createElement(React.Fragment, null, "Say who collected \xB7 ", noWho.length, " left") : React.createElement(React.Fragment, null, included.some(needsReason) ? 'Recorded' : cfg.verb, " for ", single ? people[0].name.split(' ')[0] : included.length))])));
   }
   const RD_MED_ROUTES = ['Oral', 'Inhaled', 'Topical', 'Other'];
+  const RD_MED_REFERENCE = ['Adrenaline auto-injector', 'Amoxicillin', 'Cetirizine', 'Hydrocortisone cream', 'Ibuprofen', 'Paracetamol', 'Salbutamol'];
+  const RD_MED_OTHER = 'other';
+  function RdMedPicker({
+    value,
+    options,
+    onChange
+  }) {
+    const current = options.find(o => o.key === value);
+    return React.createElement(RdDropdownShell, {
+      label: current ? '' : 'Choose a medication',
+      value: current ? current.label : '',
+      ariaLabel: `Medication — ${current ? current.label : 'none chosen'}`
+    }, close => options.map(o => {
+      const on = o.key === value;
+      return React.createElement("button", {
+        key: o.key,
+        type: "button",
+        role: "menuitemradio",
+        "aria-checked": on,
+        onClick: () => {
+          onChange(o.key);
+          close();
+        },
+        className: "fp-row",
+        style: {
+          all: 'unset',
+          boxSizing: 'border-box',
+          cursor: 'pointer',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 9,
+          minHeight: 40,
+          padding: '0 11px',
+          borderRadius: 'var(--sd-radius-m)',
+          fontSize: 14,
+          fontWeight: on ? 700 : 500,
+          background: on ? 'var(--sd-colour-surface-cyan)' : 'transparent',
+          color: on ? 'var(--sd-colour-action-primary)' : 'var(--sd-colour-text-primary)'
+        }
+      }, React.createElement("span", {
+        style: {
+          width: 16,
+          flexShrink: 0,
+          display: 'inline-flex'
+        }
+      }, on && React.createElement(RdGlyph, {
+        d: RD_TICK_D,
+        size: 15,
+        width: 2.6
+      })), React.createElement("span", {
+        style: {
+          flex: 1,
+          minWidth: 0
+        }
+      }, o.label));
+    }));
+  }
   const RD_MED_EXPIRY_SOON = 21;
   function rdMedExpiry(med) {
     if (!med || typeof med.expiresIn !== 'number') return null;
@@ -9400,9 +10265,22 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     onDismiss
   }) {
     const meds = child.meds || [];
-    const onFile = meds.length > 0;
     const D0 = initialDraft || {};
-    const [medName, setMedName] = useState(D0.medName || meds[0] && meds[0].name || null);
+    const [pick, setPick] = useState(D0.pick !== undefined ? D0.pick : meds[0] ? `auth:${meds[0].name}` : null);
+    const authMed = pick ? meds.find(m => `auth:${m.name}` === pick) || null : null;
+    const refName = pick && pick.startsWith('ref:') ? pick.slice(4) : null;
+    const onFile = !!authMed;
+    const onFileNames = meds.map(m => m.name.toLowerCase());
+    const medOptions = [...meds.map(m => ({
+      key: `auth:${m.name}`,
+      label: `${m.name} · on file`
+    })), ...RD_MED_REFERENCE.filter(n => !onFileNames.includes(n.toLowerCase())).map(n => ({
+      key: `ref:${n}`,
+      label: n
+    })), {
+      key: RD_MED_OTHER,
+      label: 'Other…'
+    }];
     const [freeName, setFreeName] = useState(D0.freeName || '');
     const [freeDose, setFreeDose] = useState(D0.freeDose || '');
     const [route, setRoute] = useState(D0.route || 'Oral');
@@ -9415,7 +10293,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     const [nextAt, setNextAt] = useState(D0.nextAt || '');
     const [nextWhen, setNextWhen] = useState(D0.nextWhen || '');
     const draft = () => ({
-      medName,
+      pick,
       freeName,
       freeDose,
       route,
@@ -9428,7 +10306,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       nextAt,
       nextWhen
     });
-    const hasContent = () => !!(checker || note.trim() || freeName.trim() || freeDose.trim() || partAmount.trim());
+    const hasContent = () => !!(checker || note.trim() || freeName.trim() || freeDose.trim() || partAmount.trim() || pick && !authMed);
     const dismiss = () => onDismiss && hasContent() ? onDismiss(draft()) : onClose();
     useEffect(() => {
       const esc = e => {
@@ -9436,9 +10314,9 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       };
       window.addEventListener('keydown', esc);
       return () => window.removeEventListener('keydown', esc);
-    }, [medName, freeName, freeDose, route, outcome, partAmount, time, checker, note, nextMode, nextAt, nextWhen]);
-    const med = meds.find(m => m.name === medName) || meds[0];
-    const givenName = onFile ? med && med.name : freeName.trim();
+    }, [pick, freeName, freeDose, route, outcome, partAmount, time, checker, note, nextMode, nextAt, nextWhen]);
+    const med = authMed;
+    const givenName = onFile ? med.name : refName || (pick === RD_MED_OTHER ? freeName.trim() : '');
     const givenDose = onFile ? med && med.dose : freeDose.trim();
     const expiry = onFile ? rdMedExpiry(med) : null;
     const ready = !!givenName && !!outcome && !!checker && (outcome !== 'Part dose' || !!partAmount.trim());
@@ -9558,18 +10436,42 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     }, React.createElement(RdGlyph, {
       d: RD_CLOCK_D,
       size: 14
-    }), "Draft restored \u2014 you dismissed this without saving."), onFile ? React.createElement(React.Fragment, null, meds.length > 1 && React.createElement("span", {
+    }), "Draft restored \u2014 you dismissed this without saving."), React.createElement("span", {
       style: {
         display: 'flex',
         flexDirection: 'column',
         gap: 7
       }
-    }, React.createElement(RdLabel, null, "Which medication"), React.createElement(RdSegmented, {
-      options: meds.map(m => m.name),
-      value: medName,
-      onChange: setMedName,
-      ariaLabel: "Which medication"
-    })), React.createElement("div", {
+    }, React.createElement(RdLabel, null, "Medication"), React.createElement(RdMedPicker, {
+      value: pick,
+      options: medOptions,
+      onChange: setPick
+    }), pick === RD_MED_OTHER && React.createElement("input", {
+      className: "fp-input",
+      autoFocus: true,
+      type: "text",
+      value: freeName,
+      onChange: e => setFreeName(e.target.value),
+      "aria-label": "Medication name",
+      placeholder: "Name as it appears on the label",
+      style: {
+        all: 'unset',
+        boxSizing: 'border-box',
+        width: '100%',
+        height: 44,
+        padding: '0 14px',
+        borderRadius: 'var(--sd-radius-lg)',
+        border: '1px solid var(--sd-colour-border-default)',
+        fontFamily: 'var(--sd-font-family)',
+        fontSize: 14.5
+      }
+    }), !givenName && React.createElement("span", {
+      style: {
+        fontSize: 12.5,
+        color: 'var(--sd-colour-feedback-error-default)',
+        fontWeight: 600
+      }
+    }, "Needed before this can be saved.")), onFile ? React.createElement(React.Fragment, null, React.createElement("div", {
       style: {
         display: 'flex',
         flexDirection: 'column',
@@ -9731,44 +10633,14 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         fontWeight: 700,
         color: 'var(--sd-colour-text-on-orange)'
       }
-    }, "No authorisation on file in Office"), React.createElement("span", {
+    }, meds.length ? `No authorisation on file for ${givenName || 'this medication'}` : 'No authorisation on file in Office'), React.createElement("span", {
       style: {
         fontSize: 12.5,
         lineHeight: 1.45,
         fontWeight: 600,
         color: 'var(--sd-colour-text-on-orange)'
       }
-    }, "Record the dose anyway \u2014 the service may hold a paper form. The record will be flagged for follow-up so the authorisation gets onto ", child.name.split(' ')[0], "\u2019s file."))), React.createElement("label", {
-      style: {
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 6
-      }
-    }, React.createElement(RdLabel, null, "Medication given"), React.createElement("input", {
-      className: "fp-input",
-      autoFocus: true,
-      type: "text",
-      value: freeName,
-      onChange: e => setFreeName(e.target.value),
-      placeholder: "Name as it appears on the label",
-      style: {
-        all: 'unset',
-        boxSizing: 'border-box',
-        width: '100%',
-        height: 44,
-        padding: '0 14px',
-        borderRadius: 'var(--sd-radius-lg)',
-        border: '1px solid var(--sd-colour-border-default)',
-        fontFamily: 'var(--sd-font-family)',
-        fontSize: 14.5
-      }
-    }), !freeName.trim() && React.createElement("span", {
-      style: {
-        fontSize: 12.5,
-        color: 'var(--sd-colour-feedback-error-default)',
-        fontWeight: 600
-      }
-    }, "Needed before this can be saved.")), React.createElement("div", {
+    }, "Record the dose anyway \u2014 the service may hold a paper form. The record will be flagged for follow-up so the authorisation gets onto ", child.name.split(' ')[0], "\u2019s file."))), React.createElement("div", {
       style: {
         display: 'flex',
         gap: 16,
@@ -11095,61 +11967,41 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       }, "Save amendment"))))
     );
   }
-  const RD_HC_REASONS = [{
-    key: 'signedout',
-    label: 'Collected — sign-out not logged yet',
-    hint: 'Who collected them, and roughly when'
-  }, {
-    key: 'room',
-    label: 'In another room',
-    hint: 'Which room, and who has them'
-  }, {
-    key: 'toilet',
-    label: 'Toilet or nappy change',
-    hint: 'Which educator is with them'
-  }, {
-    key: 'outside',
-    label: 'Outside',
-    hint: 'Where, and who is supervising'
-  }, {
-    key: 'absent',
-    label: 'Absent — not logged yet',
-    hint: 'Who told you, and when'
-  }];
-  const rdHcHint = key => (RD_HC_REASONS.find(x => x.key === key) || {}).hint || 'Anything worth putting on the record';
   function RdHeadcountSheet({
     expected,
     roomName,
     scopeLabel = 'to this room',
     present = null,
+    booked: bookedNow = [],
+    signedInNow = () => false,
+    onSignIn,
     showRoom,
+    grouping = null,
     history = [],
+    count = null,
+    acting = '',
+    onOpenCount,
     onClose,
     onConfirm,
-    onDiscrepancy,
-    onEscalate
+    onDiscrepancy
   }) {
-    const roster = Array.isArray(present) ? present : [];
-    const [seen, setSeen] = useState(() => new Set());
+    const roster = React.useMemo(() => Array.isArray(present) ? present : [], []);
+    const booked = React.useMemo(() => bookedNow, []);
+    const initial = React.useMemo(() => count ? new Map(count.children.map(x => [x.id, x])) : null, []);
+    const hc = React.useMemo(() => rdHcSections(roster, grouping), []);
+    const [closed, setClosed] = useState(() => new Set([...(grouping === 'room' || roster.length > RD_HC_COLLAPSE_AT ? hc.groups.map(g => g.key) : []), RD_HC_NSI]));
+    const anyOpen = hc.groups.some(g => !closed.has(g.key));
+    const [seen, setSeen] = useState(() => new Set(count ? count.children.filter(x => x.counted).map(x => x.id) : []));
     const [stage, setStage] = useState('count');
-    const [told, setTold] = useState(null);
     const [showLog, setShowLog] = useState(false);
-    const [why, setWhy] = useState({});
-    const setReason = (id, patch) => setWhy(w => ({
-      ...w,
-      [id]: {
-        ...(w[id] || {}),
-        ...patch
-      }
-    }));
-    const reasonText = p => {
-      const r = why[p.id] || {};
-      const label = (RD_HC_REASONS.find(x => x.key === r.why) || {}).label;
-      return [label, (r.note || '').trim()].filter(Boolean).join(' — ') || null;
-    };
-    const toggle = id => setSeen(s => {
+    const toggle = React.useCallback(id => setSeen(s => {
       const n = new Set(s);
       n.has(id) ? n.delete(id) : n.add(id);
+      return n;
+    }), []);
+    const toggleSection = key => setClosed(s => {
+      const n = new Set(s);
+      n.has(key) ? n.delete(key) : n.add(key);
       return n;
     });
     useEffect(() => {
@@ -11162,78 +12014,148 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     const total = roster.length || expected;
     const missing = roster.filter(p => !seen.has(p.id));
     const allSeen = roster.length > 0 && missing.length === 0;
-    const backToCount = () => {
-      setStage('count');
-      setTold(null);
+    const nSeen = roster.length - missing.length;
+    const backToCount = () => setStage('count');
+    const first = n => String(n || '').split(' ')[0];
+    const stampOf = (id, on) => {
+      const was = initial && initial.get(id);
+      return !was || !!was.counted !== on ? {
+        by: acting,
+        at: RD_NOW,
+        changed: true
+      } : {
+        by: was.by,
+        at: was.at,
+        changed: false
+      };
     };
-    const row = p => {
+    const noteOf = (id, on) => {
+      if (!count) return null;
+      const s = stampOf(id, on);
+      if (on) return `${first(s.by)} ${s.at}`;
+      return s.changed || s.by !== count.by || s.at !== count.at ? `Unticked · ${first(s.by)} ${s.at}` : null;
+    };
+    const dirty = !!count && count.children.some(x => !!x.counted !== seen.has(x.id));
+    const stamp = (p, signedIn) => {
       const on = seen.has(p.id);
-      const gone = stage === 'missing' && !on;
-      return React.createElement("button", {
+      const s = stampOf(p.id, on);
+      return {
+        id: p.id,
+        name: p.name,
+        room: p.roomKey || p.room,
+        counted: on,
+        signedIn,
+        by: s.by,
+        at: s.at
+      };
+    };
+    const record = () => [...roster.map(p => stamp(p, true)), ...booked.map(p => stamp(p, false)), ...(count ? count.children.filter(x => !roster.some(p => p.id === x.id) && !booked.some(p => p.id === x.id)) : [])];
+    const row = (p, showTag = true, roomChip = true) => {
+      const on = seen.has(p.id);
+      return React.createElement(RdHcRow, {
         key: p.id,
+        p: p,
+        on: on,
+        gone: stage === 'missing' && !on,
+        showRoom: showRoom && roomChip,
+        showTag: showTag,
+        note: noteOf(p.id, on),
+        onToggle: toggle
+      });
+    };
+    const bookedRow = p => {
+      const on = seen.has(p.id);
+      return React.createElement(RdHcRow, {
+        key: p.id,
+        p: p,
+        on: on,
+        showRoom: showRoom,
+        showTag: true,
+        note: noteOf(p.id, on),
+        onToggle: toggle,
+        hint: on && !signedInNow(p.id),
+        onSignIn: onSignIn
+      });
+    };
+    const head = (key, label, tally, done) => {
+      const open = !closed.has(key);
+      return React.createElement("button", {
         type: "button",
-        onClick: () => toggle(p.id),
-        "aria-pressed": on,
-        className: "fp-row",
+        onClick: () => toggleSection(key),
+        "aria-expanded": open,
         style: {
           all: 'unset',
           boxSizing: 'border-box',
           cursor: 'pointer',
           display: 'flex',
           alignItems: 'center',
-          gap: 11,
-          padding: '9px 12px',
-          borderRadius: 'var(--sd-radius-lg)',
-          border: '1px solid ' + (on ? 'var(--sd-colour-action-primary)' : gone ? 'var(--sd-colour-feedback-error-default)' : 'var(--sd-colour-border-default)'),
-          background: on ? 'var(--sd-colour-surface-cyan)' : gone ? 'var(--sd-colour-surface-red)' : 'var(--sd-colour-surface-default)'
+          gap: 8,
+          width: '100%',
+          minHeight: 40,
+          padding: '0 4px',
+          position: 'sticky',
+          top: 0,
+          zIndex: 2,
+          background: 'var(--sd-colour-surface-default)'
         }
       }, React.createElement("span", {
-        "aria-hidden": "true",
         style: {
-          width: 24,
-          height: 24,
-          borderRadius: 'var(--sd-radius-sm)',
-          flexShrink: 0,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          background: on ? 'var(--sd-colour-action-primary)' : 'transparent',
-          border: on ? 'none' : '2px solid var(--sd-colour-border-strong)',
-          color: '#fff'
-        }
-      }, on && React.createElement(RdGlyph, {
-        d: RD_TICK_D,
-        size: 14,
-        width: 3
-      })), React.createElement(RdKid, {
-        c: p,
-        size: 34
-      }), React.createElement("span", {
-        style: {
-          fontSize: 14.5,
+          fontSize: 13,
           fontWeight: 700,
-          flex: 1,
-          minWidth: 0,
+          letterSpacing: '0.02em',
           color: 'var(--sd-colour-text-primary)'
         }
-      }, p.name), showRoom && p.room && React.createElement(RdRoomChip, {
-        name: p.room
-      }), gone && React.createElement("span", {
+      }, label), tally && React.createElement("span", {
         style: {
-          fontSize: 12,
-          fontWeight: 700,
-          color: 'var(--sd-colour-feedback-error-default)',
-          flexShrink: 0
+          fontSize: 13,
+          fontWeight: 600,
+          color: done ? 'var(--sd-colour-action-primary)' : 'var(--sd-colour-text-secondary)'
         }
-      }, "Not seen"));
+      }, tally), React.createElement("span", {
+        style: {
+          flex: 1
+        }
+      }), React.createElement("span", {
+        style: {
+          transform: open ? 'rotate(180deg)' : 'none',
+          transition: 'transform .15s',
+          display: 'inline-flex',
+          color: 'var(--sd-colour-text-secondary)'
+        }
+      }, React.createElement(RdGlyph, {
+        d: "M6 9l6 6 6-6",
+        size: 15,
+        width: 2
+      })));
     };
-    const rosterList = () => roster.length ? roster.map(row) : React.createElement("span", {
+    const bookedSection = () => !!booked.length && React.createElement("section", {
+      key: RD_HC_NSI,
+      style: {
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 6,
+        flexShrink: 0
+      }
+    }, head(RD_HC_NSI, `Not signed in yet · ${booked.length}`), !closed.has(RD_HC_NSI) && booked.map(bookedRow));
+    const rosterList = (sections = false) => [!roster.length ? React.createElement("span", {
+      key: "none",
       style: {
         fontSize: 13,
         color: 'var(--sd-colour-text-secondary)',
         padding: '18px 0'
       }
-    }, "Nobody is signed in ", scopeLabel, " \u2014 there\u2019s nothing to count.");
+    }, "Nobody is signed in ", scopeLabel, " \u2014 there\u2019s nothing to count.") : !(sections && hc.key) ? roster.map(p => row(p)) : hc.groups.map(g => {
+      const n = g.items.reduce((k, p) => k + (seen.has(p.id) ? 1 : 0), 0);
+      return React.createElement("section", {
+        key: g.key,
+        style: {
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 6,
+          flexShrink: 0
+        }
+      }, head(g.key, g.label, `${n} of ${g.items.length} seen`, n === g.items.length), !closed.has(g.key) && g.items.map(p => row(p, hc.key !== RD_TAG_GROUPING, hc.key !== 'room')));
+    }), sections && bookedSection()];
     return React.createElement("div", {
       style: {
         position: 'absolute',
@@ -11291,13 +12213,13 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         fontSize: 18,
         fontWeight: 700
       }
-    }, "Head count \xB7 ", roomName), React.createElement("span", {
+    }, count ? `Continue ${count.by === acting ? 'your' : `${first(count.by)}’s`} ${count.at} count` : `Head count · ${roomName}`), React.createElement("span", {
       style: {
         fontSize: 13,
         fontWeight: 600,
         color: 'var(--sd-colour-text-secondary)'
       }
-    }, "Tick every child you can see. ", total, " signed in ", scopeLabel, ".")), React.createElement("button", {
+    }, count ? `${roomName} · your changes are saved under your name.` : `Tick every child you can see. ${total} signed in ${scopeLabel}.`)), React.createElement("button", {
       type: "button",
       "aria-label": "Close",
       onClick: onClose,
@@ -11325,7 +12247,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         lineHeight: 1,
         color: allSeen ? 'var(--sd-colour-action-primary)' : 'var(--sd-colour-text-primary)'
       }
-    }, seen.size), React.createElement("span", {
+    }, nSeen), React.createElement("span", {
       style: {
         fontSize: 15,
         fontWeight: 600,
@@ -11389,103 +12311,6 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       style: {
         display: 'flex',
         flexDirection: 'column',
-        gap: 8
-      }
-    }, React.createElement(RdLabel, null, "Anything known about them? (optional)"), missing.map(p => {
-      const r = why[p.id] || {};
-      return React.createElement("div", {
-        key: p.id,
-        style: {
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 7,
-          padding: '10px 12px',
-          borderRadius: 'var(--sd-radius-lg)',
-          border: '1px solid var(--sd-colour-border-default)'
-        }
-      }, React.createElement("span", {
-        style: {
-          display: 'flex',
-          alignItems: 'center',
-          gap: 9
-        }
-      }, React.createElement(RdKid, {
-        c: p,
-        size: 28
-      }), React.createElement("span", {
-        style: {
-          fontSize: 14,
-          fontWeight: 700,
-          flex: 1,
-          minWidth: 0
-        }
-      }, p.name), !r.why && React.createElement("span", {
-        style: {
-          fontSize: 12,
-          fontWeight: 700,
-          color: 'var(--sd-colour-feedback-error-default)'
-        }
-      }, "Still looking")), React.createElement("span", {
-        style: {
-          display: 'flex',
-          gap: 6,
-          flexWrap: 'wrap'
-        }
-      }, RD_HC_REASONS.map(x => React.createElement("button", {
-        key: x.key,
-        type: "button",
-        onClick: () => setReason(p.id, {
-          why: r.why === x.key ? null : x.key
-        }),
-        className: 'ds-selection-pill ds-selection-pill--sm' + (r.why === x.key ? ' ds-selection-pill--selected' : ''),
-        style: {
-          height: 34,
-          fontSize: 12.5
-        }
-      }, React.createElement("span", {
-        className: "ds-selection-pill__label"
-      }, x.label)))), !!r.why && React.createElement("input", {
-        className: "fp-input",
-        type: "text",
-        value: r.note || '',
-        onChange: e => setReason(p.id, {
-          note: e.target.value
-        }),
-        placeholder: rdHcHint(r.why),
-        style: {
-          all: 'unset',
-          boxSizing: 'border-box',
-          width: '100%',
-          height: 40,
-          padding: '0 12px',
-          borderRadius: 'var(--sd-radius-lg)',
-          border: '1px solid var(--sd-colour-border-default)',
-          fontFamily: 'var(--sd-font-family)',
-          fontSize: 13.5
-        }
-      }));
-    })), React.createElement("span", {
-      style: {
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 7
-      }
-    }, React.createElement(RdLabel, null, "Who have you told? (optional)"), React.createElement(RdSegmented, {
-      options: ['Nominated supervisor', 'Another educator'],
-      value: told,
-      onChange: setTold,
-      ariaLabel: "Who have you told"
-    }), React.createElement("span", {
-      style: {
-        fontSize: 12.5,
-        lineHeight: 1.45,
-        fontWeight: 600,
-        color: 'var(--sd-colour-text-secondary)'
-      }
-    }, told ? `The record will say you told the ${told.toLowerCase()}.` : 'You can record the count without this — it will say nobody has been told yet.')), React.createElement("div", {
-      style: {
-        display: 'flex',
-        flexDirection: 'column',
         gap: 9,
         padding: '12px 14px',
         borderRadius: 'var(--sd-radius-lg)',
@@ -11508,16 +12333,13 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       style: {
         color: 'var(--sd-colour-text-primary)'
       }
-    }, "24 hours"), ". Recording this count does not raise that notification."), onEscalate && React.createElement(RdAction, {
-      glyph: "M6 3h9l4 4v14H6V3ZM14 3v5h5M9 13h7M9 17h5",
-      onClick: () => onEscalate(missing, seen.size, told)
-    }, "Start an incident record")), React.createElement("div", {
+    }, "24 hours"), ". Recording this count does not raise that notification.")), React.createElement("div", {
       style: {
         display: 'flex',
         flexDirection: 'column',
         gap: 6
       }
-    }, React.createElement(RdLabel, null, "Room roster"), rosterList())), stage === 'count' && !!history.length && React.createElement("div", {
+    }, React.createElement(RdLabel, null, "Room roster"), rosterList())), stage === 'count' && !count && !!history.length && React.createElement("div", {
       style: {
         padding: '0 22px 10px',
         flexShrink: 0
@@ -11580,65 +12402,93 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         gap: 4,
         padding: '8px 2px 0'
       }
-    }, history.map((h, i) => {
+    }, history.map(h => {
       const short = h.seen < h.of;
-      return (React.createElement("div", {
-          key: i,
-          style: {
-            display: 'flex',
-            flexWrap: 'wrap',
-            alignItems: 'baseline',
-            gap: 8,
-            fontSize: 12.5,
-            padding: '4px 10px',
-            borderRadius: 'var(--sd-radius-m)',
-            background: short ? 'var(--sd-colour-surface-red)' : 'transparent'
-          }
-        }, React.createElement("span", {
-          style: {
-            fontWeight: 700,
-            minWidth: 62
-          }
-        }, RD_AMPM(h.at)), React.createElement("span", {
-          style: {
-            fontWeight: 600,
-            color: short ? 'var(--sd-colour-feedback-error-default)' : 'var(--sd-colour-text-primary)'
-          }
-        }, h.seen, " of ", h.of, " seen"), React.createElement("span", {
-          style: {
-            flex: 1,
-            minWidth: 0,
-            color: 'var(--sd-colour-text-secondary)',
-            whiteSpace: 'nowrap',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis'
-          }
-        }, h.missing && h.missing.length ? `· not seen: ${(h.why && h.why.length ? h.why : h.missing).join(', ')}` : ''), React.createElement("span", {
-          style: {
-            color: 'var(--sd-colour-text-secondary)',
-            whiteSpace: 'nowrap'
-          }
-        }, h.by), short && (h.told || h.escalated) && React.createElement("span", {
-          style: {
-            flexBasis: '100%',
-            minWidth: '100%',
-            paddingLeft: 70,
-            display: 'flex',
-            gap: 8,
-            flexWrap: 'wrap'
-          }
-        }, h.told && React.createElement("span", {
-          style: {
-            fontWeight: 600,
-            color: /nobody/i.test(h.told) ? 'var(--sd-colour-feedback-error-default)' : 'var(--sd-colour-text-secondary)'
-          }
-        }, /nobody/i.test(h.told) ? '· nobody told yet' : `· told the ${h.told.toLowerCase()}`), h.escalated && React.createElement("span", {
-          style: {
-            fontWeight: 700,
-            color: 'var(--sd-colour-feedback-error-default)'
-          }
-        }, "\xB7 escalated to an incident record")))
-      );
+      const rowStyle = {
+        display: 'flex',
+        flexWrap: 'wrap',
+        alignItems: 'baseline',
+        gap: 8,
+        fontSize: 12.5,
+        padding: '4px 10px',
+        borderRadius: 'var(--sd-radius-m)',
+        background: short ? 'var(--sd-colour-surface-red)' : 'transparent'
+      };
+      const cells = React.createElement(React.Fragment, null, React.createElement("span", {
+        style: {
+          fontWeight: 700,
+          minWidth: 62
+        }
+      }, RD_AMPM(h.at)), React.createElement("span", {
+        style: {
+          fontWeight: 600,
+          color: short ? 'var(--sd-colour-feedback-error-default)' : 'var(--sd-colour-text-primary)'
+        }
+      }, h.seen, " of ", h.of, " seen"), React.createElement("span", {
+        style: {
+          flex: 1,
+          minWidth: 0,
+          color: 'var(--sd-colour-text-secondary)',
+          whiteSpace: 'nowrap',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis'
+        }
+      }, h.missing && h.missing.length ? `· not seen: ${h.missing.join(', ')}` : ''));
+      const who = React.createElement("span", {
+        style: {
+          color: 'var(--sd-colour-text-secondary)',
+          whiteSpace: 'nowrap'
+        }
+      }, (h.people || [h.by]).join(' + '));
+      if (!onOpenCount) return React.createElement("div", {
+        key: h.id,
+        style: rowStyle
+      }, cells, who);
+      return React.createElement("button", {
+        key: h.id,
+        type: "button",
+        onClick: () => onOpenCount(h),
+        "aria-label": `${short ? 'Continue' : 'Open'} the ${RD_AMPM(h.at)} count`,
+        style: {
+          all: 'unset',
+          boxSizing: 'border-box',
+          cursor: 'pointer',
+          position: 'relative',
+          width: '100%',
+          textAlign: 'left',
+          ...rowStyle
+        }
+      }, React.createElement("span", {
+        "aria-hidden": "true",
+        style: {
+          position: 'absolute',
+          left: 0,
+          right: 0,
+          top: -6,
+          bottom: -6
+        }
+      }), cells, React.createElement("span", {
+        style: {
+          display: 'inline-flex',
+          alignItems: 'baseline',
+          gap: 8,
+          marginLeft: 'auto'
+        }
+      }, who, React.createElement("span", {
+        style: {
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: 2,
+          alignSelf: 'center',
+          fontWeight: 700,
+          whiteSpace: 'nowrap',
+          color: short ? 'var(--sd-colour-action-primary)' : 'var(--sd-colour-text-secondary)'
+        }
+      }, short && 'Continue', React.createElement(RdGlyph, {
+        d: RD_CHEV_D,
+        size: 14,
+        width: 2
+      }))));
     }), React.createElement("span", {
       style: {
         fontSize: 11.5,
@@ -11646,7 +12496,30 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         color: 'var(--sd-colour-text-secondary)',
         padding: '6px 10px 0'
       }
-    }, "This room, today. The full head-count report across the service is a web job \u2014 see S1."))), stage === 'count' && React.createElement("div", {
+    }, grouping === 'room' ? 'All rooms, today.' : 'This room, today.', " The full head-count report across the service is a web job \u2014 see S1."))), stage === 'count' && !!hc.key && React.createElement("div", {
+      style: {
+        padding: '0 22px 2px',
+        display: 'flex',
+        alignItems: 'center',
+        gap: 8,
+        flexShrink: 0
+      }
+    }, React.createElement("span", {
+      style: {
+        fontSize: 12.5,
+        fontWeight: 600,
+        color: 'var(--sd-colour-text-secondary)',
+        flex: 1,
+        minWidth: 0
+      }
+    }, "By ", hc.word), React.createElement("button", {
+      type: "button",
+      className: "ds-btn ds-btn--minimal ds-btn--sm",
+      style: {
+        margin: '-6px -12px -6px 0'
+      },
+      onClick: () => setClosed(anyOpen ? new Set([...hc.groups.map(g => g.key), RD_HC_NSI]) : new Set())
+    }, anyOpen ? 'Collapse all' : 'Expand all')), stage === 'count' && React.createElement("div", {
       style: {
         flex: 1,
         minHeight: 0,
@@ -11656,7 +12529,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         flexDirection: 'column',
         gap: 6
       }
-    }, rosterList()), React.createElement("div", {
+    }, rosterList(true)), React.createElement("div", {
       style: {
         padding: '14px 22px 18px',
         borderTop: '1px solid var(--sd-colour-border-default)',
@@ -11669,22 +12542,20 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       primary: true,
       glyph: RD_TICK_D,
       full: true,
-      onClick: () => onConfirm(seen.size, roster)
-    }, "Record ", seen.size, " seen") : React.createElement(RdAction, {
+      muted: !!count && !dirty,
+      onClick: count && !dirty ? undefined : () => onConfirm(nSeen, roster, record())
+    }, count ? `Save · ${nSeen} of ${total} seen` : `Record ${nSeen} seen`) : React.createElement(RdAction, {
       primary: true,
       glyph: RD_TICK_D,
       full: true,
-      muted: !roster.length,
-      onClick: roster.length ? () => setStage('missing') : undefined
-    }, seen.size ? `Done — ${missing.length} not seen` : 'Done counting') : React.createElement(React.Fragment, null, React.createElement(RdAction, {
+      muted: !roster.length || !!count && !dirty,
+      onClick: roster.length && !(count && !dirty) ? () => setStage('missing') : undefined
+    }, nSeen ? `Done — ${missing.length} not seen` : 'Done counting') : React.createElement(React.Fragment, null, React.createElement(RdAction, {
       primary: true,
       glyph: RD_TICK_D,
       full: true,
-      onClick: () => onDiscrepancy(seen.size, told, missing.map(p => ({
-        ...p,
-        why: reasonText(p)
-      })))
-    }, "Record ", seen.size, " of ", total, " \xB7 ", missing.length, " not seen"), React.createElement(RdAction, {
+      onClick: () => onDiscrepancy(nSeen, missing, record())
+    }, count ? 'Save' : 'Record', " ", nSeen, " of ", total, " \xB7 ", missing.length, " not seen"), React.createElement(RdAction, {
       full: true,
       onClick: backToCount
     }, "Keep counting")), React.createElement("span", {
@@ -11694,11 +12565,11 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         textAlign: 'center',
         color: 'var(--sd-colour-text-secondary)'
       }
-    }, "Each count is its own record, kept with the time and who made it \u2014 see ", React.createElement("b", {
+    }, count ? React.createElement(React.Fragment, null, "Updates ", count.by === acting ? 'your' : `${first(count.by)}’s`, " ", count.at, " count, not a new one.") : React.createElement(React.Fragment, null, "Each count is its own record, kept with the time and who made it", history.length ? React.createElement(React.Fragment, null, " \u2014 see ", React.createElement("b", {
       style: {
         fontWeight: 700
       }
-    }, "Today\u2019s counts"), " above."))));
+    }, "Today\u2019s counts"), " above") : '', ".")))));
   }
   const RD_MENU_SERVICE = [{
     key: 'headcount',
@@ -12062,7 +12933,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       ...r,
       __room: true,
       signed,
-      booked: r.booked,
+      booked: opts && opts.future ? kids.length : r.booked,
       ratio,
       ratioOk: ratio <= r.limit,
       due: kids.filter(c => rdLiveAlert(c, events)).length
@@ -12128,7 +12999,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       setFacets,
       showSelectedOnly,
       setShowSelectedOnly,
-      selectRule
+      selectRule,
+      dueList
     } = ctx;
     const strip = c => (calm || readOnly) && c.alert ? {
       ...c,
@@ -12182,7 +13054,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       sortKey,
       setSortKey,
       sortOptions: RD_SORTS,
-      groupingOptions: (selectRule === RULE_BANDS ? RD_GROUPINGS_C : RD_GROUPINGS).filter(g => !RD_FIELD_GROUPINGS.includes(g.key) || new Set(pool.map(c => c[g.key] || '—')).size >= 2),
+      groupingOptions: RD_GROUP_MENU.filter(g => g.key === RD_TAG_GROUPING ? pool.some(c => c.childTag) : !RD_FIELD_GROUPINGS.includes(g.key) || new Set(pool.map(c => c[g.key] || '—')).size >= 2),
       selectArm,
       facets,
       setFacets,
@@ -12192,6 +13064,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       grouped: rdGroupsCarry(selectRule, facets, grouping),
       dueChildren: due,
       ratioBreaches: breaches,
+      dueList,
       isTicked: c => ticked.has(c.id),
       toggleTick,
       clearSelection,
@@ -12225,7 +13098,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     };
     if (scope === 'service') {
       const signed = pool.filter(c => c.status === 'here').length;
-      const totalBooked = RD_ROOMS.reduce((n, r) => n + r.booked, 0);
+      const totalBooked = RD_ROOM_STATS.reduce((n, r) => n + r.booked, 0);
       const educators = RD_ROOMS.reduce((n, r) => n + r.educators, 0);
       const showRooms = view === 'rooms';
       const matchedRooms = rooms.filter(r => !q || r.name.toLowerCase().includes(q));
@@ -12653,7 +13526,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         flexShrink: 0
       }
     }, React.createElement(RdGlyph, {
-      d: RD_LOCK_D,
+      d: d.readOnly === 'future' ? RD_CAL_D : RD_LOCK_D,
       size: 16
     })), React.createElement("span", {
       style: {
@@ -12663,7 +13536,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         minWidth: 0,
         color: 'var(--sd-colour-text-primary)'
       }
-    }, "Viewing ", d.date.label, " \u2014 this day is closed. Records can\u2019t be added or changed."), React.createElement("button", {
+    }, d.readOnly === 'future' ? React.createElement(React.Fragment, null, "Viewing ", d.date.label, " \u2014 bookings so far. Nothing can be logged until the day.") : React.createElement(React.Fragment, null, "Viewing ", d.date.label, " \u2014 this day is closed. Records can\u2019t be added or changed.")), React.createElement("button", {
       type: "button",
       onClick: d.date.toToday,
       className: "fp-btn",
@@ -12767,10 +13640,15 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     useEffect(() => {
       setSelectRule(rdReadRule(props.selectRule));
     }, [props.selectRule]);
+    const [dueList, setDueList] = useState(rdReadDueList(props.dueList !== undefined ? props.dueList : _p.get('duelist')));
+    useEffect(() => {
+      if (props.dueList !== undefined) setDueList(rdReadDueList(props.dueList));
+    }, [props.dueList]);
     const [facets, setFacets] = useState(RD_SHOW_LEGACY[_p.get('show')] || {});
     const [showSelectedOnly, setShowSelectedOnly] = useState(false);
     const [grouping, setGrouping] = useState(rdReadGrouping(_p.get('group')));
     const [sortKey, setSortKey] = useState(_p.get('sort') === 'last' ? 'last' : 'first');
+    const [openGroups, setOpenGroups] = useState({});
     const [selected, setSelected] = useState(null);
     const [selectedRoom, setSelectedRoom] = useState(null);
     const [query, setQuery] = useState('');
@@ -12778,8 +13656,10 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     const [educator, setEducator] = useState(props.educator || RD_EDUCATOR);
     const [educatorOpen, setEducatorOpen] = useState(false);
     const [cameraOpen, setCameraOpen] = useState(false);
-    const [dateIndex, setDateIndex] = useState(_p.get('date') && RD_DATES[Number(_p.get('date'))] ? Number(_p.get('date')) : 0);
-    const readOnly = dateIndex > 0;
+    const [dateIndex, setDateIndex] = useState(_p.get('date') && rdDateAt(Number(_p.get('date'))) ? Number(_p.get('date')) : 0);
+    const dateDay = rdDateAt(dateIndex) || rdDateAt(0);
+    const readOnly = dateIndex > 0 ? 'past' : dateIndex < 0 ? 'future' : false;
+    const readOnlyMsg = readOnly === 'future' ? 'Future days are read-only' : 'Past days are read-only';
     const [calOpen, setCalOpen] = useState(false);
     const [notifRead, setNotifRead] = useState(new Set());
     const [notifsOpen, setNotifsOpen] = useState(false);
@@ -12788,6 +13668,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     const [rowDetailByRoom, setRowDetailByRoom] = useState({});
     const [settingsOpen, setSettingsOpen] = useState(false);
     const [roster, setRoster] = useState(RD_ALL_CHILDREN);
+    const [childGroups, setChildGroups] = useState(rdChildGroupSeed);
     const [ticked, setTicked] = useState(new Set());
     const [sheet, setSheet] = useState(null);
     const [toast, setToast] = useState(null);
@@ -12799,24 +13680,18 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       const t = setInterval(() => setHcTick(n => n + 1), 60000);
       return () => clearInterval(t);
     }, [hcTicking]);
-    const [headcounts, setHeadcounts] = useState([{
-      at: '12:48',
-      by: 'Grace Chen',
-      seen: 8,
-      of: 8,
-      missing: []
-    }, {
-      at: '12:38',
-      by: 'Priya Anand',
-      seen: 8,
-      of: 8,
-      missing: []
-    }]);
-    const logHeadcount = rec => setHeadcounts(h => [{
-      at: '12:55',
+    const [headcounts, setHeadcounts] = useState(rdHcToday);
+    const saveHeadcounts = next => {
+      rdHcStore.counts = next;
+      setHeadcounts(next);
+    };
+    const logHeadcount = children => saveHeadcounts([{
+      id: `hc-${Date.now()}`,
+      room: scope === 'service' ? 'service' : roomKey,
+      at: RD_NOW,
       by: educator.name,
-      ...rec
-    }, ...h]);
+      children
+    }, ...headcounts]);
     const [portraitPane, setPortraitPane] = useState(_p.get('pane') === 'side' ? 'side' : 'bottom');
     const [conn, setConn] = useState(props.conn || (_p.get('conn') === 'offline' ? 'offline' : 'online'));
     const [synced, setSynced] = useState(0);
@@ -12935,7 +13810,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     };
     const openBulk = (eventKey, scope) => {
       if (readOnly) {
-        showToast('Past days are read-only');
+        showToast(readOnlyMsg);
         return;
       }
       if (RD_BULK[eventKey] && RD_BULK[eventKey].attendance && offlineBlocked('attendance')) {
@@ -12969,7 +13844,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     const offlineBlocked = f => rdOffBlocked(f, conn);
     const openHeadcount = () => {
       if (readOnly) {
-        showToast('Past days are read-only');
+        showToast(readOnlyMsg);
         return;
       }
       if (offlineBlocked('headcount')) {
@@ -12980,13 +13855,55 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         kind: 'headcount'
       });
     };
+    const openCount = h => {
+      if (readOnly) {
+        showToast(readOnlyMsg);
+        return;
+      }
+      if (offlineBlocked('headcount')) {
+        showToast('Head counts need a connection');
+        return;
+      }
+      setSheet({
+        kind: 'headcount',
+        countId: h.id
+      });
+    };
+    const [hcSign, setHcSign] = useState(null);
+    const openHcSign = c => {
+      if (readOnly) {
+        showToast(readOnlyMsg);
+        return;
+      }
+      if (offlineBlocked('attendance')) {
+        showToast('Signing in and out needs a connection');
+        return;
+      }
+      setHcSign(c.id);
+    };
+    const updateCount = (h, children) => {
+      if (offlineBlocked('headcount')) {
+        showToast('Head counts need a connection');
+        return;
+      }
+      saveHeadcounts(headcounts.map(x => x.id === h.id ? {
+        ...x,
+        children
+      } : x));
+      setSheet(null);
+      const v = rdHcView({
+        ...h,
+        children
+      });
+      showToast(`Count updated · ${v.seen} of ${v.of} seen`);
+    };
     const openChooser = c => {
       if (readOnly) return;
       setChooser(c);
     };
     const openSign = (c, direction) => {
       if (readOnly) {
-        showToast('Past days are read-only');
+        showToast(readOnlyMsg);
         return;
       }
       if (offlineBlocked('attendance')) {
@@ -13145,7 +14062,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       launch('all rooms');
     };
     const pickScope = s => s === 'service' ? goService() : goRoom(roomKey);
-    const scopeNotifs = RD_NOTIFS.filter(n => scope === 'service' ? true : n.scope === 'service' || n.room === roomKey).map(n => n.derive === 'sleepDue' ? rdSleepNotif(n, roster, eventsByRoom, careByRoom) : n).filter(Boolean).map(n => ({
+    const scopeNotifs = RD_NOTIFS.filter(n => scope === 'service' ? true : n.scope === 'service' || n.room === roomKey).filter(rdNotifToday).map(n => n.derive === 'sleepDue' ? rdSleepNotif(n, roster, eventsByRoom, careByRoom) : n).filter(Boolean).map(n => ({
       ...n,
       unread: !notifRead.has(n.id)
     }));
@@ -13156,15 +14073,19 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     const rowDetail = rowDetailByRoom[roomKey] || RD_ROW_DETAIL_DEFAULT;
     const roomMaps = {
       careByRoom,
-      eventsByRoom
+      eventsByRoom,
+      future: readOnly === 'future'
     };
+    const dayRoster = readOnly === 'future' ? rdFutureRoster(roster, dateDay) : roster;
+    const taggedRoster = rdWithChildTags(dayRoster, childGroups);
+    const groupingNow = grouping === RD_TAG_GROUPING && !taggedRoster.some(c => c.childTag && (scope === 'service' || c.room === roomKey)) ? 'attendance' : grouping;
     const d = buildDashboard({
-      roster,
+      roster: taggedRoster,
       scope,
       roomKey,
       calm,
       showStaff,
-      grouping,
+      grouping: groupingNow,
       setGrouping,
       sortKey,
       setSortKey,
@@ -13193,6 +14114,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       showSelectedOnly,
       setShowSelectedOnly,
       selectRule,
+      dueList,
       conn,
       pending,
       syncing,
@@ -13218,15 +14140,33 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       readOnly,
       date: {
         index: dateIndex,
-        label: RD_DATES[dateIndex],
+        label: dateDay.label,
         readOnly,
-        canOlder: dateIndex < RD_DATES.length - 1,
-        canNewer: dateIndex > 0,
-        older: () => setDateIndex(i => Math.min(RD_DATES.length - 1, i + 1)),
-        newer: () => setDateIndex(i => Math.max(0, i - 1)),
+        canOlder: dateIndex < RD_DATE_MAX,
+        canNewer: dateIndex > RD_DATE_MIN,
+        older: () => setDateIndex(i => Math.min(RD_DATE_MAX, i + 1)),
+        newer: () => setDateIndex(i => Math.max(RD_DATE_MIN, i - 1)),
         toToday: () => setDateIndex(0),
         openCalendar: () => setCalOpen(true)
       }
+    });
+    Object.assign(d, rdOpenGroups(d, {
+      listKey: `${scope === 'service' ? 'service' : roomKey}|${groupingNow}`,
+      grouping: groupingNow,
+      openGroups,
+      setOpenGroups,
+      narrow: query.trim() || rdFacetChips(facets).length || showSelectedOnly ? JSON.stringify([query.trim().toLowerCase(), facets, showSelectedOnly]) : ''
+    }));
+    d.canTagOne = scope === 'room' && !readOnly && can('childGroups', 'room') && !rdOffBlocked('childGroups', conn);
+    d.canTag = d.canTagOne && !!d.tickedCount;
+    d.openTagSheet = () => setSheet({
+      kind: 'tag',
+      ids: [...ticked]
+    });
+    d.openTagOne = c => setSheet({
+      kind: 'tag',
+      ids: [c.id],
+      one: true
     });
     const screen = React.createElement(SplitShell, {
       d: d,
@@ -13283,7 +14223,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     }, screen), menuOpen && React.createElement(RdDrawer, {
       scope: scope,
       roomKey: roomKey,
-      rooms: RD_ROOMS.map(r => roomStats(r, roster, roomMaps)),
+      rooms: RD_ROOMS.map(r => roomStats(r, dayRoster, roomMaps)),
       onClose: () => setMenuOpen(false),
       onRoom: goRoom,
       onService: goService,
@@ -13315,7 +14255,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
           applyEvent(okIds, ev, at || RD_NOW, details);
         }
         afterLog();
-        const evLabel = rdEventTitle(ev, (details && details[okIds[0]] || {}).context) || RD_BULK[ev].label;
+        const ctxs = okIds.map(id => (details && details[id] || {}).context);
+        const evLabel = rdEventTitle(ev, ctxs.every(x => x === ctxs[0]) ? ctxs[0] : null) || RD_BULK[ev].label;
         if (conn === 'offline') queue(`${evLabel} · ${who}`, ev, okIds, at || RD_NOW);
         if (!(opts && opts.silent)) {
           const undo = () => {
@@ -13347,65 +14288,109 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
           } else showToast(`${c.name.split(' ')[0]} signed ${inbound ? 'in' : 'out'} · ${at}`);
         }
       });
-    })(), sheet && sheet.kind === 'headcount' && (() => {
-      const hcPresent = (scope === 'service' ? roster : roster.filter(c => c.room === roomKey)).filter(c => c.status === 'here').map(c => ({
-        id: c.id,
-        name: c.name,
-        img: c.img,
-        room: roomNameOf(c)
+    })(), sheet && sheet.kind === 'tag' && (() => {
+      const people = sheet.ids.map(id => taggedRoster.find(c => c.id === id)).filter(Boolean);
+      const ids = people.map(p => p.id);
+      const who = ids.length === 1 ? people[0].name.split(' ')[0] : `${ids.length} children`;
+      const groups = [...childGroups].sort((a, b) => a.name.localeCompare(b.name)).map(g => ({
+        ...g,
+        count: g.childIds.length
       }));
+      const commit = (next, msg, queueLabel) => {
+        const before = {
+          groups: childGroups,
+          pend: pending
+        };
+        setChildGroups(next);
+        setSheet(null);
+        if (!sheet.one) afterLog();
+        if (conn === 'offline') queue(queueLabel, 'tag', ids, RD_NOW);
+        showToast(conn === 'offline' ? `Saved on this device · ${msg}` : msg, () => {
+          setChildGroups(before.groups);
+          setPending(before.pend);
+          showToast('Change undone');
+        });
+      };
+      return React.createElement(RdTagSheet, {
+        people: people,
+        groups: groups,
+        roomName: d.identity.title,
+        phone: !isIpad,
+        offline: conn === 'offline',
+        onClose: () => setSheet(null),
+        onAdd: target => {
+          const g = target.id ? target : {
+            id: `grp-${Date.now()}`,
+            name: target.name,
+            shortName: rdGroupShortName(target.name),
+            childIds: []
+          };
+          const base = target.id ? childGroups : [...childGroups, {
+            id: g.id,
+            name: g.name,
+            shortName: g.shortName,
+            childIds: []
+          }];
+          commit(rdGroupsMove(base, ids, g.id), `${who} added to ${g.name}`, `Tag · ${g.name} · ${who}`);
+        },
+        onRemove: () => {
+          const from = [...new Set(people.filter(p => p.childTag).map(p => p.childTag.name))];
+          commit(rdGroupsMove(childGroups, ids, null), `${who} removed from ${from.length === 1 ? from[0] : 'their tags'}`, `Tag · removed from ${from.join(', ')} · ${who}`);
+        },
+        onDelete: g => commit(childGroups.filter(x => x.id !== g.id), `${g.name} deleted`, `Tag · deleted ${g.name}`)
+      });
+    })(), sheet && sheet.kind === 'headcount' && (() => {
+      const hcScope = scope === 'service' ? 'service' : roomKey;
+      const asRow = c => ({
+        ...c,
+        roomKey: c.room,
+        room: roomNameOf(c)
+      });
+      const hcCount = sheet.countId ? headcounts.find(h => h.id === sheet.countId) : null;
+      const byId = new Map(taggedRoster.map(c => [c.id, c]));
+      const hcPresent = hcCount ? hcCount.children.filter(x => x.signedIn && byId.has(x.id)).map(x => asRow(byId.get(x.id))) : (scope === 'service' ? taggedRoster : taggedRoster.filter(c => c.room === roomKey)).filter(c => c.status === 'here').map(asRow);
+      const hcBooked = hcCount ? hcCount.children.filter(x => !x.signedIn && byId.has(x.id)).map(x => asRow(byId.get(x.id))) : (scope === 'service' ? taggedRoster : taggedRoster.filter(c => c.room === roomKey)).filter(c => c.status === 'expected').map(asRow);
       return React.createElement(RdHeadcountSheet, {
+        key: sheet.countId || 'new',
         expected: hcPresent.length,
         roomName: d.identity.title,
         scopeLabel: scope === 'service' ? 'across all rooms' : 'to this room',
         present: hcPresent,
         showRoom: scope === 'service',
-        history: headcounts,
-        onClose: () => setSheet(null),
-        onEscalate: (missingChildren, n, told) => {
-          const names = (missingChildren || []).map(c => c.name);
-          logHeadcount({
-            seen: n,
-            of: hcPresent.length,
-            missing: names,
-            told: told || 'nobody told yet',
-            escalated: true
-          });
-          setSheet(null);
-          const first = (missingChildren || [])[0];
-          if (first) {
-            const live = roster.find(c => c.id === first.id) || first;
-            setIncident(live);
-            showToast(`Count recorded · incident started for ${live.name.split(' ')[0]}`);
-          }
+        booked: hcBooked,
+        signedInNow: id => (byId.get(id) || {}).status === 'here',
+        onSignIn: openHcSign,
+        history: headcounts.filter(h => h.room === hcScope).map(rdHcView),
+        count: hcCount,
+        acting: educator.name,
+        onOpenCount: scope === 'service' ? undefined : openCount,
+        grouping: scope === 'service' ? 'room' : groupingNow,
+        onClose: () => {
+          if (hcSign == null) setSheet(null);
         },
-        onDiscrepancy: (n, told, missingChildren) => {
+        onDiscrepancy: (n, missingChildren, children) => {
+          if (hcCount) {
+            updateCount(hcCount, children);
+            return;
+          }
           setSheet(null);
           const names = (missingChildren || []).map(c => c.name);
-          const toldLabel = told || 'nobody told yet';
-          const withWhy = (missingChildren || []).map(c => `${c.name.split(' ')[0]} (${c.why || 'still looking'})`);
-          logHeadcount({
-            seen: n,
-            of: hcPresent.length,
-            missing: names,
-            told: toldLabel,
-            why: withWhy
-          });
+          logHeadcount(children);
           const ids = (missingChildren || []).map(c => c.id);
-          const label = `Head count · ${n} of ${hcPresent.length} seen · ${toldLabel} · not seen: ${withWhy.join(', ')}`;
+          const label = `Head count · ${n} of ${hcPresent.length} seen · not seen: ${names.join(', ')}`;
           if (conn === 'offline') {
             queue(label, 'headcount', ids, RD_NOW);
             showToast('Saved on this device · not everyone seen');
-          } else showToast(`Recorded · ${names.length} not seen · ${toldLabel}`);
+          } else showToast(`Recorded · ${names.length} not seen`);
         },
-        onConfirm: (n, seenChildren) => {
+        onConfirm: (n, seenChildren, children) => {
+          if (hcCount) {
+            updateCount(hcCount, children);
+            return;
+          }
           setSheet(null);
           setHcOverdue(false);
-          logHeadcount({
-            seen: n,
-            of: hcPresent.length,
-            missing: []
-          });
+          logHeadcount(children);
           const ids = (seenChildren || []).map(c => c.id);
           if (conn === 'offline') {
             queue(`Head count · ${n} of ${n} seen`, 'headcount', ids, '12:55');
@@ -13413,6 +14398,25 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
           } else {
             showToast(`Head count recorded · ${n} seen`);
           }
+        }
+      });
+    })(), hcSign != null && sheet && sheet.kind === 'headcount' && (() => {
+      const c = roster.find(x => x.id === hcSign);
+      if (!c) return null;
+      return React.createElement(RdSignSheet, {
+        child: c,
+        direction: "in",
+        offline: conn === 'offline',
+        phone: !isIpad,
+        educator: educator,
+        onClose: () => setHcSign(null),
+        onConfirm: (at, who) => {
+          setHcSign(null);
+          applySignIn(c.id, at, who);
+          if (conn === 'offline') {
+            queue(`Signed in · ${c.name} · ${who} · ${at}`, 'attendance', [c.id], at);
+            showToast(`Saved on this device · ${c.name.split(' ')[0]}`);
+          } else showToast(`${c.name.split(' ')[0]} signed in · ${at}`);
         }
       });
     })(), toast && React.createElement("div", {
@@ -13637,7 +14641,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         }
       });
     })(), profile && (() => {
-      const c = roster.find(x => x.id === profile.id) || RD_OTHER.find(x => x.id === profile.id) || profile;
+      const c = dayRoster.find(x => x.id === profile.id) || roster.find(x => x.id === profile.id) || RD_OTHER.find(x => x.id === profile.id) || profile;
       return React.createElement(RdProfileSheet, {
         child: c,
         readOnly: readOnly,
@@ -13656,6 +14660,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         } else showToast('Photo captured (demo)');
       }
     }), calOpen && React.createElement(RdCalendarPopover, {
+      value: dateIndex,
+      onPick: setDateIndex,
       onClose: () => setCalOpen(false)
     }), pendingOpen && React.createElement(RdPendingSheet, {
       conn: conn,
@@ -13672,6 +14678,582 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       label: splash,
       onDone: () => setSplash(false)
     }));
+  }
+  RD_FEATURES.childGroups = {
+    label: 'Tag children',
+    room: true,
+    service: false,
+    offline: 'queue'
+  };
+  const RD_TAG_D = 'M3.5 12.6V4.5a1 1 0 0 1 1-1h8.1l8.4 8.4a1 1 0 0 1 0 1.4l-7.2 7.2a1 1 0 0 1-1.4 0L3.5 12.6ZM8 8h.01';
+  const RD_CHILD_GROUP_DEFS = [{
+    id: 'grp-hall',
+    name: 'Hall',
+    shortName: 'Hall'
+  }, {
+    id: 'grp-indoor',
+    name: 'Indoor room',
+    shortName: 'Indoor'
+  }, {
+    id: 'grp-excursion',
+    name: 'Excursion',
+    shortName: 'Excursion'
+  }];
+  const RD_CHILD_GROUP_DEAL = ['grp-hall', 'grp-indoor', 'grp-hall', 'grp-excursion', 'grp-indoor', 'grp-hall', 'grp-excursion', 'grp-indoor', 'grp-hall', 'grp-excursion', 'grp-indoor', 'grp-hall'];
+  function rdChildGroupSeed() {
+    const kids = RD_ALL_CHILDREN.filter(c => c.room === 'bilby' && c.status === 'here');
+    return RD_CHILD_GROUP_DEFS.map(g => ({
+      ...g,
+      childIds: kids.filter((c, i) => RD_CHILD_GROUP_DEAL[i % RD_CHILD_GROUP_DEAL.length] === g.id).map(c => c.id)
+    }));
+  }
+  const rdGroupShortName = name => name.length <= 12 ? name : name.split(/\s+/)[0].slice(0, 12);
+  function rdWithChildTags(list, groups) {
+    const byChild = new Map();
+    [...groups].sort((a, b) => a.name.localeCompare(b.name)).forEach(g => {
+      const tag = {
+        id: g.id,
+        name: g.name,
+        shortName: g.shortName || g.name
+      };
+      g.childIds.forEach(id => {
+        if (!byChild.has(id)) byChild.set(id, tag);
+      });
+    });
+    if (!byChild.size) return list;
+    return list.map(c => byChild.has(c.id) ? {
+      ...c,
+      childTag: byChild.get(c.id)
+    } : c);
+  }
+  const rdGroupsMove = (groups, ids, targetId) => groups.map(g => {
+    const rest = g.childIds.filter(id => !ids.includes(id));
+    if (g.id === targetId) return {
+      ...g,
+      childIds: [...rest, ...ids]
+    };
+    return rest.length === g.childIds.length ? g : {
+      ...g,
+      childIds: rest
+    };
+  });
+  function RdTagChip({
+    tag
+  }) {
+    return React.createElement("span", {
+      className: "ds-pill ds-pill--sm ds-pill--grey ds-pill--ghost",
+      title: `Tag: ${tag.name}`,
+      style: {
+        flexShrink: 0
+      }
+    }, tag.shortName || tag.name);
+  }
+  function RdTextAction({
+    children,
+    onClick,
+    ariaLabel,
+    danger
+  }) {
+    return React.createElement("button", {
+      type: "button",
+      onClick: onClick,
+      "aria-label": ariaLabel,
+      style: {
+        all: 'unset',
+        boxSizing: 'border-box',
+        cursor: 'pointer',
+        display: 'inline-flex',
+        alignItems: 'center',
+        height: 44,
+        padding: '0 8px',
+        margin: '-14px -8px',
+        flexShrink: 0,
+        whiteSpace: 'nowrap',
+        fontSize: 13,
+        fontWeight: 700,
+        color: danger ? 'var(--sd-colour-feedback-error-default)' : 'var(--sd-colour-action-primary)'
+      }
+    }, children);
+  }
+  function RdTagSheet({
+    people,
+    groups,
+    roomName,
+    phone,
+    offline,
+    onClose,
+    onAdd,
+    onRemove,
+    onDelete
+  }) {
+    const NEW = '__new';
+    const NONE = '__none';
+    const [pickKey, setPickKey] = useState(groups.length ? null : NEW);
+    const [name, setName] = useState('');
+    const [confirmDelete, setConfirmDelete] = useState(false);
+    useEffect(() => {
+      setConfirmDelete(false);
+    }, [pickKey]);
+    useEffect(() => {
+      const esc = e => {
+        if (e.key === 'Escape') onClose();
+      };
+      window.addEventListener('keydown', esc);
+      return () => window.removeEventListener('keydown', esc);
+    }, [onClose]);
+    const n = people.length;
+    const who = n === 1 ? people[0].name.split(' ')[0] : `${n}`;
+    const tagged = people.filter(p => p.childTag);
+    const picked = groups.find(g => g.id === pickKey) || null;
+    const typed = name.trim();
+    const same = pickKey === NEW && typed ? groups.find(g => g.name.toLowerCase() === typed.toLowerCase()) : null;
+    const target = pickKey === NEW ? same || (typed ? {
+      id: null,
+      name: typed
+    } : null) : picked;
+    const moving = target ? people.filter(p => p.childTag && p.childTag.id !== target.id).length : 0;
+    const already = target && target.id ? people.filter(p => p.childTag && p.childTag.id === target.id).length : 0;
+    const ready = pickKey === NONE ? !!tagged.length : !!target && already < n;
+    const fromNames = [...new Set(tagged.map(p => p.childTag.name))];
+    const options = [...groups.map(g => [g.id, `${g.name} · ${g.count}`]), [NEW, 'New tag…'], ...(tagged.length ? [[NONE, 'No tag']] : [])];
+    const sub = 'var(--sd-colour-text-secondary)';
+    const title = n === 1 && tagged.length ? 'Change tag' : 'Add to tag';
+    const primaryLabel = pickKey === NONE ? `Remove ${tagged.length === n ? who : tagged.length} from ${fromNames.length === 1 ? fromNames[0] : 'their tags'}` : !target ? pickKey === NEW ? 'Name the tag' : 'Pick a tag' : already === n ? `Already in ${target.name}` : `Add ${who} to ${target.name}`;
+    return React.createElement("div", {
+      style: {
+        position: 'absolute',
+        inset: 0,
+        zIndex: 40,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 28
+      }
+    }, React.createElement("button", {
+      type: "button",
+      "aria-label": "Cancel",
+      onClick: onClose,
+      className: "rd-scrim",
+      style: {
+        all: 'unset',
+        cursor: 'pointer',
+        position: 'absolute',
+        inset: 0,
+        background: 'rgba(0,40,34,0.45)'
+      }
+    }), React.createElement("div", {
+      className: "rd-sheet",
+      role: "dialog",
+      "aria-label": title,
+      style: {
+        position: 'relative',
+        width: '100%',
+        maxWidth: 520,
+        maxHeight: '100%',
+        background: 'var(--sd-colour-surface-default)',
+        borderRadius: 'var(--sd-radius-lg)',
+        boxShadow: '0 24px 60px rgba(0,40,34,0.34)',
+        display: 'flex',
+        flexDirection: 'column'
+      }
+    }, React.createElement("div", {
+      style: {
+        padding: '20px 22px 16px',
+        borderBottom: '1px solid var(--sd-colour-border-default)',
+        display: 'flex',
+        alignItems: 'center',
+        gap: 12,
+        flexShrink: 0
+      }
+    }, React.createElement("span", {
+      style: {
+        width: 40,
+        height: 40,
+        borderRadius: '50%',
+        flexShrink: 0,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: 'var(--sd-colour-surface-cyan)',
+        color: 'var(--sd-colour-action-primary)'
+      }
+    }, React.createElement(RdGlyph, {
+      d: RD_TAG_D,
+      size: 20
+    })), React.createElement("span", {
+      style: {
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 2,
+        flex: 1,
+        minWidth: 0
+      }
+    }, React.createElement("span", {
+      style: {
+        fontSize: 19,
+        fontWeight: 700
+      }
+    }, title), React.createElement("span", {
+      style: {
+        fontSize: 13,
+        fontWeight: 600,
+        color: sub
+      }
+    }, n === 1 ? people[0].name : `${n} selected`, " \xB7 ", roomName)), React.createElement("button", {
+      type: "button",
+      "aria-label": "Cancel",
+      onClick: onClose,
+      style: {
+        all: 'unset',
+        cursor: 'pointer',
+        color: sub
+      }
+    }, React.createElement(RdGlyph, {
+      d: RD_CLOSE_D,
+      size: 20
+    }))), React.createElement("div", {
+      style: {
+        flex: 1,
+        minHeight: 0,
+        overflowY: 'auto',
+        padding: '16px 22px 18px',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 10
+      }
+    }, React.createElement(RdLabel, null, "Tags"), React.createElement(RdChoiceChips, {
+      options: options,
+      value: pickKey,
+      onChange: setPickKey,
+      ariaLabel: "Which tag"
+    }), pickKey === NEW && React.createElement("input", {
+      className: "fp-input",
+      type: "text",
+      value: name,
+      autoFocus: true,
+      maxLength: 24,
+      onChange: e => setName(e.target.value),
+      placeholder: "Name it \u2014 a space or an activity, like Gym or Bus 2",
+      "aria-label": "New tag name",
+      style: {
+        all: 'unset',
+        boxSizing: 'border-box',
+        width: '100%',
+        height: 44,
+        padding: '0 12px',
+        borderRadius: 'var(--sd-radius-lg)',
+        border: '1px solid var(--sd-colour-border-default)',
+        fontFamily: 'var(--sd-font-family)',
+        fontSize: 14.5
+      }
+    }), same && React.createElement("span", {
+      style: {
+        fontSize: 12.5,
+        color: sub
+      }
+    }, same.name, " already exists \u2014 they\u2019ll join it."), !!moving && pickKey !== NONE && React.createElement("span", {
+      style: {
+        fontSize: 12.5,
+        lineHeight: 1.45,
+        color: sub
+      }
+    }, "A child has one tag at a time \u2014 ", moving === 1 ? n === 1 ? `${who} moves` : '1 child moves' : `${moving} children move`, " from ", moving === 1 && n === 1 ? people[0].childTag.name : 'their current tag', "."), picked && !confirmDelete && React.createElement("span", {
+      style: {
+        display: 'flex',
+        paddingTop: 6
+      }
+    }, React.createElement(RdTextAction, {
+      onClick: () => setConfirmDelete(true)
+    }, "Delete ", picked.name, "\u2026")), picked && confirmDelete && React.createElement("div", {
+      role: "alertdialog",
+      "aria-label": `Delete ${picked.name}`,
+      style: {
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 8,
+        padding: '12px 14px',
+        borderRadius: 'var(--sd-radius-lg)',
+        background: 'var(--sd-colour-surface-red)'
+      }
+    }, React.createElement("span", {
+      style: {
+        fontSize: 13.5,
+        fontWeight: 700
+      }
+    }, "Delete ", picked.name, " for the whole service?"), React.createElement("span", {
+      style: {
+        fontSize: 12.5,
+        lineHeight: 1.45,
+        color: sub
+      }
+    }, picked.count === 1 ? 'The 1 child with it loses' : `The ${picked.count} children with it lose`, " the tag. Nothing else on their record changes."), React.createElement("span", {
+      style: {
+        display: 'flex',
+        alignItems: 'center',
+        gap: 20,
+        flexWrap: 'wrap'
+      }
+    }, React.createElement("button", {
+      type: "button",
+      className: "ds-btn ds-btn--destructive ds-btn--sm",
+      onClick: () => onDelete(picked)
+    }, "Delete tag"), React.createElement(RdTextAction, {
+      onClick: () => setConfirmDelete(false)
+    }, "Keep it")))), React.createElement(RdSheetFoot, {
+      phone: phone,
+      note: React.createElement(React.Fragment, null, "Tags stay until you remove them, and they\u2019re shared across the service.", offline && React.createElement(React.Fragment, null, React.createElement("br", null), React.createElement("span", {
+        style: {
+          color: RD_SYNC_FG,
+          fontWeight: 600
+        }
+      }, "Saved on this device \xB7 syncs when there\u2019s signal")))
+    }, React.createElement(RdAction, {
+      onClick: onClose
+    }, "Cancel"), React.createElement(RdAction, {
+      primary: true,
+      glyph: RD_TICK_D,
+      muted: !ready || confirmDelete,
+      onClick: ready && !confirmDelete ? () => pickKey === NONE ? onRemove() : onAdd(target) : undefined
+    }, primaryLabel))));
+  }
+  const RD_HC_FALLBACK = [RD_TAG_GROUPING, 'age', 'school', 'grade'];
+  const RD_HC_COLLAPSE_AT = 40;
+  const RD_HC_NSI = 'not-signed-in';
+  const RD_HC_WORD = {
+    room: 'room',
+    [RD_TAG_GROUPING]: 'tag',
+    age: 'age',
+    school: 'school',
+    grade: 'grade',
+    kinder: 'kinder program',
+    sleep: 'sleep / rest'
+  };
+  function rdHcSections(people, grouping) {
+    const byRoom = () => [...new Set(people.map(p => p.room).filter(Boolean))].map(r => ({
+      key: `room-${r}`,
+      label: r,
+      items: people.filter(p => p.room === r)
+    }));
+    const tries = grouping === 'room' ? ['room'] : [...new Set([grouping, ...RD_HC_FALLBACK])].filter(k => k && k !== 'attendance' && k !== RD_UNGROUPED);
+    for (const k of tries) {
+      const groups = (k === 'room' ? byRoom() : rdSubGroup(people, k)).filter(g => g.label && g.items.length);
+      const covered = groups.reduce((n, g) => n + g.items.length, 0) === people.length;
+      if (groups.length >= 2 && covered) return {
+        key: k,
+        word: RD_HC_WORD[k] || k,
+        groups
+      };
+    }
+    return {
+      key: null,
+      word: null,
+      groups: []
+    };
+  }
+  const RdHcRow = React.memo(function RdHcRow({
+    p,
+    on,
+    gone,
+    showRoom,
+    showTag,
+    note,
+    hint,
+    onSignIn,
+    onToggle
+  }) {
+    const frame = {
+      borderRadius: 'var(--sd-radius-lg)',
+      border: '1px solid ' + (on ? 'var(--sd-colour-action-primary)' : gone ? 'var(--sd-colour-feedback-error-default)' : 'var(--sd-colour-border-default)'),
+      background: on ? 'var(--sd-colour-surface-cyan)' : gone ? 'var(--sd-colour-surface-red)' : 'var(--sd-colour-surface-default)'
+    };
+    const rowStyle = {
+      all: 'unset',
+      boxSizing: 'border-box',
+      cursor: 'pointer',
+      display: 'flex',
+      alignItems: 'center',
+      gap: 11,
+      padding: '9px 12px'
+    };
+    if (onSignIn) {
+      return React.createElement("div", {
+        className: "fp-row",
+        style: {
+          ...frame,
+          display: 'flex',
+          flexDirection: 'column'
+        }
+      }, React.createElement(RdHcRowBody, {
+        p: p,
+        on: on,
+        gone: gone,
+        showRoom: showRoom,
+        showTag: showTag,
+        note: note,
+        onToggle: onToggle,
+        style: rowStyle
+      }), hint && React.createElement("span", {
+        style: {
+          display: 'flex',
+          flexWrap: 'wrap',
+          alignItems: 'baseline',
+          gap: 6,
+          padding: '0 12px 10px',
+          paddingLeft: 'clamp(47px, 18%, 92px)',
+          marginTop: -4,
+          fontSize: 12.5,
+          fontWeight: 600,
+          color: 'var(--sd-colour-text-secondary)'
+        }
+      }, "Seen \u2014 not signed in \xB7", React.createElement("button", {
+        type: "button",
+        onClick: () => onSignIn(p),
+        style: {
+          all: 'unset',
+          cursor: 'pointer',
+          position: 'relative',
+          fontWeight: 700,
+          color: 'var(--sd-colour-action-primary)'
+        }
+      }, React.createElement("span", {
+        "aria-hidden": "true",
+        style: {
+          position: 'absolute',
+          left: -8,
+          right: -8,
+          top: -10,
+          bottom: -10
+        }
+      }), "Sign in")));
+    }
+    return React.createElement(RdHcRowBody, {
+      p: p,
+      on: on,
+      gone: gone,
+      showRoom: showRoom,
+      showTag: showTag,
+      note: note,
+      onToggle: onToggle,
+      className: "fp-row",
+      style: {
+        ...rowStyle,
+        ...frame
+      }
+    });
+  });
+  function RdHcRowBody({
+    p,
+    on,
+    gone,
+    showRoom,
+    showTag,
+    note,
+    onToggle,
+    className,
+    style
+  }) {
+    return React.createElement("button", {
+      type: "button",
+      onClick: () => onToggle(p.id),
+      "aria-pressed": on,
+      className: className,
+      style: style
+    }, React.createElement("span", {
+      "aria-hidden": "true",
+      style: {
+        width: 24,
+        height: 24,
+        borderRadius: 'var(--sd-radius-sm)',
+        flexShrink: 0,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: on ? 'var(--sd-colour-action-primary)' : 'transparent',
+        border: on ? 'none' : '2px solid var(--sd-colour-border-strong)',
+        color: 'var(--sd-colour-text-inverse)'
+      }
+    }, on && React.createElement(RdGlyph, {
+      d: RD_TICK_D,
+      size: 14,
+      width: 3
+    })), React.createElement(RdKid, {
+      c: p,
+      size: 34
+    }), React.createElement("span", {
+      style: {
+        flex: 1,
+        minWidth: 0,
+        display: 'flex',
+        alignItems: 'center',
+        flexWrap: 'wrap',
+        gap: '4px 8px'
+      }
+    }, React.createElement("span", {
+      style: {
+        fontSize: 14.5,
+        fontWeight: 700,
+        color: 'var(--sd-colour-text-primary)'
+      }
+    }, p.name), showTag && p.childTag && React.createElement(RdTagChip, {
+      tag: p.childTag
+    }), note && React.createElement("span", {
+      style: {
+        marginLeft: 'auto',
+        fontSize: 12,
+        fontWeight: 600,
+        color: 'var(--sd-colour-text-secondary)',
+        whiteSpace: 'nowrap'
+      }
+    }, note)), showRoom && p.room && React.createElement(RdRoomChip, {
+      name: p.room
+    }), gone && React.createElement("span", {
+      style: {
+        fontSize: 12,
+        fontWeight: 700,
+        color: 'var(--sd-colour-feedback-error-default)',
+        flexShrink: 0
+      }
+    }, "Not seen"));
+  }
+  const RD_HC_OUTSIDE = [3, 5, 6, 7, 14, 17];
+  const rdHcChild = (c, counted, by, at) => ({
+    id: c.id,
+    name: c.name,
+    room: c.room,
+    counted,
+    signedIn: c.status === 'here',
+    by,
+    at
+  });
+  function rdHcSeed() {
+    const counts = [];
+    RD_ROOMS.forEach(r => {
+      const kids = RD_ALL_CHILDREN.filter(c => c.room === r.key && (c.status === 'here' || c.status === 'expected'));
+      const rec = (at, by, seen) => ({
+        id: `${r.key}-${at}`,
+        room: r.key,
+        at,
+        by,
+        children: kids.map(c => rdHcChild(c, c.status === 'here' && seen(c), by, at))
+      });
+      counts.push(r.key === 'koala' ? rec('12:48', 'Thomas Nguyen', c => !RD_HC_OUTSIDE.includes(c.id)) : rec('12:48', 'Grace Chen', () => true));
+      counts.push(rec('12:38', 'Priya Anand', () => true));
+    });
+    return counts;
+  }
+  const rdHcStore = {
+    counts: null
+  };
+  const rdHcToday = () => rdHcStore.counts || (rdHcStore.counts = rdHcSeed());
+  function rdHcView(h) {
+    const inKids = h.children.filter(x => x.signedIn);
+    return {
+      ...h,
+      seen: inKids.filter(x => x.counted).length,
+      of: inKids.length,
+      missing: inKids.filter(x => !x.counted).map(x => x.name),
+      people: [h.by, ...h.children.map(x => x.by)].filter((v, i, a) => v && a.indexOf(v) === i)
+    };
   }
   window.PgDash = {
     FlowApp,

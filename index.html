@@ -149,6 +149,10 @@
   .fp-row:hover, .v-row:hover { box-shadow: 0 4px 14px rgba(0,0,0,0.08); }
   .fp-row:active, .v-row:active { transform: scale(.985); }
   
+  .rd-quiet { transition: background-color .12s, transform .1s !important; }
+  .rd-quiet:hover { background-color: var(--sd-colour-surface-grey) !important; }
+  .rd-quiet:active { background-color: var(--sd-colour-surface-grey) !important; transform: scale(.99) !important; }
+  
   .fp-input:focus, .v-input:focus { outline: none; border-color: var(--sd-colour-action-primary) !important; box-shadow: 0 0 0 3px rgba(0,119,107,0.14); }
   .fp-input--dark::placeholder, .v-input--dark::placeholder { color: rgba(255,255,255,0.6); }
   .fp-input--dark:focus, .v-input--dark:focus { border-color: #fff !important; box-shadow: 0 0 0 3px rgba(255,255,255,0.18); }
