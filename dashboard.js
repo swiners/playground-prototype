@@ -1,15 +1,6 @@
 function _extends() { return _extends = Object.assign ? Object.assign.bind() : function (n) { for (var e = 1; e < arguments.length; e++) { var t = arguments[e]; for (var r in t) ({}).hasOwnProperty.call(t, r) && (n[r] = t[r]); } return n; }, _extends.apply(null, arguments); }
 (function () {
   const RD_ROW_H = 64;
-  const RD_MENU_D = 'M4 7h16M4 12h16M4 17h16';
-  const RD_SEARCH_D = 'M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14ZM20 20l-4-4';
-  const RD_CLOSE_D = 'M6 6l12 12M18 6L6 18';
-  const RD_CHEV_D = 'M9 6l6 6-6 6';
-  const RD_CAMERA_D = 'M4 8a2 2 0 0 1 2-2h1.2l1-1.6a1 1 0 0 1 .84-.4h4.92a1 1 0 0 1 .84.4l1 1.6H18a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8ZM12 17a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z';
-  const RD_LOCK_D = 'M6 11V8a6 6 0 1 1 12 0v3M5 11h14v9H5v-9Z';
-  const RD_TICK_D = 'M4 12l5 5L20 6';
-  const RD_SIGNIN_D = 'M15 4h5v16h-5M11 8l4 4-4 4M15 12H3';
-  const RD_SIGNOUT_D = 'M9 4H4v16h5M15 8l4 4-4 4M19 12H8';
   const RD_FEATURES = {
     childList: {
       label: 'Child list',
@@ -72,15 +63,6 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
   const RD_SYNC_FG = 'var(--sd-colour-text-on-purple)';
   const RD_SYNC_BG = 'var(--sd-colour-surface-purple)';
   const RD_SYNC_DOT = 'var(--sd-colour-text-on-purple)';
-  const RD_OFFLINE_D = 'M3 3l18 18M8.5 16.4a5 5 0 0 1 7 0M5.5 13.1a9 9 0 0 1 3-2M18.5 13.1a9 9 0 0 0-6-2.6M2.5 9.5a14 14 0 0 1 4-2.6M21.5 9.5a14 14 0 0 0-8-3.4M12 20h.01';
-  const RD_ONLINE_D = 'M8.5 16.4a5 5 0 0 1 7 0M5.5 13.1a9 9 0 0 1 13 0M2.5 9.5a14 14 0 0 1 19 0M12 20h.01';
-  const RD_SYNC_D = 'M20 11a8 8 0 0 0-14-4.5L4 8m0-4v4h4M4 13a8 8 0 0 0 14 4.5L20 16m0 4v-4h-4';
-  const RD_CLOCK_D = 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18ZM12 7v5l3.5 2';
-  const RD_STAFF_D = 'M12 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7ZM5 20a7 7 0 0 1 14 0';
-  const RD_SHIELD_D = 'M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7l8-4ZM12 9v4M12 16h.01';
-  const RD_WARN_D = 'M12 3l9 16H3L12 3ZM12 9v5M12 17h.01';
-  const RD_PHONE_D = 'M5 3h3.4l1.6 4-2.2 1.6a11 11 0 0 0 5.6 5.6L15 11.9l4 1.6V17a2 2 0 0 1-2.2 2A14 14 0 0 1 3 5.2 2 2 0 0 1 5 3Z';
-  const RD_BAG_D = 'M4 8h16v11a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V8ZM8.5 8V6a3.5 3.5 0 0 1 7 0v2';
   const RD_ROOMS = [{
     key: 'nursery',
     name: 'Nursery',
@@ -112,8 +94,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     educators: 1,
     booked: 20,
     limit: 11,
-    care: 'ldc',
-    sleepTrack: 'Rest'
+    care: 'ldc'
   }, {
     key: 'wombat',
     name: 'Wombat Club',
@@ -121,8 +102,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     educators: 2,
     booked: 24,
     limit: 11,
-    care: 'vac',
-    sleepTrack: 'Rest'
+    care: 'vac'
   }, {
     key: 'bilby',
     name: 'Bilby Club',
@@ -130,8 +110,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     educators: 2,
     booked: 18,
     limit: 15,
-    care: 'vac',
-    sleepTrack: 'Rest'
+    care: 'vac'
   }, {
     key: 'brushtail',
     name: 'Brushtail Hall',
@@ -139,8 +118,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     educators: 9,
     booked: 100,
     limit: 11,
-    care: 'ldc',
-    sleepTrack: 'Rest'
+    care: 'ldc'
   }];
   const RD_CARE = {
     ldc: {
@@ -207,7 +185,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       on[e.key] = (RD_CARE[careKey] || RD_CARE.ldc).events.includes(e.key) || e.key === 'med';
     });
     on.advancedSleep = false;
-    on.sleepTrack = sleepTrack || 'Sleep';
+    on.sleepTrack = 'Sleep';
     return on;
   };
   const RD_ROW_DETAIL = [{
@@ -276,9 +254,6 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     key: 'grade',
     label: 'Grade'
   }, {
-    key: 'kinder',
-    label: 'Kinder program'
-  }, {
     key: 'tags',
     label: 'Tags'
   }, {
@@ -290,7 +265,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
   const RD_GROUP_MENU = RD_GROUPINGS.filter(g => g.key !== RD_UNGROUPED);
   const RD_GROUP_DEFAULT = 'attendance';
   const RD_GROUP_OFF_LABEL = 'None';
-  const RD_FIELD_GROUPINGS = ['age', 'school', 'grade', 'kinder'];
+  const RD_FIELD_GROUPINGS = ['age', 'school', 'grade'];
   const RD_GROUPING_LEGACY = {
     class: 'kinder'
   };
@@ -338,7 +313,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     label: 'Allergy'
   }, {
     key: 'anaphylaxis',
-    label: 'Anaphylaxis'
+    label: 'EpiPen / Anapen'
   }, {
     key: 'medication',
     label: 'Medication'
@@ -589,12 +564,6 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     at: '7:05',
     status: 'here',
     state: 'Sleeping',
-    collect: {
-      who: 'Father',
-      courtOrder: true,
-      onFile: 'parenting order, 4 Aug 2026',
-      note: 'If he arrives, do not release Mia — call the nominated supervisor.'
-    },
     last: [['sleep', '12:50', 'Asleep'], ['nappy', '11:55', 'Dry'], ['meal', '11:30', 'All']]
   }, {
     id: 3,
@@ -635,7 +604,6 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       dose: '0.15 mg auto-injector',
       route: 'Intramuscular',
       ongoing: true,
-      kept: 'in her bag',
       auth: 'ASCIA action plan',
       authBy: 'Dr N. Okonkwo',
       authOn: '2 Jul',
@@ -646,7 +614,6 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       dose: '2 puffs via spacer',
       route: 'Inhaled',
       ongoing: true,
-      kept: 'in her bag',
       auth: 'Asthma action plan',
       authBy: 'Dr N. Okonkwo',
       authOn: '2 Jul',
@@ -674,10 +641,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     status: 'here',
     state: 'Awake',
     tags: ['Gluten sensitivity'],
-    prefs: {
-      sun: 'Own sunscreen'
-    },
-    last: [['meal', '11:35', 'All'], ['sun', '10:15', 'Own sunscreen', 'Brought her own from home']]
+    last: [['meal', '11:35', 'All'], ['sun', '10:15', null, 'Brought her own from home']]
   }, {
     id: 7,
     name: 'Noah Lee',
@@ -698,10 +662,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     at: '7:40',
     status: 'here',
     state: 'Sleeping',
-    prefs: {
-      sun: 'SPF 50'
-    },
-    last: [['sleep', '12:50', 'Asleep'], ['meal', '11:30', 'Half', 'Packed the rest to take home'], ['sun', '10:15', 'SPF 50']]
+    last: [['sleep', '12:50', 'Asleep'], ['meal', '11:30', 'Half', 'Packed the rest to take home'], ['sun', '10:15']]
   }, {
     id: 9,
     name: 'Ava Martin',
@@ -743,13 +704,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     at: '7:22',
     status: 'here',
     state: 'Awake',
-    prefs: {
-      sun: 'Medical exemption'
-    },
-    prefNotes: {
-      sun: 'Eczema — GP letter on file, parent applies barrier cream'
-    },
-    last: [['meal', '11:30', 'All'], ['sun', '10:15', 'Medical exemption', 'Eczema — GP letter on file, parent applies barrier cream']]
+    last: [['meal', '11:30', 'All']]
   }, {
     id: 15,
     name: 'Finn O’Donnell',
@@ -776,15 +731,10 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     img: 55,
     age: 4,
     disability: true,
-    collect: {
-      who: 'Mother',
-      courtOrder: false,
-      note: 'Mother is not collecting this term, by family arrangement. Check with the office before releasing to her.'
-    },
     at: '7:35',
     status: 'here',
     state: 'Awake',
-    last: [['meal', '11:30', 'Half'], ['sun', '10:15', 'SPF 30']]
+    last: [['meal', '11:30', 'Half'], ['sun', '10:15']]
   }, {
     id: 18,
     name: 'Ruth Okonjo',
@@ -947,7 +897,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       const alert = alertKey ? rdSeededAlert(alertKey, i) : null;
       const club = room === 'wombat' || room === 'bilby';
       const at = club ? '7:' + String(5 + i * 4 % 50).padStart(2, '0') : '7:' + String(10 + i * 3 % 45).padStart(2, '0');
-      const last = club ? [['meal', '12:10', 'All'], ['sun', '9:15', 'SPF 50']] : [['meal', '11:30', 'All']];
+      const last = club ? [['meal', '12:10', 'All'], ['sun', '9:15']] : [['meal', '11:30', 'All']];
       const seeded = (sc.sleep || [])[i];
       const state = seeded ? {
         state: seeded[0]
@@ -1198,7 +1148,6 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
   const RD_MUMS = ['Sarah', 'Emma', 'Priya', 'Mei', 'Aisha', 'Hannah'];
   const RD_DADS = ['David', 'James', 'Omar', 'Wei', 'Tom', 'Raj'];
   const RD_GPS = ['Margaret', 'Joan', 'Rosa', 'Lily', 'Grace', 'Nan'];
-  const RD_ATTACH_D = 'M6 3h9l4 4v14H6V3ZM14 3v5h5M9 13h6M9 17h4';
   function rdSeed(id) {
     return String(id).split('').reduce((n, ch) => n + ch.charCodeAt(0), 0);
   }
@@ -1316,99 +1265,23 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       about
     };
   }
-  const RD_ICONS = {
-    sleep: 'M17 12.5a6 6 0 0 1-7.5-7.5 6.5 6.5 0 1 0 7.5 7.5Z',
-    nappy: 'M4 6h16v4a8 8 0 0 1-8 8 8 8 0 0 1-8-8V6Z',
-    meal: 'M5 4v7a3 3 0 0 0 3 3v6M8 4v6M19 4c-1.5 1-2 3-2 5s.5 3 2 3v8',
-    sun: 'M12 7.5a4.5 4.5 0 1 0 0 9 4.5 4.5 0 0 0 0-9ZM12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.5 1.5M17.6 17.6l1.5 1.5M19.1 4.9l-1.5 1.5M6.4 17.6l-1.5 1.5',
-    med: 'M10.5 3.5 3.5 10.5a5 5 0 0 0 7 7l7-7a5 5 0 0 0-7-7ZM7 7l7 7',
-    note: 'M4 5.5A2.5 2.5 0 0 1 6.5 3H19v15H6.5A2.5 2.5 0 0 0 4 20.5V5.5Z'
-  };
-  const RD_ICON_DIR = 'icons/';
   const RD_COLOUR_ICON = {
-    sleep: [{
-      src: 'sleep-body.svg',
-      t: '7.69%',
-      r: '11.77%',
-      b: '0',
-      l: '8.33%'
-    }, {
-      src: 'sleep-badge.svg',
-      t: '0',
-      r: '4.17%',
-      b: '53.85%',
-      l: '50.18%',
-      grow: '-4.69% -4.74%'
-    }],
-    nappy: [{
-      src: 'nappy.svg',
-      t: '0',
-      r: '0',
-      b: '5.66%',
-      l: '0'
-    }],
-    meal: [{
-      src: 'meal.svg',
-      t: '0.85%',
-      r: '21%',
-      b: '0',
-      l: '20.98%'
-    }],
-    sun: [{
-      src: 'sun-body.svg',
-      t: '0.48%',
-      r: '4.68%',
-      b: '0.48%',
-      l: '17.18%'
-    }, {
-      src: 'sun-mark.svg',
-      t: '41.15%',
-      r: '60.1%',
-      b: '47.21%',
-      l: '27.46%'
-    }],
-    med: [{
-      src: 'med.svg',
-      t: '0.5%',
-      r: '10.29%',
-      b: '0.5%',
-      l: '9.22%'
-    }],
-    time: [{
-      src: 'time.svg',
-      t: '0.87%',
-      r: '0.78%',
-      b: '0.87%',
-      l: '0'
-    }],
-    note: [{
-      src: 'note.svg',
-      t: '0',
-      r: '0',
-      b: '0',
-      l: '0'
-    }],
-    incident: [{
-      src: 'incident.svg',
-      t: '0',
-      r: '0',
-      b: '0',
-      l: '0'
-    }],
-    asleep: [{
-      src: 'state-asleep.svg',
-      t: '0',
-      r: '0',
-      b: '0',
-      l: '0'
-    }],
-    awake: [{
-      src: 'state-awake.svg',
-      t: '0',
-      r: '0',
-      b: '0',
-      l: '0'
-    }]
+    sleep: 'colour/sleepcheck',
+    nappy: 'colour/nappies',
+    meal: 'colour/knifr-fork',
+    sun: 'colour/sunscreen',
+    med: 'colour/pills',
+    time: 'colour/time',
+    note: 'colour/note',
+    incident: 'colour/bandaid-red',
+    asleep: 'colour/sleep',
+    awake: 'colour/awake'
+  };
+  const RD_BADGE_ICON = {
+    sleep: 'badge-sleep',
+    med: 'badge-med',
+    sun: 'badge-sun',
+    nappy: 'badge-nappy'
   };
   const RD_STATE_PILL = {
     Unsettled: {
@@ -1542,13 +1415,13 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     });
     if (past) {
       if (seed % 9 === 0 || seed % 13 === 0) return [];
-      add(`${7 + seed % 2}:${String(10 + seed % 45).padStart(2, '0')}`, 'in', `Delivered by ${pick(carers, 1)}`, {
+      add(`${7 + seed % 2}:${String(10 + seed % 45).padStart(2, '0')}`, 'in', null, {
         by: by(0)
       });
       add('9:35', 'meal', `Morning tea · ate ${pick(['all', 'most', 'half'], 3)}`, {
         by: by(2)
       });
-      add('10:20', 'sun', `Applied · SPF ${seed % 2 ? '50' : '30'}`, {
+      add('10:20', 'sun', 'Applied', {
         by: by(0)
       });
       add('11:15', 'nappy', `Found ${pick(['dry', 'wet', 'soiled'], 4)}`, {
@@ -1574,7 +1447,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     }
     const present = c.status === 'here' || c.status === 'gone';
     if (present) {
-      add(c.at || '7:45', 'in', `Delivered by ${pick(carers, 1)}`, {
+      add(c.at || '7:45', 'in', null, {
         by: by(0)
       });
       add('8:40', 'nappy', `Found ${pick(['dry', 'wet', 'soiled'], 2)}`, {
@@ -1583,7 +1456,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       add('9:30', 'meal', `Morning tea · ate ${pick(['all', 'most', 'half'], 3)}`, {
         by: by(2)
       });
-      add('10:15', 'sun', `Applied · SPF ${seed % 2 ? '50' : '30'}`, {
+      add('10:15', 'sun', 'Applied', {
         by: by(0),
         note: seed % 3 === 0 ? 'Before outdoor play' : null
       });
@@ -1722,10 +1595,6 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     key: 'airway',
     label: 'Airway',
     options: ['Clear', 'Partially obstructed', 'Obstructed']
-  }, {
-    key: 'uncovered',
-    label: 'Head & face uncovered',
-    options: ['Uncovered', 'Bedding near face', 'Covered']
   }];
   const RD_NAPPY_GROUPS = [{
     cat: 'nappy_change',
@@ -1784,7 +1653,6 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     label: 'Other…'
   }];
   const RD_MENU_OTHER = 'other';
-  const RD_DELIVERED_BY = ['Parent / guardian', 'Authorised contact', 'School', 'Walked in'];
   const RD_COLLECTED_BY = ['Parent / guardian', 'Authorised contact', 'School', 'Walked home'];
   const rdCollectOptions = c => {
     if (!c || !c.collect) return RD_COLLECTED_BY;
@@ -1794,20 +1662,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
   const RD_BULK = {
     sun: {
       label: 'Sunscreen',
-      verb: 'Applied',
-      shared: {
-        label: 'Applied to all',
-        options: ['SPF 30', 'SPF 50'],
-        value: 'SPF 30',
-        carry: true
-      },
-      perChild: {
-        label: 'Applied',
-        options: [['SPF 30', 'SPF 30'], ['SPF 50', 'SPF 50'], ['Own sunscreen', 'Own']],
-        notApplied: 'Not applied',
-        reasonFor: ['Not applicable', 'Medical exemption', 'Refused']
-      },
-      prefKey: 'sun'
+      verb: 'Applied'
     },
     meal: {
       label: 'Meal',
@@ -1853,7 +1708,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       singleOnly: true,
       perChild: {
         label: 'Outcome',
-        options: ['Given', 'Part dose', 'Refused'],
+        options: ['Given', 'Part dose'],
         value: 'Given'
       }
     },
@@ -1866,17 +1721,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       label: 'Sign in',
       verb: 'Signed in',
       attendance: 'in',
-      seedBySelection: true,
-      shared: {
-        label: 'Delivered by',
-        options: RD_DELIVERED_BY,
-        value: 'Parent / guardian',
-        carry: true
-      },
-      perChild: {
-        label: 'Delivered by',
-        options: RD_DELIVERED_BY
-      }
+      seedBySelection: true
     },
     out: {
       label: 'Sign out',
@@ -1966,8 +1811,6 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
   };
   const rdReadArm = sel => sel === 'check' ? 'check' : '';
   const RD_HC_INTERVAL = 10;
-  const RD_NOTE_D = 'M4 5.5A2.5 2.5 0 0 1 6.5 3H19v15H6.5A2.5 2.5 0 0 0 4 20.5V5.5Z';
-  const RD_CAL_D = 'M4 8h16M7 3v3M17 3v3M5 5h14v15H5V5Z';
   const RD_PAST_DAYS = 3;
   const RD_FUTURE_SPAN = 7;
   const RD_WDAY = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -2013,7 +1856,6 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         last,
         alert,
         by,
-        deliveredBy,
         loggedBy,
         absentNote,
         audit,
@@ -2028,7 +1870,6 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     });
   }
   const rdNotifToday = n => (n.day || 0) === 0;
-  const RD_BELL_D = 'M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.5 21a1.5 1.5 0 0 0 3 0';
   const RD_NOTIFS = [{
     id: 'n1',
     scope: 'room',
@@ -2045,13 +1886,6 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     title: 'Roster updated by the office',
     body: 'Hannah Patel marked absent today',
     at: '7:50'
-  }, {
-    id: 'n3',
-    scope: 'service',
-    kind: 'cover',
-    title: 'Kangaroo Room needs cover',
-    body: '12 children to 1 educator — over ratio',
-    at: '12:40'
   }, {
     id: 'n4',
     scope: 'room',
@@ -2086,10 +1920,10 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     at: '9:10'
   }];
   const RD_NOTIF_ICON = {
-    booking: 'M16 3v4M8 3v4M4 8h16M5 5h14v15H5V5ZM9 14l2 2 4-4',
-    roster: 'M4 6h16M4 12h10M4 18h7',
-    cover: 'M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM2 20a7 7 0 0 1 14 0M17 11a3 3 0 1 0 0-6M18 20h4a6 6 0 0 0-4-5.7',
-    note: 'M4 5.5A2.5 2.5 0 0 1 6.5 3H19v15H6.5A2.5 2.5 0 0 0 4 20.5V5.5Z'
+    booking: 'calendar',
+    roster: 'list',
+    cover: 'user-multiple',
+    note: 'book-edit'
   };
   const SCOPES = [{
     key: 'room',
@@ -2133,99 +1967,15 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       handlers
     };
   }
-  function RdGlyph({
-    d,
-    size = 16,
-    width = 1.7
-  }) {
-    return React.createElement("svg", {
-      width: size,
-      height: size,
-      viewBox: "0 0 24 24",
-      fill: "none",
-      "aria-hidden": "true"
-    }, React.createElement("path", {
-      d: d,
-      stroke: "currentColor",
-      strokeWidth: width,
-      strokeLinecap: "round",
-      strokeLinejoin: "round"
-    }));
-  }
-  const RD_ICON_URL = '../../assets/icons/outline/';
-  function RdIcon({
-    name,
-    size = 20
-  }) {
-    const url = `url("${window.__PG_ICONS && window.__PG_ICONS[name] || RD_ICON_URL + name + '.svg'}")`;
-    return React.createElement("span", {
-      "aria-hidden": "true",
-      style: {
-        display: 'inline-block',
-        width: size,
-        height: size,
-        flexShrink: 0,
-        background: 'currentColor',
-        WebkitMaskImage: url,
-        maskImage: url,
-        WebkitMaskRepeat: 'no-repeat',
-        maskRepeat: 'no-repeat',
-        WebkitMaskPosition: 'center',
-        maskPosition: 'center',
-        WebkitMaskSize: 'contain',
-        maskSize: 'contain'
-      }
-    });
-  }
   function RdColourIcon({
     kind,
     size = 16
   }) {
-    const layers = RD_COLOUR_ICON[kind];
-    if (!layers) return RD_ICONS[kind] ? React.createElement(RdGlyph, {
-      d: RD_ICONS[kind],
+    const name = RD_COLOUR_ICON[kind];
+    return name ? React.createElement(SdIcon, {
+      name: name,
       size: size
     }) : null;
-    const fill = {
-      position: 'absolute',
-      width: '100%',
-      height: '100%',
-      display: 'block'
-    };
-    return React.createElement("span", {
-      "aria-hidden": "true",
-      style: {
-        position: 'relative',
-        display: 'inline-block',
-        width: size,
-        height: size,
-        flexShrink: 0
-      }
-    }, layers.map((l, i) => {
-      const img = React.createElement("img", {
-        src: RD_ICON_DIR + l.src,
-        alt: "",
-        style: {
-          ...fill,
-          inset: 0
-        }
-      });
-      return React.createElement("span", {
-        key: i,
-        style: {
-          position: 'absolute',
-          top: l.t,
-          right: l.r,
-          bottom: l.b,
-          left: l.l
-        }
-      }, l.grow ? React.createElement("span", {
-        style: {
-          position: 'absolute',
-          inset: l.grow
-        }
-      }, img) : img);
-    }));
   }
   function RdAvatar({
     src,
@@ -2304,7 +2054,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       }, c)
     }));
     if (c.anaphylaxis && !out.some(p => p.tone === 'crit')) out.unshift({
-      label: 'Anaphylaxis',
+      label: 'EpiPen / Anapen',
       tone: 'crit'
     });
     return out;
@@ -2317,9 +2067,9 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     return React.createElement("span", {
       className: `ds-pill ds-pill--sm ${t.pill} ds-pill--minimal`,
       "data-tone": tone
-    }, children, tone === 'crit' && !/anaphyla/i.test(String(children)) && React.createElement("span", {
+    }, children, tone === 'crit' && !/epipen|anapen/i.test(String(children)) && React.createElement("span", {
       style: RD_SR_ONLY
-    }, " (anaphylaxis)"));
+    }, " (has an EpiPen or Anapen)"));
   }
   const RdHealthPills = ({
     c
@@ -2472,10 +2222,9 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         flexShrink: 0,
         color: red ? 'inherit' : 'var(--sd-colour-text-on-orange)'
       }
-    }, React.createElement(RdGlyph, {
-      d: RD_ICONS[hit[0]],
-      size: 14,
-      width: 2.2
+    }, React.createElement(SdIcon, {
+      name: RD_BADGE_ICON[hit[0]],
+      size: 14
     }));
     if (full) {
       const parts = [...(late ? ['Late'] : []), ...alert.label.split(' · ')];
@@ -2609,7 +2358,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         border: `1px solid ${D_BORDER}`,
         color: '#fff'
       }
-    }, React.createElement(RdIcon, {
+    }, React.createElement(SdIcon, {
       name: "notification-bell",
       size: 20
     }), count > 0 && React.createElement("span", {
@@ -2654,185 +2403,10 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         border: `1px solid ${D_BORDER}`,
         color: '#fff'
       }
-    }, React.createElement(RdIcon, {
+    }, React.createElement(SdIcon, {
       name: "settings-cog",
       size: 19
     }));
-  }
-  function RdCameraButton({
-    onOpen
-  }) {
-    return React.createElement("button", {
-      type: "button",
-      onClick: onOpen,
-      "aria-label": "Take a photo",
-      className: "fp-btn",
-      style: {
-        all: 'unset',
-        boxSizing: 'border-box',
-        cursor: 'pointer',
-        width: 38,
-        height: 38,
-        borderRadius: 'var(--sd-radius-full)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        flexShrink: 0,
-        background: D_FILL,
-        border: `1px solid ${D_BORDER}`,
-        color: '#fff'
-      }
-    }, React.createElement(RdIcon, {
-      name: "camera",
-      size: 20
-    }));
-  }
-  function RdCameraSheet({
-    offline,
-    onClose,
-    onCapture
-  }) {
-    useEffect(() => {
-      const esc = e => {
-        if (e.key === 'Escape') onClose();
-      };
-      window.addEventListener('keydown', esc);
-      return () => window.removeEventListener('keydown', esc);
-    }, [onClose]);
-    return React.createElement("div", {
-      style: {
-        position: 'absolute',
-        inset: 0,
-        zIndex: 40,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: 28
-      }
-    }, React.createElement("button", {
-      type: "button",
-      "aria-label": "Cancel",
-      onClick: onClose,
-      className: "rd-scrim",
-      style: {
-        all: 'unset',
-        cursor: 'pointer',
-        position: 'absolute',
-        inset: 0,
-        background: 'rgba(0,40,34,0.45)'
-      }
-    }), React.createElement("div", {
-      className: "rd-sheet",
-      style: {
-        position: 'relative',
-        width: '100%',
-        maxWidth: 480,
-        maxHeight: '100%',
-        overflowY: 'auto',
-        background: 'var(--sd-colour-surface-default)',
-        borderRadius: 'var(--sd-radius-lg)',
-        boxShadow: '0 24px 60px rgba(0,40,34,0.34)',
-        display: 'flex',
-        flexDirection: 'column'
-      }
-    }, React.createElement("div", {
-      style: {
-        padding: '20px 22px 14px',
-        borderBottom: '1px solid var(--sd-colour-border-default)',
-        display: 'flex',
-        alignItems: 'center',
-        gap: 12,
-        flexShrink: 0
-      }
-    }, React.createElement("span", {
-      style: {
-        flex: 1,
-        minWidth: 0,
-        fontSize: 19,
-        fontWeight: 700
-      }
-    }, "Take a photo"), React.createElement("button", {
-      type: "button",
-      "aria-label": "Cancel",
-      onClick: onClose,
-      style: {
-        all: 'unset',
-        cursor: 'pointer',
-        color: 'var(--sd-colour-text-secondary)'
-      }
-    }, React.createElement(RdGlyph, {
-      d: RD_CLOSE_D,
-      size: 20
-    }))), React.createElement("div", {
-      style: {
-        padding: '16px 22px 18px',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 14
-      }
-    }, React.createElement("div", {
-      style: {
-        aspectRatio: '4 / 3',
-        borderRadius: 'var(--sd-radius-lg)',
-        background: 'var(--sd-colour-surface-grey)',
-        border: '1px solid var(--sd-colour-border-default)',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: 8,
-        color: 'var(--sd-colour-text-secondary)'
-      }
-    }, React.createElement(RdGlyph, {
-      d: RD_CAMERA_D,
-      size: 40
-    }), React.createElement("span", {
-      style: {
-        fontSize: 13,
-        fontWeight: 600
-      }
-    }, "Camera preview \u2014 demo only")), React.createElement("div", {
-      style: {
-        display: 'flex',
-        gap: 10,
-        padding: '12px 14px',
-        borderRadius: 'var(--sd-radius-lg)',
-        background: 'var(--sd-colour-surface-orange)'
-      }
-    }, React.createElement("span", {
-      style: {
-        color: 'var(--sd-colour-feedback-warning-default)',
-        flexShrink: 0
-      }
-    }, React.createElement(RdGlyph, {
-      d: "M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7l8-4ZM12 9v4M12 16h.01",
-      size: 18
-    })), React.createElement("span", {
-      style: {
-        fontSize: 12.5,
-        lineHeight: 1.45,
-        fontWeight: 600
-      }
-    }, "Photo consent is per child (C5) and isn\u2019t wired up here \u2014 some children must not be photographed, so a real camera has to check who\u2019s in frame first."))), React.createElement("div", {
-      style: {
-        padding: '0 22px 22px',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 8
-      }
-    }, React.createElement(RdAction, {
-      primary: true,
-      glyph: RD_CAMERA_D,
-      full: true,
-      onClick: onCapture
-    }, "Capture"), offline && React.createElement("span", {
-      style: {
-        textAlign: 'center',
-        fontSize: 12,
-        fontWeight: 600,
-        color: 'var(--sd-colour-text-secondary)'
-      }
-    }, "Saved on this device \xB7 syncs when there\u2019s signal"))));
   }
   function RdDateNav({
     date,
@@ -2859,10 +2433,9 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         color: '#fff',
         opacity: enabled ? 1 : 0.4
       }
-    }, React.createElement(RdGlyph, {
-      d: glyph,
-      size: 16,
-      width: 2
+    }, React.createElement(SdIcon, {
+      name: glyph,
+      size: 16
     }));
     return React.createElement("div", {
       style: {
@@ -2871,7 +2444,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         gap: 6,
         flexShrink: 0
       }
-    }, stepBtn('M15 6l-6 6 6 6', date.older, date.canOlder, 'Previous day'), React.createElement("button", {
+    }, stepBtn('chevron-left', date.older, date.canOlder, 'Previous day'), React.createElement("button", {
       type: "button",
       onClick: date.openCalendar,
       "aria-label": `Pick a date — currently ${date.label}`,
@@ -2892,8 +2465,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         fontWeight: 700,
         whiteSpace: 'nowrap'
       }
-    }, !compact && React.createElement(RdGlyph, {
-      d: RD_CAL_D,
+    }, !compact && React.createElement(SdIcon, {
+      name: "calendar",
       size: 15
     }), date.label, !today && !compact && React.createElement("span", {
       style: {
@@ -2903,7 +2476,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         textTransform: 'uppercase',
         color: 'var(--sd-colour-cyan-100)'
       }
-    }, "\xB7 read-only")), stepBtn('M9 6l6 6-6 6', date.newer, date.canNewer, 'Next day'), !today && !compact && React.createElement("button", {
+    }, "\xB7 read-only")), stepBtn('chevron-right', date.newer, date.canNewer, 'Next day'), !today && !compact && React.createElement("button", {
       type: "button",
       onClick: date.toToday,
       className: "fp-btn",
@@ -2958,8 +2531,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         display: 'inline-flex',
         padding: 2
       }
-    }, React.createElement(RdGlyph, {
-      d: glyph,
+    }, React.createElement(SdIcon, {
+      name: glyph,
       size: 18
     })) : null;
     return React.createElement("div", {
@@ -2994,13 +2567,13 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         alignItems: 'center',
         gap: 8
       }
-    }, monthBtn('M15 6l-6 6 6 6', new Date(y, m - 1, 1), 'Previous month'), React.createElement("span", {
+    }, monthBtn('chevron-left', new Date(y, m - 1, 1), 'Previous month'), React.createElement("span", {
       style: {
         fontSize: 15,
         fontWeight: 700,
         flex: 1
       }
-    }, RD_MONTH[m], " ", y), monthBtn('M9 6l6 6-6 6', new Date(y, m + 1, 1), 'Next month'), React.createElement("button", {
+    }, RD_MONTH[m], " ", y), monthBtn('chevron-right', new Date(y, m + 1, 1), 'Next month'), React.createElement("button", {
       type: "button",
       "aria-label": "Close",
       onClick: onClose,
@@ -3010,8 +2583,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         color: 'var(--sd-colour-text-secondary)',
         display: 'inline-flex'
       }
-    }, React.createElement(RdGlyph, {
-      d: RD_CLOSE_D,
+    }, React.createElement(SdIcon, {
+      name: "close",
       size: 18
     }))), React.createElement("div", {
       style: {
@@ -3196,10 +2769,9 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         display: 'inline-flex',
         flexShrink: 0
       }
-    }, React.createElement(RdGlyph, {
-      d: "M15 6l-6 6 6 6",
-      size: 20,
-      width: 2
+    }, React.createElement(SdIcon, {
+      name: "chevron-left",
+      size: 20
     })), React.createElement("span", {
       style: {
         display: 'flex',
@@ -3229,8 +2801,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         color: 'var(--sd-colour-text-secondary)',
         flexShrink: 0
       }
-    }, React.createElement(RdGlyph, {
-      d: RD_CLOSE_D,
+    }, React.createElement(SdIcon, {
+      name: "close",
       size: 20
     }))), pending ? React.createElement("div", {
       className: wrong ? 'v-shake' : undefined,
@@ -3293,8 +2865,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         justifyContent: 'center',
         color: 'var(--sd-colour-text-secondary)'
       }
-    }, React.createElement(RdGlyph, {
-      d: "M9 5h10v14H9L3 12l6-7ZM12 9l5 6M17 9l-5 6",
+    }, React.createElement(SdIcon, {
+      name: "backspace",
       size: 22
     })))) : React.createElement(React.Fragment, null, React.createElement("div", {
       style: {
@@ -3353,17 +2925,16 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
           color: 'var(--sd-colour-action-primary)',
           flexShrink: 0
         }
-      }, React.createElement(RdGlyph, {
-        d: RD_TICK_D,
-        size: 18,
-        width: 2.4
+      }, React.createElement(SdIcon, {
+        name: "tick",
+        size: 18
       })) : React.createElement("span", {
         style: {
           color: 'var(--sd-colour-text-secondary)',
           flexShrink: 0
         }
-      }, React.createElement(RdGlyph, {
-        d: RD_LOCK_D,
+      }, React.createElement(SdIcon, {
+        name: "lock",
         size: 16
       })));
     })), React.createElement("div", {
@@ -3376,7 +2947,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         gap: 8
       }
     }, React.createElement(RdAction, {
-      glyph: "M14 8V6a2 2 0 0 0-2-2H5v16h7a2 2 0 0 0 2-2v-2M9 12h11m0 0-3-3m3 3-3 3",
+      glyph: "signout",
       full: true,
       muted: !onLogout,
       onClick: onLogout
@@ -3456,8 +3027,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         background: 'var(--sd-colour-surface-cyan)',
         color: 'var(--sd-colour-action-primary)'
       }
-    }, React.createElement(RdGlyph, {
-      d: RD_BELL_D,
+    }, React.createElement(SdIcon, {
+      name: "notification-bell",
       size: 20
     })), React.createElement("span", {
       style: {
@@ -3487,8 +3058,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         cursor: 'pointer',
         color: 'var(--sd-colour-text-secondary)'
       }
-    }, React.createElement(RdGlyph, {
-      d: RD_CLOSE_D,
+    }, React.createElement(SdIcon, {
+      name: "close",
       size: 20
     }))), React.createElement("div", {
       style: {
@@ -3517,8 +3088,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         flexShrink: 0,
         marginTop: 1
       }
-    }, React.createElement(RdGlyph, {
-      d: RD_NOTIF_ICON[n.kind] || RD_BELL_D,
+    }, React.createElement(SdIcon, {
+      name: RD_NOTIF_ICON[n.kind] || 'notification-bell',
       size: 18
     })), React.createElement("span", {
       style: {
@@ -3664,8 +3235,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         background: 'var(--sd-colour-surface-cyan)',
         color: 'var(--sd-colour-action-primary)'
       }
-    }, React.createElement(RdGlyph, {
-      d: RD_CAL_D,
+    }, React.createElement(SdIcon, {
+      name: "calendar",
       size: 20
     })), React.createElement("span", {
       style: {
@@ -3695,8 +3266,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         cursor: 'pointer',
         color: 'var(--sd-colour-text-secondary)'
       }
-    }, React.createElement(RdGlyph, {
-      d: RD_CLOSE_D,
+    }, React.createElement(SdIcon, {
+      name: "close",
       size: 20
     }))), React.createElement("div", {
       style: {
@@ -3721,8 +3292,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         color: 'var(--sd-colour-text-secondary)',
         flexShrink: 0
       }
-    }, React.createElement(RdGlyph, {
-      d: "M12 3l9 16H3L12 3ZM12 9v5M12 17h.01",
+    }, React.createElement(SdIcon, {
+      name: "warning",
       size: 18
     })), React.createElement("span", {
       style: {
@@ -3817,45 +3388,12 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         fontSize: 14,
         fontWeight: 600
       }
-    }, "This room runs"), React.createElement("span", {
-      style: {
-        fontSize: 12.5,
-        color: 'var(--sd-colour-text-secondary)'
-      }
-    }, "Names this room\u2019s check. Each child\u2019s last entry decides sleep or rest")), React.createElement(RdSegmented, {
-      options: [['Sleep', 'Sleep'], ['Rest', 'Rest']],
-      value: events.sleepTrack || 'Sleep',
-      onChange: v => setEvents(m => ({
-        ...m,
-        sleepTrack: v
-      })),
-      ariaLabel: "Sleep or rest rounds in this room"
-    })), events.sleep && React.createElement("div", {
-      style: {
-        display: 'flex',
-        alignItems: 'center',
-        gap: 12,
-        padding: '2px 0 2px 29px'
-      }
-    }, React.createElement("span", {
-      style: {
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 1,
-        flex: 1,
-        minWidth: 0
-      }
-    }, React.createElement("span", {
-      style: {
-        fontSize: 14,
-        fontWeight: 600
-      }
     }, "Advanced sleep checks"), React.createElement("span", {
       style: {
         fontSize: 12.5,
         color: 'var(--sd-colour-text-secondary)'
       }
-    }, "Record the seven Red Nose observation points on every check")), React.createElement(RdToggle, {
+    }, "Record the six observation points on every check")), React.createElement(RdToggle, {
       on: !!events.advancedSleep,
       label: "Advanced sleep checks in this room",
       onChange: v => setEvents(m => ({
@@ -3946,7 +3484,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       onClick: onClose
     }, "Cancel"), React.createElement(RdAction, {
       primary: true,
-      glyph: RD_TICK_D,
+      glyph: 'tick',
       muted: !changed,
       onClick: changed ? () => onSave(care, detail, events) : undefined
     }, "Save settings"))));
@@ -4007,8 +3545,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
           width: '100%'
         } : {})
       }
-    }, glyph && React.createElement(RdGlyph, {
-      d: glyph,
+    }, glyph && React.createElement(SdIcon, {
+      name: glyph,
       size: 18
     }), children);
   }
@@ -4099,10 +3637,9 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         cursor: 'pointer',
         ...style
       }
-    }, dot, label, React.createElement(RdGlyph, {
-      d: RD_CHEV_D,
-      size: 14,
-      width: 2.2
+    }, dot, label, React.createElement(SdIcon, {
+      name: "chevron-right",
+      size: 14
     }));
   }
   function RdDueSheet({
@@ -4145,8 +3682,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         color: hc.overdue ? 'var(--sd-colour-feedback-error-default)' : 'var(--sd-colour-action-primary)',
         flexShrink: 0
       }
-    }, React.createElement(RdGlyph, {
-      d: RD_CLOCK_D,
+    }, React.createElement(SdIcon, {
+      name: "time",
       size: 20
     })), React.createElement("span", {
       style: {
@@ -4172,10 +3709,9 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       style: {
         color: hc.overdue ? 'var(--sd-colour-feedback-error-default)' : 'var(--sd-colour-action-primary)'
       }
-    }, React.createElement(RdGlyph, {
-      d: RD_CHEV_D,
-      size: 16,
-      width: 2
+    }, React.createElement(SdIcon, {
+      name: "chevron-right",
+      size: 16
     }))) : null;
     return React.createElement("div", {
       style: {
@@ -4234,8 +3770,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         background: 'var(--sd-colour-surface-orange)',
         color: 'var(--sd-colour-text-on-orange)'
       }
-    }, React.createElement(RdGlyph, {
-      d: RD_CLOCK_D,
+    }, React.createElement(SdIcon, {
+      name: "time",
       size: 20
     })), React.createElement("span", {
       style: {
@@ -4266,8 +3802,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         color: 'var(--sd-colour-text-secondary)',
         flexShrink: 0
       }
-    }, React.createElement(RdGlyph, {
-      d: RD_CLOSE_D,
+    }, React.createElement(SdIcon, {
+      name: "close",
       size: 20
     }))), React.createElement("div", {
       style: {
@@ -4300,8 +3836,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         color: 'var(--sd-colour-feedback-error-default)',
         flexShrink: 0
       }
-    }, React.createElement(RdGlyph, {
-      d: "M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7l8-4ZM12 9v4M12 16h.01",
+    }, React.createElement(SdIcon, {
+      name: "warning",
       size: 20
     })), React.createElement("span", {
       style: {
@@ -4345,10 +3881,9 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         background: 'var(--sd-colour-surface-cyan)',
         color: 'var(--sd-colour-action-primary)'
       }
-    }, React.createElement(RdGlyph, {
-      d: RD_TICK_D,
-      size: 22,
-      width: 2
+    }, React.createElement(SdIcon, {
+      name: "tick",
+      size: 22
     })), React.createElement("span", {
       style: {
         fontSize: 14.5,
@@ -4403,8 +3938,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         color: 'var(--sd-colour-text-secondary)',
         flexShrink: 0
       }
-    }, React.createElement(RdGlyph, {
-      d: RD_SEARCH_D,
+    }, React.createElement(SdIcon, {
+      name: "search",
       size: 17
     })), React.createElement("input", {
       className: "fp-input",
@@ -4431,8 +3966,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         color: 'var(--sd-colour-text-secondary)',
         flexShrink: 0
       }
-    }, React.createElement(RdGlyph, {
-      d: RD_CLOSE_D,
+    }, React.createElement(SdIcon, {
+      name: "close",
       size: 15
     })), compact && React.createElement("span", {
       style: {
@@ -4493,10 +4028,9 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         border: ticked ? 'none' : '2px solid var(--sd-colour-border-strong)',
         color: '#fff'
       }
-    }, ticked && React.createElement(RdGlyph, {
-      d: RD_TICK_D,
-      size: 14,
-      width: 3
+    }, ticked && React.createElement(SdIcon, {
+      name: "tick",
+      size: 14
     }));
     const frame = {
       boxSizing: 'border-box',
@@ -4564,8 +4098,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
           fontWeight: 600,
           color: sub
         }
-      }, React.createElement(RdGlyph, {
-        d: RD_LOCK_D,
+      }, React.createElement(SdIcon, {
+        name: "lock",
         size: 13
       }), "Signed in elsewhere"), c.collect && React.createElement(RdCollectPill, {
         collect: c.collect
@@ -4779,10 +4313,9 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         background: breach ? 'var(--sd-colour-surface-red)' : 'var(--sd-colour-surface-green)',
         color: breach ? 'var(--sd-colour-feedback-error-default)' : 'var(--sd-colour-text-on-green)'
       }
-    }, React.createElement(RdGlyph, {
-      d: RD_STAFF_D,
-      size: 13,
-      width: 2
+    }, React.createElement(SdIcon, {
+      name: "user",
+      size: 13
     }), breach ? `Over ratio · 1:${r.ratio}` : `Staffed 1:${r.ratio}`), !!r.due && React.createElement(RdAlert, {
       alert: {
         kind: 'due',
@@ -4841,10 +4374,9 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       style: {
         color: sub
       }
-    }, React.createElement(RdGlyph, {
-      d: RD_CHEV_D,
-      size: 17,
-      width: 2
+    }, React.createElement(SdIcon, {
+      name: "chevron-right",
+      size: 17
     }))));
   }
   const RD_HEAD_H = 30;
@@ -4920,10 +4452,9 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         transform: open ? 'rotate(90deg)' : 'none',
         transition: 'transform .15s'
       }
-    }, React.createElement(RdGlyph, {
-      d: RD_CHEV_D,
-      size: 16,
-      width: 2
+    }, React.createElement(SdIcon, {
+      name: "chevron-right",
+      size: 16
     })), words) : words, action && React.createElement(React.Fragment, null, !onToggle && React.createElement("span", {
       style: {
         flex: 1
@@ -5032,8 +4563,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         cursor: 'pointer',
         color: 'var(--sd-colour-text-secondary)'
       }
-    }, React.createElement(RdGlyph, {
-      d: RD_CLOSE_D,
+    }, React.createElement(SdIcon, {
+      name: "close",
       size: 18
     }))), React.createElement("div", {
       style: wide && wrapBody ? {
@@ -5133,10 +4664,9 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         color: urgent ? 'var(--sd-colour-feedback-error-default)' : 'var(--sd-colour-text-on-orange)',
         flexShrink: 0
       }
-    }, React.createElement(RdGlyph, {
-      d: RD_CHEV_D,
-      size: 16,
-      width: 2
+    }, React.createElement(SdIcon, {
+      name: "chevron-right",
+      size: 16
     })));
   }
   const RD_DUE_LISTS = ['current', 'a', 'b', 'c'];
@@ -5302,10 +4832,9 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         transform: on ? 'rotate(90deg)' : 'none',
         transition: 'transform .15s'
       }
-    }, React.createElement(RdGlyph, {
-      d: RD_CHEV_D,
-      size: 16,
-      width: 2
+    }, React.createElement(SdIcon, {
+      name: "chevron-right",
+      size: 16
     }));
     if (mode === 'b') return React.createElement("div", {
       style: col,
@@ -5507,8 +5036,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         background: 'var(--sd-colour-surface-grey)',
         color: 'var(--sd-colour-text-primary)'
       }
-    }, React.createElement(RdGlyph, {
-      d: k === 'in' ? RD_SIGNIN_D : k === 'out' ? RD_SIGNOUT_D : RD_CLOSE_D,
+    }, React.createElement(SdIcon, {
+      name: k === 'in' ? 'signin' : k === 'out' ? 'signout' : 'close',
       size: 18
     }), RD_BULK[k].label, React.createElement("span", {
       style: {
@@ -5520,10 +5049,9 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         fontWeight: 700,
         color: 'var(--sd-colour-text-secondary)'
       }
-    }, n), React.createElement(RdGlyph, {
-      d: RD_CHEV_D,
-      size: 15,
-      width: 2
+    }, n), React.createElement(SdIcon, {
+      name: "chevron-right",
+      size: 15
     }))))), React.createElement(RdLabel, null, "Log for these ", d.tickedCount), React.createElement("div", {
       style: {
         display: 'flex',
@@ -5557,10 +5085,9 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       style: {
         flex: 1
       }
-    }), React.createElement(RdGlyph, {
-      d: RD_CHEV_D,
-      size: 15,
-      width: 2
+    }), React.createElement(SdIcon, {
+      name: "chevron-right",
+      size: 15
     })))), React.createElement("div", {
       style: {
         display: 'flex',
@@ -5608,10 +5135,9 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       style: {
         color: 'var(--sd-colour-text-secondary)'
       }
-    }, React.createElement(RdGlyph, {
-      d: RD_CLOSE_D,
-      size: 12,
-      width: 2
+    }, React.createElement(SdIcon, {
+      name: "close",
+      size: 12
     })))))));
   }
   function RdPaneNow({
@@ -5638,8 +5164,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         color: d.headcount.overdue ? 'var(--sd-colour-feedback-error-default)' : 'var(--sd-colour-action-primary)',
         flexShrink: 0
       }
-    }, React.createElement(RdGlyph, {
-      d: "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18ZM12 7v5l3.5 2",
+    }, React.createElement(SdIcon, {
+      name: "time",
       size: 20
     })), React.createElement("span", {
       style: {
@@ -5665,10 +5191,9 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       style: {
         color: d.headcount.overdue ? 'var(--sd-colour-feedback-error-default)' : 'var(--sd-colour-action-primary)'
       }
-    }, React.createElement(RdGlyph, {
-      d: RD_CHEV_D,
-      size: 16,
-      width: 2
+    }, React.createElement(SdIcon, {
+      name: "chevron-right",
+      size: 16
     }))) : null;
     return React.createElement(RdPaneShell, {
       wide: wide,
@@ -5772,8 +5297,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         color: 'var(--sd-colour-feedback-error-default)',
         flexShrink: 0
       }
-    }, React.createElement(RdGlyph, {
-      d: "M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7l8-4ZM12 9v4M12 16h.01",
+    }, React.createElement(SdIcon, {
+      name: "warning",
       size: 20
     })), React.createElement("span", {
       style: {
@@ -5799,10 +5324,9 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       style: {
         color: 'var(--sd-colour-feedback-error-default)'
       }
-    }, React.createElement(RdGlyph, {
-      d: RD_CHEV_D,
-      size: 16,
-      width: 2
+    }, React.createElement(SdIcon, {
+      name: "chevron-right",
+      size: 16
     }))))), d.dueChildren.length ? React.createElement(RdDueList, {
       d: d,
       onPick: d.openDueChild,
@@ -5829,10 +5353,9 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         background: 'var(--sd-colour-surface-cyan)',
         color: 'var(--sd-colour-action-primary)'
       }
-    }, React.createElement(RdGlyph, {
-      d: RD_TICK_D,
-      size: 22,
-      width: 2
+    }, React.createElement(SdIcon, {
+      name: "tick",
+      size: 22
     })), React.createElement("span", {
       style: {
         fontSize: 14.5,
@@ -5957,8 +5480,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         color: 'var(--sd-colour-action-primary)',
         flexShrink: 0
       }
-    }, React.createElement(RdGlyph, {
-      d: "M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM4 21a8 8 0 0 1 16 0",
+    }, React.createElement(SdIcon, {
+      name: "user",
       size: 17
     })), React.createElement("span", {
       style: {
@@ -5987,10 +5510,9 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         color: sub,
         flexShrink: 0
       }
-    }, React.createElement(RdGlyph, {
-      d: RD_CHEV_D,
-      size: 16,
-      width: 2
+    }, React.createElement(SdIcon, {
+      name: "chevron-right",
+      size: 16
     }))) : null;
     const tagLine = c.childTag || onTag ? React.createElement("span", {
       style: {
@@ -6134,8 +5656,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
           color: sub,
           flexShrink: 0
         }
-      }, React.createElement(RdGlyph, {
-        d: "M4 20h4l10-10-4-4L4 16v4ZM13.5 6.5l4 4",
+      }, React.createElement(SdIcon, {
+        name: "edit",
         size: 14
       })));
       return canCorrect ? React.createElement("button", {
@@ -6251,8 +5773,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         color: 'var(--sd-colour-feedback-error-default)',
         flexShrink: 0
       }
-    }, React.createElement(RdGlyph, {
-      d: RD_LOCK_D,
+    }, React.createElement(SdIcon, {
+      name: "lock",
       size: 18
     })), React.createElement("span", {
       style: {
@@ -6267,38 +5789,38 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       title: "Child",
       onClose: onClose,
       footer: readOnly ? React.createElement(RdAction, {
-        glyph: RD_LOCK_D,
+        glyph: 'lock',
         full: true,
         muted: true
       }, readOnly === 'future' ? 'Read-only · future day' : 'Read-only · past day') : c.blocked ? React.createElement(RdAction, {
-        glyph: RD_LOCK_D,
+        glyph: 'lock',
         full: true,
         muted: true
       }, "Can\u2019t sign in here") : React.createElement(React.Fragment, null, anyLocked ? React.createElement(RdAction, {
-        glyph: RD_CHEV_D,
+        glyph: 'chevron-right',
         primary: true,
         full: true,
         onClick: onOpenRoom
       }, "Open ", roomName, " to log") : c.status === 'expected' || c.status === 'other' ? onSign ? React.createElement(RdAction, {
-        glyph: RD_SIGNIN_D,
+        glyph: 'signin',
         primary: true,
         full: true,
         onClick: () => onSign('in')
       }, "Sign in ", c.name.split(' ')[0]) : React.createElement(RdAction, {
-        glyph: RD_LOCK_D,
+        glyph: 'lock',
         full: true,
         muted: true
       }, "Sign in needs a connection") : c.status === 'here' ? React.createElement(RdAction, {
-        glyph: RD_TICK_D,
+        glyph: 'tick',
         primary: true,
         full: true,
         onClick: onChooseEvent
       }, "Log an event") : null, c.status === 'here' && !anyLocked && onSign && React.createElement(RdAction, {
-        glyph: RD_SIGNOUT_D,
+        glyph: 'signout',
         full: true,
         onClick: () => onSign('out')
       }, "Sign out"), React.createElement(RdAction, {
-        glyph: "M6 3h9l4 4v14H6V3ZM14 3v5h5M9 13h7M9 17h5",
+        glyph: "document",
         full: true,
         onClick: onIncident
       }, "Log incident"))
@@ -6328,12 +5850,12 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     kind,
     size = 16
   }) {
-    if (kind === 'in') return React.createElement(RdGlyph, {
-      d: RD_SIGNIN_D,
+    if (kind === 'in') return React.createElement(SdIcon, {
+      name: "signin",
       size: size
     });
-    if (kind === 'out') return React.createElement(RdGlyph, {
-      d: RD_SIGNOUT_D,
+    if (kind === 'out') return React.createElement(SdIcon, {
+      name: "signout",
       size: size
     });
     return React.createElement(RdColourIcon, {
@@ -6493,8 +6015,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
           fontSize: 11.5,
           fontWeight: 700
         }
-      }, React.createElement(RdGlyph, {
-        d: "M4 20h4l10-10-4-4L4 16v4ZM13.5 6.5l4 4",
+      }, React.createElement(SdIcon, {
+        name: "edit",
         size: 13
       }), "Amend")), React.createElement("span", {
         style: {
@@ -6607,8 +6129,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         fontWeight: 700,
         whiteSpace: 'nowrap'
       }
-    }, React.createElement(RdGlyph, {
-      d: RD_CAL_D,
+    }, React.createElement(SdIcon, {
+      name: "calendar",
       size: 16
     }), (RD_LOG_DAYS[value] || RD_LOG_DAYS[0]).day, React.createElement("span", {
       style: {
@@ -6616,10 +6138,9 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         transition: 'transform .15s',
         display: 'inline-flex'
       }
-    }, React.createElement(RdGlyph, {
-      d: "M6 9l6 6 6-6",
-      size: 14,
-      width: 2
+    }, React.createElement(SdIcon, {
+      name: "chevron-down",
+      size: 14
     }))), open && React.createElement("div", {
       role: "menu",
       style: {
@@ -6752,10 +6273,9 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     }, held.length, " of ", (person.auths || []).length), React.createElement("span", {
       className: "ds-accordion__chevron",
       "aria-hidden": "true"
-    }, React.createElement(RdGlyph, {
-      d: "M6 9l6 6 6-6",
-      size: 16,
-      width: 2
+    }, React.createElement(SdIcon, {
+      name: "chevron-down",
+      size: 16
     })))), React.createElement("div", {
       className: 'ds-accordion__panel' + (open ? ' ds-accordion__panel--open' : ''),
       inert: open ? undefined : ''
@@ -6783,10 +6303,9 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         color: a.on ? 'var(--sd-colour-action-primary)' : sub,
         display: 'inline-flex'
       }
-    }, React.createElement(RdGlyph, {
-      d: a.on ? RD_TICK_D : RD_CLOSE_D,
-      size: 15,
-      width: a.on ? 2.4 : 2
+    }, React.createElement(SdIcon, {
+      name: a.on ? 'tick' : 'close',
+      size: 15
     })), React.createElement("span", {
       style: {
         fontWeight: a.on ? 600 : 500,
@@ -6836,7 +6355,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     const tags = child.tags || [];
     const shortName = n => String(n).replace(/\s*\([^)]*\)\s*$/, '');
     const allergens = tags.filter(t => /allerg(y|ies)/i.test(t)).map(t => t.replace(/\s*allerg(y|ies)\s*$/i, '').toLowerCase()).filter(Boolean);
-    const rescue = ongoing.find(m => /anaphylaxis|000/i.test(m.window || '')) || null;
+    const rescue = null;
     const medFor = tag => {
       const key = String(tag).split(' ')[0].replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
       return key ? ongoing.find(m => new RegExp(key, 'i').test(m.auth || '')) || null : null;
@@ -6848,8 +6367,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       const bits = rescue ? [`${rescue.auth} on file`, `${shortName(rescue.name)} travels with ${first}`, ...(/000/.test(rescue.window || '') ? ['call 000 after giving'] : [])] : ['Action plan on file'];
       flags.push({
         tone: 'crit',
-        mark: RD_SHIELD_D,
-        title: `Anaphylaxis${allergens.length ? ' — ' + allergens.join(' and ') : ''}`,
+        mark: 'warning',
+        title: 'EpiPen / Anapen',
         meta: bits.join(' · '),
         action: null
       });
@@ -6860,7 +6379,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         tone: rdTone({
           collect: k
         }),
-        mark: RD_LOCK_D,
+        mark: 'lock',
         title: `${rdCollectLabel(k)} — ${k.who} can’t collect`,
         meta: [k.note, k.courtOrder ? `Court order held by the office${k.onFile ? ` · ${k.onFile}` : ''}.` : null].filter(Boolean).join(' '),
         action: null
@@ -6874,15 +6393,15 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       const m = medFor(t);
       flags.push({
         tone,
-        mark: m ? RD_ICONS.med : RD_SHIELD_D,
+        mark: m ? 'badge-med' : 'warning',
         title: t,
-        meta: m ? `${m.auth} on file · ${shortName(m.name)}${m.kept ? ' ' + m.kept : ''} — travels with ${first}, between rooms and on every excursion` : null,
+        meta: m ? `${m.auth} on file · ${shortName(m.name)} — travels with ${first}, between rooms and on every excursion` : null,
         action: null
       });
     });
     if (child.disability) flags.push({
       tone: 'calm',
-      mark: RD_STAFF_D,
+      mark: 'user',
       title: 'Additional needs',
       meta: 'Recorded on the enrolment record.',
       action: null
@@ -6902,8 +6421,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         color: sub,
         display: 'inline-flex'
       }
-    }, React.createElement(RdGlyph, {
-      d: f.mark,
+    }, React.createElement(SdIcon, {
+      name: f.mark,
       size: 18
     })), React.createElement("span", {
       style: {
@@ -6934,8 +6453,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     }, React.createElement("span", {
       className: "ds-message-box__icon",
       "aria-hidden": "true"
-    }, React.createElement(RdGlyph, {
-      d: f.mark,
+    }, React.createElement(SdIcon, {
+      name: f.mark,
       size: 24
     })), React.createElement("div", {
       className: "ds-message-box__text"
@@ -7017,8 +6536,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
           display: 'inline-flex',
           opacity: 0.6
         }
-      }, React.createElement(RdGlyph, {
-        d: RD_BAG_D,
+      }, React.createElement(SdIcon, {
+        name: "bag",
         size: 15
       })), `${m.kept.charAt(0).toUpperCase() + m.kept.slice(1)} — travels with ${first}`), m.window && React.createElement("span", {
         style: {
@@ -7112,7 +6631,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     }));
     const secs = [{
       id: 'health',
-      mark: RD_SHIELD_D,
+      mark: 'health',
       nav: 'Health & safety',
       title: 'Health & safety',
       badge: flags.length || '—',
@@ -7126,7 +6645,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       }, flags.map(flagRow)) : emptyBlock('No allergies, medical conditions or additional needs recorded.')
     }, {
       id: 'meds',
-      mark: RD_ICONS.med,
+      mark: 'badge-med',
       nav: 'Medication',
       title: 'Medication & action plans',
       pill: medPill,
@@ -7153,8 +6672,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
           color: sub,
           flexShrink: 0
         }
-      }, React.createElement(RdGlyph, {
-        d: RD_ATTACH_D,
+      }, React.createElement(SdIcon, {
+        name: "document",
         size: 17
       })), React.createElement("span", {
         style: {
@@ -7172,7 +6691,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       }, "Authorisations are added in Office. This profile reads them."))
     }, {
       id: 'guardians',
-      mark: RD_STAFF_D,
+      mark: 'user',
       nav: 'Guardians',
       title: 'Parents & guardians',
       badge: p.guardians.length,
@@ -7189,7 +6708,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       }))))
     }, {
       id: 'emergency',
-      mark: RD_PHONE_D,
+      mark: 'phone',
       nav: 'Emergency contact',
       title: 'Emergency contact',
       badge: 1,
@@ -7206,7 +6725,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       })))
     }, {
       id: 'about',
-      mark: RD_NOTE_D,
+      mark: 'book-edit',
       nav: `About ${first}`,
       title: `About ${first}`,
       body: React.createElement("div", {
@@ -7267,7 +6786,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       }, "Written in Office. To change it, ask the office."))
     }, {
       id: 'docs',
-      mark: RD_ATTACH_D,
+      mark: 'document',
       nav: 'Documents',
       title: 'Documents',
       badge: p.attachments.length,
@@ -7297,8 +6816,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
             color: missing ? sub : 'var(--sd-colour-action-primary)',
             flexShrink: 0
           }
-        }, React.createElement(RdGlyph, {
-          d: RD_ATTACH_D,
+        }, React.createElement(SdIcon, {
+          name: "document",
           size: 18
         })), React.createElement("span", {
           style: {
@@ -7323,7 +6842,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       }, "Preview and download aren\u2019t wired up in the prototype."))
     }, {
       id: 'log',
-      mark: RD_CLOCK_D,
+      mark: 'time',
       nav: logTitle,
       title: logTitle,
       rule: true,
@@ -7394,8 +6913,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
           color: on ? 'var(--sd-colour-action-primary)' : 'inherit',
           opacity: on ? 1 : 0.65
         }
-      }, React.createElement(RdGlyph, {
-        d: s.mark,
+      }, React.createElement(SdIcon, {
+        name: s.mark,
         size: 16
       })), React.createElement("span", {
         style: {
@@ -7413,10 +6932,9 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
           display: 'inline-flex',
           color: RD_TONE.crit.mark
         }
-      }, React.createElement(RdGlyph, {
-        d: RD_SHIELD_D,
-        size: 14,
-        width: 2.4
+      }, React.createElement(SdIcon, {
+        name: "warning",
+        size: 14
       })), (s.dot === 'warn' || s.dot === 'restrict') && React.createElement("span", {
         "aria-hidden": "true",
         "data-tone": s.dot,
@@ -7458,8 +6976,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         flexShrink: 0,
         display: 'inline-flex'
       }
-    }, React.createElement(RdGlyph, {
-      d: RD_SHIELD_D,
+    }, React.createElement(SdIcon, {
+      name: "warning",
       size: 17
     })), React.createElement("span", {
       style: {
@@ -7597,10 +7115,9 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         fontSize: 13,
         fontWeight: 700
       }
-    }, React.createElement(RdGlyph, {
-      d: RD_CLOSE_D,
-      size: 16,
-      width: 2
+    }, React.createElement(SdIcon, {
+      name: "close",
+      size: 16
     }), "Close"))), critStrip, React.createElement("div", {
       style: {
         flex: 1,
@@ -7678,12 +7195,12 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       title: "Room",
       onClose: onClose,
       footer: React.createElement(React.Fragment, null, React.createElement(RdAction, {
-        glyph: RD_CHEV_D,
+        glyph: 'chevron-right',
         primary: true,
         full: true,
         onClick: onOpenRoom
       }, "Open ", r.name), React.createElement(RdAction, {
-        glyph: "M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM2 20a7 7 0 0 1 14 0M17 11a3 3 0 1 0 0-6M18 20h4a6 6 0 0 0-4-5.7",
+        glyph: "user-multiple",
         full: true
       }, "Head count"))
     }, React.createElement("div", {
@@ -7736,8 +7253,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         color: 'var(--sd-colour-feedback-error-default)',
         flexShrink: 0
       }
-    }, React.createElement(RdGlyph, {
-      d: "M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7l8-4ZM12 9v4M12 16h.01",
+    }, React.createElement(SdIcon, {
+      name: "warning",
       size: 20
     })), React.createElement("span", {
       style: {
@@ -7847,10 +7364,9 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         color: 'var(--sd-colour-text-secondary)',
         display: 'inline-flex'
       }
-    }, React.createElement(RdGlyph, {
-      d: RD_CHEV_D,
-      size: 16,
-      width: 2
+    }, React.createElement(SdIcon, {
+      name: "chevron-right",
+      size: 16
     })), React.createElement("span", {
       style: {
         fontSize: 13,
@@ -7883,6 +7399,10 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     pad
   }) {
     const [otherOpen, setOtherOpen] = useState(false);
+    const [batchOpen, setBatchOpen] = useState(false);
+    useEffect(() => {
+      if (!d.tickedCount) setBatchOpen(false);
+    }, [d.tickedCount]);
     const split = arrangement !== 'none';
     const bottom = arrangement === 'bottom';
     const compact = arrangement === 'none' || arrangement === 'side-portrait';
@@ -7933,8 +7453,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         color: RD_SYNC_FG,
         flexShrink: 0
       }
-    }, React.createElement(RdGlyph, {
-      d: RD_CLOCK_D,
+    }, React.createElement(SdIcon, {
+      name: "time",
       size: 14
     }), d.staleNote), React.createElement("div", {
       style: {
@@ -8064,23 +7584,82 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       d: d,
       wide: bottom
     });
-    if (!split) return React.createElement("div", {
-      style: {
-        flex: 1,
-        minHeight: 0,
-        display: 'flex',
-        padding: pad,
-        position: 'relative'
-      }
-    }, list, !!(d.selected || d.selectedRoom || d.tickedCount) && React.createElement("div", {
-      className: "rd-sheet",
-      style: {
-        position: 'absolute',
-        inset: 0,
-        zIndex: 30,
-        background: 'var(--sd-colour-surface-default)'
-      }
-    }, pane));
+    if (!split) {
+      const batchOnly = !!d.tickedCount;
+      const overlay = batchOnly ? batchOpen : !!(d.selected || d.selectedRoom);
+      return React.createElement("div", {
+        style: {
+          flex: 1,
+          minHeight: 0,
+          display: 'flex',
+          flexDirection: 'column'
+        }
+      }, React.createElement("div", {
+        style: {
+          flex: 1,
+          minHeight: 0,
+          display: 'flex',
+          padding: pad,
+          position: 'relative'
+        }
+      }, list, overlay && React.createElement("div", {
+        className: "rd-sheet",
+        style: {
+          position: 'absolute',
+          inset: 0,
+          zIndex: 30,
+          background: 'var(--sd-colour-surface-default)',
+          display: 'flex',
+          flexDirection: 'column'
+        }
+      }, batchOnly && React.createElement("button", {
+        type: "button",
+        onClick: () => setBatchOpen(false),
+        className: "fp-btn",
+        style: {
+          all: 'unset',
+          boxSizing: 'border-box',
+          cursor: 'pointer',
+          flexShrink: 0,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 6,
+          height: 48,
+          padding: '0 14px',
+          fontSize: 14,
+          fontWeight: 700,
+          color: 'var(--sd-colour-action-primary)',
+          borderBottom: '1px solid var(--sd-colour-border-default)'
+        }
+      }, React.createElement(SdIcon, {
+        name: "chevron-left",
+        size: 18
+      }), "Back to the list \xB7 ", d.tickedCount, " selected"), React.createElement("div", {
+        style: {
+          flex: 1,
+          minHeight: 0,
+          position: 'relative'
+        }
+      }, React.createElement("div", {
+        style: {
+          position: 'absolute',
+          inset: 0
+        }
+      }, pane)))), batchOnly && !overlay && React.createElement("div", {
+        role: "region",
+        "aria-label": "Selection",
+        style: {
+          padding: '10px 12px',
+          flexShrink: 0,
+          borderTop: '1px solid var(--sd-colour-border-default)',
+          background: 'var(--sd-colour-surface-default)'
+        }
+      }, React.createElement(RdAction, {
+        primary: true,
+        full: true,
+        onClick: () => setBatchOpen(true)
+      }, `Actions for ${d.tickedCount} selected`)));
+    }
     return React.createElement("div", {
       style: {
         flex: 1,
@@ -8147,10 +7726,9 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
           fontWeight: 700,
           whiteSpace: 'nowrap'
         }
-      }, React.createElement(RdGlyph, {
-        d: RD_TICK_D,
-        size: 16,
-        width: 2.4
+      }, React.createElement(SdIcon, {
+        name: "tick",
+        size: 16
       }), "All ", synced, " synced");
     }
     if (conn === 'online' && !syncing && !pending) return null;
@@ -8181,8 +7759,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         display: 'flex',
         flexShrink: 0
       }
-    }, React.createElement(RdGlyph, {
-      d: syncing ? RD_SYNC_D : RD_OFFLINE_D,
+    }, React.createElement(SdIcon, {
+      name: syncing ? 'refresh-update-arrow' : 'wifi-off',
       size: 16
     })), syncing ? `Syncing ${pending}…` : offline ? 'Offline' : 'Waiting to sync', !syncing && !!pending && React.createElement("span", {
       style: {
@@ -8216,10 +7794,9 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         color: RD_SYNC_FG,
         whiteSpace: 'nowrap'
       }
-    }, React.createElement(RdGlyph, {
-      d: RD_CLOCK_D,
-      size: 11,
-      width: 2
+    }, React.createElement(SdIcon, {
+      name: "time",
+      size: 11
     }), children);
   }
   function RdPendingSheet({
@@ -8249,19 +7826,19 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       sub: `${sent.current} record${sent.current === 1 ? '' : 's'} sent from this device`,
       bg: 'var(--sd-colour-surface-green)',
       fg: 'var(--sd-colour-text-on-green)',
-      glyph: RD_TICK_D
+      glyph: 'tick'
     } : syncing ? {
       title: 'Sending…',
       sub: nSending === 1 ? '1 record on its way' : `${nSending} records on their way`,
       bg: RD_SYNC_BG,
       fg: RD_SYNC_FG,
-      glyph: RD_SYNC_D
+      glyph: 'refresh-update-arrow'
     } : {
       title: conn === 'offline' ? 'No connection' : 'Waiting to sync',
       sub: `${pending.length} record${pending.length === 1 ? '' : 's'} saved on this device`,
       bg: RD_SYNC_BG,
       fg: RD_SYNC_FG,
-      glyph: RD_OFFLINE_D
+      glyph: 'wifi-off'
     };
     return React.createElement("div", {
       style: {
@@ -8320,8 +7897,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         background: head.bg,
         color: head.fg
       }
-    }, React.createElement(RdGlyph, {
-      d: head.glyph,
+    }, React.createElement(SdIcon, {
+      name: head.glyph,
       size: 20
     })), React.createElement("span", {
       style: {
@@ -8351,8 +7928,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         cursor: 'pointer',
         color: 'var(--sd-colour-text-secondary)'
       }
-    }, React.createElement(RdGlyph, {
-      d: RD_CLOSE_D,
+    }, React.createElement(SdIcon, {
+      name: "close",
       size: 20
     }))), React.createElement("div", {
       style: {
@@ -8419,10 +7996,9 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       className: "ds-pill ds-pill--sm ds-pill--green ds-pill--minimal"
     }, React.createElement("span", {
       className: "ds-pill__icon"
-    }, React.createElement(RdGlyph, {
-      d: RD_TICK_D,
-      size: 14,
-      width: 2.6
+    }, React.createElement(SdIcon, {
+      name: "tick",
+      size: 14
     })), "Sent") : syncing ? React.createElement("span", {
       style: {
         display: 'inline-flex',
@@ -8441,10 +8017,9 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       style: {
         display: 'flex'
       }
-    }, React.createElement(RdGlyph, {
-      d: RD_SYNC_D,
-      size: 11,
-      width: 2
+    }, React.createElement(SdIcon, {
+      name: "refresh-update-arrow",
+      size: 11
     })), "Sending") : React.createElement(RdPendingTag, null))) : React.createElement("span", {
       style: {
         fontSize: 13,
@@ -8460,7 +8035,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       }
     }, React.createElement(RdAction, {
       primary: true,
-      glyph: done ? RD_TICK_D : undefined,
+      glyph: done ? 'tick' : undefined,
       onClick: onClose
     }, done ? 'Done' : 'Keep working'))));
   }
@@ -8480,8 +8055,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         color: RD_SYNC_FG,
         flexShrink: 0
       }
-    }, React.createElement(RdGlyph, {
-      d: RD_OFFLINE_D,
+    }, React.createElement(SdIcon, {
+      name: "wifi-off",
       size: 18
     })), React.createElement("span", {
       style: {
@@ -8614,8 +8189,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         background: 'var(--sd-colour-surface-cyan)',
         color: 'var(--sd-colour-action-primary)'
       }
-    }, React.createElement(RdGlyph, {
-      d: RD_CLOCK_D,
+    }, React.createElement(SdIcon, {
+      name: "time",
       size: 17
     }), React.createElement("input", {
       ref: ref,
@@ -8665,6 +8240,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       }
     }, RD_AMPM(value)), back > 0 ? ` · ${back} minute${back === 1 ? '' : 's'} ago` : ' · now'));
   }
+  const RdSheetMenus = React.createContext(false);
   function RdDropdownShell({
     label,
     value,
@@ -8675,6 +8251,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     children
   }) {
     const [open, setOpen] = useState(false);
+    const sheetMenu = React.useContext(RdSheetMenus);
     const ref = React.useRef(null);
     useEffect(() => {
       if (!open) return;
@@ -8740,18 +8317,28 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         transition: 'transform .15s',
         display: 'inline-flex'
       }
-    }, React.createElement(RdGlyph, {
-      d: "M6 9l6 6 6-6",
-      size: 14,
-      width: 2
+    }, React.createElement(SdIcon, {
+      name: "chevron-down",
+      size: 14
     }))), open && React.createElement("div", {
       role: "menu",
       style: {
-        position: 'absolute',
-        top: 'calc(100% + 6px)',
-        left: 0,
-        zIndex: 20,
-        minWidth: wide ? 320 : 216,
+        ...(sheetMenu ? {
+          position: 'fixed',
+          left: 12,
+          right: 12,
+          bottom: 12,
+          zIndex: 60,
+          boxSizing: 'border-box',
+          maxHeight: 'min(420px, 70%)'
+        } : {
+          position: 'absolute',
+          top: 'calc(100% + 6px)',
+          left: 0,
+          zIndex: 20,
+          minWidth: wide ? 320 : 216,
+          maxHeight: 400
+        }),
         background: 'var(--sd-colour-surface-default)',
         border: '1px solid var(--sd-colour-border-default)',
         borderRadius: 'var(--sd-radius-lg)',
@@ -8760,7 +8347,6 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         display: 'flex',
         flexDirection: 'column',
         gap: 2,
-        maxHeight: 400,
         overflowY: 'auto'
       }
     }, children(() => setOpen(false))));
@@ -8821,10 +8407,9 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
           flexShrink: 0,
           display: 'inline-flex'
         }
-      }, on && React.createElement(RdGlyph, {
-        d: RD_TICK_D,
-        size: 15,
-        width: 2.6
+      }, on && React.createElement(SdIcon, {
+        name: "tick",
+        size: 15
       })), React.createElement("span", {
         style: {
           flex: 1,
@@ -8864,7 +8449,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       viewBox: "0 0 24 24",
       fill: "none"
     }, React.createElement("path", {
-      d: RD_TICK_D,
+      d: "M4 12l5 5L20 6",
       stroke: "currentColor",
       strokeWidth: "3",
       strokeLinecap: "round",
@@ -8958,10 +8543,9 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
           flexShrink: 0,
           display: 'inline-flex'
         }
-      }, isOn && React.createElement(RdGlyph, {
-        d: RD_TICK_D,
-        size: 15,
-        width: 2.6
+      }, isOn && React.createElement(SdIcon, {
+        name: "tick",
+        size: 15
       })), React.createElement("span", {
         style: {
           flex: 1,
@@ -9018,10 +8602,9 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         whiteSpace: 'nowrap',
         color: 'var(--sd-colour-text-primary)'
       }
-    }, React.createElement(RdGlyph, {
-      d: RD_CLOSE_D,
-      size: 15,
-      width: 2
+    }, React.createElement(SdIcon, {
+      name: "close",
+      size: 15
     }), "Clear"));
     const clearFiltersBtn = d.selectRule !== RULE_FILTER || !d.hasFilters ? null : React.createElement("button", {
       type: "button",
@@ -9045,10 +8628,9 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         whiteSpace: 'nowrap',
         flexShrink: 0
       }
-    }, React.createElement(RdGlyph, {
-      d: RD_CLOSE_D,
-      size: 15,
-      width: 2.2
+    }, React.createElement(SdIcon, {
+      name: "close",
+      size: 15
     }), "Clear all filters");
     const selectAll = d.selectRule === RULE_BANDS || d.grouped && d.hasFilters || !d.canSelect || !d.shownIds.length ? null : React.createElement("button", _extends({
       type: "button",
@@ -9084,6 +8666,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         gap: 8,
         flexShrink: 0
       }
+    }, React.createElement(RdSheetMenus.Provider, {
+      value: !!compact
     }, React.createElement("div", {
       style: compact ? {
         display: 'flex',
@@ -9140,7 +8724,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         flex: 1,
         minWidth: 0
       }
-    }), !compact && (summary || clearFiltersBtn || selectAll)), !!chips.length && React.createElement("div", {
+    }), !compact && (summary || clearFiltersBtn || selectAll))), !!chips.length && React.createElement("div", {
       style: {
         display: 'flex',
         gap: 6,
@@ -9166,10 +8750,9 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       className: "ds-selection-pill__label"
     }, value.label), React.createElement("span", {
       className: "ds-selection-pill__dismiss"
-    }, React.createElement(RdGlyph, {
-      d: RD_CLOSE_D,
-      size: 14,
-      width: 2
+    }, React.createElement(SdIcon, {
+      name: "close",
+      size: 14
     })))), d.selectRule !== RULE_FILTER && React.createElement("button", {
       type: "button",
       className: "ds-btn ds-btn--ghost ds-btn--sm",
@@ -9243,10 +8826,9 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
             background: sel ? 'var(--sd-colour-surface-cyan)' : 'var(--sd-colour-surface-default)',
             color: sel ? 'var(--sd-colour-action-primary)' : 'var(--sd-colour-text-primary)'
           }
-        }, sel && React.createElement(RdGlyph, {
-          d: RD_TICK_D,
-          size: 13,
-          width: 3
+        }, sel && React.createElement(SdIcon, {
+          name: "tick",
+          size: 13
         }), o.label);
       }))))
     );
@@ -9480,8 +9062,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         cursor: 'pointer',
         color: 'var(--sd-colour-text-secondary)'
       }
-    }, React.createElement(RdGlyph, {
-      d: RD_CLOSE_D,
+    }, React.createElement(SdIcon, {
+      name: "close",
       size: 20
     }))), React.createElement("div", {
       style: {
@@ -9574,8 +9156,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         flexShrink: 0,
         marginTop: 1
       }
-    }, React.createElement(RdGlyph, {
-      d: "M12 3l9 16H3L12 3ZM12 9v5M12 17h.01",
+    }, React.createElement(SdIcon, {
+      name: "warning",
       size: 18
     })), React.createElement("span", {
       style: {
@@ -9782,10 +9364,9 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
             transform: r.detailOpen ? 'rotate(90deg)' : 'none',
             transition: 'transform .15s'
           }
-        }, React.createElement(RdGlyph, {
-          d: RD_CHEV_D,
-          size: 15,
-          width: 2.2
+        }, React.createElement(SdIcon, {
+          name: "chevron-right",
+          size: 15
         }))) : r.named ? React.createElement(RdChoiceChips, {
           options: rdCollectOptions(c),
           value: r.value,
@@ -9864,8 +9445,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
             background: r.at ? 'var(--sd-colour-surface-cyan)' : 'var(--sd-colour-surface-default)',
             color: r.at ? 'var(--sd-colour-action-primary)' : 'var(--sd-colour-text-secondary)'
           }
-        }, React.createElement(RdGlyph, {
-          d: RD_CLOCK_D,
+        }, React.createElement(SdIcon, {
+          name: "time",
           size: 14
         }), RD_AMPM(r.at || time)), !off && React.createElement("button", {
           type: "button",
@@ -9886,8 +9467,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
             background: r.note || r.noteOpen ? 'var(--sd-colour-surface-cyan)' : 'transparent',
             color: r.note || r.noteOpen ? 'var(--sd-colour-action-primary)' : 'var(--sd-colour-text-secondary)'
           }
-        }, React.createElement(RdGlyph, {
-          d: RD_NOTE_D,
+        }, React.createElement(SdIcon, {
+          name: "book-edit",
           size: 17
         })), blocked && React.createElement("span", {
           style: {
@@ -9900,8 +9481,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
             fontWeight: 600,
             whiteSpace: 'nowrap'
           }
-        }, React.createElement(RdGlyph, {
-          d: RD_LOCK_D,
+        }, React.createElement(SdIcon, {
+          name: "lock",
           size: 15
         }), "Can\u2019t log"), !single && !blocked && (r.excluded ? React.createElement("button", {
           type: "button",
@@ -9927,10 +9508,9 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
             fontWeight: 700,
             whiteSpace: 'nowrap'
           }
-        }, React.createElement(RdGlyph, {
-          d: "M12 5v14M5 12h14",
-          size: 16,
-          width: 2.4
+        }, React.createElement(SdIcon, {
+          name: "add",
+          size: 16
         }), "Add back") : React.createElement("button", {
           type: "button",
           "aria-label": `Leave ${c.name.split(' ')[0]} out of this record`,
@@ -9949,8 +9529,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
             flexShrink: 0,
             color: 'var(--sd-colour-text-secondary)'
           }
-        }, React.createElement(RdGlyph, {
-          d: RD_CLOSE_D,
+        }, React.createElement(SdIcon, {
+          name: "close",
           size: 17
         }))), (cfg.attendance === 'out' && c.collect || !!rdHealthPills(c).length) && React.createElement("span", {
           style: {
@@ -10051,7 +9631,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
             textTransform: 'uppercase',
             color: 'var(--sd-colour-text-secondary)'
           }
-        }, "Physical check \xB7 seven observation points"), RD_SLEEP_CHECKS.map(k => React.createElement("div", {
+        }, "Physical check \xB7 six observation points"), RD_SLEEP_CHECKS.map(k => React.createElement("div", {
           key: k.key,
           style: {
             display: 'flex',
@@ -10118,8 +9698,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         color: 'var(--sd-colour-feedback-error-default)',
         flexShrink: 0
       }
-    }, React.createElement(RdGlyph, {
-      d: "M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7l8-4ZM12 9v4M12 16h.01",
+    }, React.createElement(SdIcon, {
+      name: "warning",
       size: 20
     })), React.createElement("span", {
       style: {
@@ -10162,7 +9742,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     }, "Done"), React.createElement(RdAction, {
       key: "retry",
       primary: true,
-      glyph: "M20 11a8 8 0 0 0-14-4.5L4 8m0-4v4h4M4 13a8 8 0 0 0 14 4.5L20 16m0 4v-4h-4",
+      glyph: "refresh-update-arrow",
       onClick: retry
     }, "Retry ", result.failedIds.length)] : [React.createElement(RdAction, {
       key: "cancel",
@@ -10170,7 +9750,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     }, "Cancel"), React.createElement(RdAction, {
       key: "confirm",
       primary: true,
-      glyph: RD_TICK_D,
+      glyph: 'tick',
       muted: !included.length || noMeal || !!missing.length || !!noReason.length || !!noWho.length,
       onClick: included.length && !noMeal && !missing.length && !noReason.length && !noWho.length ? doConfirm : undefined
     }, !included.length ? 'Nobody to log for' : noMeal ? 'Say what was served' : missing.length ? React.createElement(React.Fragment, null, "Pick what was found \xB7 ", missing.length, " left") : noReason.length ? React.createElement(React.Fragment, null, "Say why not applied \xB7 ", noReason.length, " left") : noWho.length ? React.createElement(React.Fragment, null, "Say who collected \xB7 ", noWho.length, " left") : React.createElement(React.Fragment, null, included.some(needsReason) ? 'Recorded' : cfg.verb, " for ", single ? people[0].name.split(' ')[0] : included.length))])));
@@ -10221,10 +9801,9 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
           flexShrink: 0,
           display: 'inline-flex'
         }
-      }, on && React.createElement(RdGlyph, {
-        d: RD_TICK_D,
-        size: 15,
-        width: 2.6
+      }, on && React.createElement(SdIcon, {
+        name: "tick",
+        size: 15
       })), React.createElement("span", {
         style: {
           flex: 1,
@@ -10408,8 +9987,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         cursor: 'pointer',
         color: 'var(--sd-colour-text-secondary)'
       }
-    }, React.createElement(RdGlyph, {
-      d: RD_CLOSE_D,
+    }, React.createElement(SdIcon, {
+      name: "close",
       size: 20
     }))), React.createElement("div", {
       style: {
@@ -10433,8 +10012,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         padding: '8px 12px',
         borderRadius: 'var(--sd-radius-lg)'
       }
-    }, React.createElement(RdGlyph, {
-      d: RD_CLOCK_D,
+    }, React.createElement(SdIcon, {
+      name: "time",
       size: 14
     }), "Draft restored \u2014 you dismissed this without saving."), React.createElement("span", {
       style: {
@@ -10492,8 +10071,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         color: 'var(--sd-colour-action-primary)',
         flexShrink: 0
       }
-    }, React.createElement(RdGlyph, {
-      d: "M9 12l2 2 4-4M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7l8-4Z",
+    }, React.createElement(SdIcon, {
+      name: "badge",
       size: 17
     })), React.createElement("span", {
       style: {
@@ -10538,8 +10117,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         flexShrink: 0,
         marginTop: 1
       }
-    }, React.createElement(RdGlyph, {
-      d: "M12 3l9 16H3L12 3ZM12 9v5M12 17h.01",
+    }, React.createElement(SdIcon, {
+      name: "warning",
       size: 19
     })), React.createElement("span", {
       style: {
@@ -10579,8 +10158,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
           marginTop: 1,
           color: close ? 'var(--sd-colour-text-on-orange)' : 'var(--sd-colour-text-secondary)'
         }
-      }, React.createElement(RdGlyph, {
-        d: RD_CLOCK_D,
+      }, React.createElement(SdIcon, {
+        name: "time",
         size: 18
       })), React.createElement("span", {
         style: {
@@ -10617,8 +10196,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         flexShrink: 0,
         marginTop: 1
       }
-    }, React.createElement(RdGlyph, {
-      d: "M12 3l9 16H3L12 3ZM12 9v5M12 17h.01",
+    }, React.createElement(SdIcon, {
+      name: "warning",
       size: 19
     })), React.createElement("span", {
       style: {
@@ -10689,7 +10268,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         gap: 7
       }
     }, React.createElement(RdLabel, null, "Outcome"), React.createElement(RdSegmented, {
-      options: ['Given', 'Part dose', 'Refused'],
+      options: ['Given', 'Part dose'],
       value: outcome,
       onChange: setOutcome,
       ariaLabel: "Dose outcome"
@@ -10860,7 +10439,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       onClick: onClose
     }, "Cancel"), React.createElement(RdAction, {
       primary: true,
-      glyph: RD_TICK_D,
+      glyph: 'tick',
       muted: !ready,
       onClick: ready ? () => onConfirm({
         med: givenName,
@@ -10892,7 +10471,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
   }, {
     key: 'sun',
     label: 'Sunscreen',
-    hint: 'Applied, and which SPF'
+    hint: 'Applied'
   }, {
     key: 'med',
     label: 'Medication',
@@ -10995,8 +10574,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         cursor: 'pointer',
         color: 'var(--sd-colour-text-secondary)'
       }
-    }, React.createElement(RdGlyph, {
-      d: RD_CLOSE_D,
+    }, React.createElement(SdIcon, {
+      name: "close",
       size: 20
     }))), React.createElement("div", {
       style: {
@@ -11062,10 +10641,9 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       style: {
         color: 'var(--sd-colour-text-secondary)'
       }
-    }, React.createElement(RdGlyph, {
-      d: RD_CHEV_D,
-      size: 16,
-      width: 2
+    }, React.createElement(SdIcon, {
+      name: "chevron-right",
+      size: 16
     })))))));
   }
   const RD_INC_KINDS = ['Injury', 'Illness', 'Trauma', 'Behavioural', 'Near miss'];
@@ -11228,8 +10806,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         background: 'var(--sd-colour-surface-red)',
         color: 'var(--sd-colour-feedback-error-default)'
       }
-    }, React.createElement(RdGlyph, {
-      d: "M6 3h9l4 4v14H6V3ZM14 3v5h5M9 13h7M9 17h5",
+    }, React.createElement(SdIcon, {
+      name: "document",
       size: 20
     })), React.createElement("span", {
       style: {
@@ -11259,8 +10837,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         cursor: 'pointer',
         color: 'var(--sd-colour-text-secondary)'
       }
-    }, React.createElement(RdGlyph, {
-      d: RD_CLOSE_D,
+    }, React.createElement(SdIcon, {
+      name: "close",
       size: 20
     }))), React.createElement("div", {
       style: {
@@ -11284,8 +10862,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         padding: '8px 12px',
         borderRadius: 'var(--sd-radius-lg)'
       }
-    }, React.createElement(RdGlyph, {
-      d: RD_CLOCK_D,
+    }, React.createElement(SdIcon, {
+      name: "time",
       size: 14
     }), "Draft restored \u2014 you dismissed this record without saving."), React.createElement("div", {
       style: {
@@ -11361,10 +10939,9 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         border: triggers[t.key] ? 'none' : '2px solid var(--sd-colour-border-strong)',
         color: '#fff'
       }
-    }, triggers[t.key] && React.createElement(RdGlyph, {
-      d: RD_TICK_D,
-      size: 13,
-      width: 3
+    }, triggers[t.key] && React.createElement(SdIcon, {
+      name: "tick",
+      size: 13
     })), React.createElement("input", {
       type: "checkbox",
       checked: !!triggers[t.key],
@@ -11480,7 +11057,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       onClick: onClose
     }, "Discard"), React.createElement(RdAction, {
       primary: true,
-      glyph: RD_TICK_D,
+      glyph: 'tick',
       muted: !what.trim(),
       onClick: what.trim() ? () => onConfirm({
         kind,
@@ -11587,8 +11164,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         cursor: 'pointer',
         color: 'var(--sd-colour-text-secondary)'
       }
-    }, React.createElement(RdGlyph, {
-      d: RD_CLOSE_D,
+    }, React.createElement(SdIcon, {
+      name: "close",
       size: 20
     }))), React.createElement("div", {
       style: {
@@ -11607,8 +11184,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     }, React.createElement("span", {
       className: "ds-message-box__icon",
       "aria-hidden": "true"
-    }, React.createElement(RdGlyph, {
-      d: RD_LOCK_D,
+    }, React.createElement(SdIcon, {
+      name: "lock",
       size: 24
     })), React.createElement("div", {
       className: "ds-message-box__text"
@@ -11628,22 +11205,22 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       value: at,
       onChange: setAt,
       ariaLabel: out ? 'Time they left' : 'Time they arrived'
-    })), React.createElement("span", {
+    })), out && React.createElement("span", {
       style: {
         display: 'flex',
         flexDirection: 'column',
         gap: 7
       }
-    }, React.createElement(RdLabel, null, out ? 'Collected by' : 'Delivered by'), out && child.collect ? React.createElement(RdChoiceChips, {
+    }, React.createElement(RdLabel, null, "Collected by"), child.collect ? React.createElement(RdChoiceChips, {
       options: rdCollectOptions(child),
       value: who,
       onChange: setWho,
       ariaLabel: "Who collected them"
     }) : React.createElement(RdSegmented, {
-      options: out ? RD_COLLECTED_BY : RD_DELIVERED_BY,
+      options: RD_COLLECTED_BY,
       value: who,
       onChange: setWho,
-      ariaLabel: out ? 'Who collected them' : 'Who delivered them'
+      ariaLabel: "Who collected them"
     }), !who && React.createElement("span", {
       style: {
         fontSize: 12.5,
@@ -11666,9 +11243,9 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       onClick: onClose
     }, "Cancel"), React.createElement(RdAction, {
       primary: true,
-      glyph: RD_TICK_D,
-      muted: !who,
-      onClick: who ? () => onConfirm(at, who) : undefined
+      glyph: 'tick',
+      muted: out && !who,
+      onClick: !out || who ? () => onConfirm(at, out ? who : null) : undefined
     }, out ? 'Sign out' : 'Sign in', " ", child.name.split(' ')[0]))));
   }
   function RdCorrectSheet({
@@ -11796,8 +11373,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
           cursor: 'pointer',
           color: 'var(--sd-colour-text-secondary)'
         }
-      }, React.createElement(RdGlyph, {
-        d: RD_CLOSE_D,
+      }, React.createElement(SdIcon, {
+        name: "close",
         size: 20
       }))), React.createElement("div", {
         style: {
@@ -11956,7 +11533,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         onClick: onClose
       }, "Cancel"), React.createElement(RdAction, {
         primary: true,
-        glyph: RD_TICK_D,
+        glyph: 'tick',
         muted: !ready,
         onClick: ready ? () => onConfirm({
           at: newAt,
@@ -12122,10 +11699,9 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
           display: 'inline-flex',
           color: 'var(--sd-colour-text-secondary)'
         }
-      }, React.createElement(RdGlyph, {
-        d: "M6 9l6 6 6-6",
-        size: 15,
-        width: 2
+      }, React.createElement(SdIcon, {
+        name: "chevron-down",
+        size: 15
       })));
     };
     const bookedSection = () => !!booked.length && React.createElement("section", {
@@ -12229,8 +11805,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         color: 'var(--sd-colour-text-secondary)',
         flexShrink: 0
       }
-    }, React.createElement(RdGlyph, {
-      d: RD_CLOSE_D,
+    }, React.createElement(SdIcon, {
+      name: "close",
       size: 20
     }))), React.createElement("div", {
       style: {
@@ -12258,10 +11834,9 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       className: "ds-pill ds-pill--sm ds-pill--green ds-pill--minimal"
     }, React.createElement("span", {
       className: "ds-pill__icon"
-    }, React.createElement(RdGlyph, {
-      d: RD_TICK_D,
-      size: 14,
-      width: 2.6
+    }, React.createElement(SdIcon, {
+      name: "tick",
+      size: 14
     })), "All accounted for")), stage === 'missing' && React.createElement("div", {
       style: {
         flex: 1,
@@ -12285,8 +11860,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         color: 'var(--sd-colour-feedback-error-default)',
         flexShrink: 0
       }
-    }, React.createElement(RdGlyph, {
-      d: "M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7l8-4ZM12 9v4M12 16h.01",
+    }, React.createElement(SdIcon, {
+      name: "warning",
       size: 20
     })), React.createElement("span", {
       style: {
@@ -12370,8 +11945,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         display: 'inline-flex',
         flexShrink: 0
       }
-    }, React.createElement(RdGlyph, {
-      d: RD_CLOCK_D,
+    }, React.createElement(SdIcon, {
+      name: "time",
       size: 16
     })), React.createElement("span", {
       style: {
@@ -12391,10 +11966,9 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         display: 'inline-flex',
         color: 'var(--sd-colour-text-secondary)'
       }
-    }, React.createElement(RdGlyph, {
-      d: "M6 9l6 6 6-6",
-      size: 15,
-      width: 2
+    }, React.createElement(SdIcon, {
+      name: "chevron-down",
+      size: 15
     }))), showLog && React.createElement("div", {
       style: {
         display: 'flex',
@@ -12484,10 +12058,9 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
           whiteSpace: 'nowrap',
           color: short ? 'var(--sd-colour-action-primary)' : 'var(--sd-colour-text-secondary)'
         }
-      }, short && 'Continue', React.createElement(RdGlyph, {
-        d: RD_CHEV_D,
-        size: 14,
-        width: 2
+      }, short && 'Continue', React.createElement(SdIcon, {
+        name: "chevron-right",
+        size: 14
       }))));
     }), React.createElement("span", {
       style: {
@@ -12540,19 +12113,19 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       }
     }, stage === 'count' ? allSeen ? React.createElement(RdAction, {
       primary: true,
-      glyph: RD_TICK_D,
+      glyph: 'tick',
       full: true,
       muted: !!count && !dirty,
       onClick: count && !dirty ? undefined : () => onConfirm(nSeen, roster, record())
     }, count ? `Save · ${nSeen} of ${total} seen` : `Record ${nSeen} seen`) : React.createElement(RdAction, {
       primary: true,
-      glyph: RD_TICK_D,
+      glyph: 'tick',
       full: true,
       muted: !roster.length || !!count && !dirty,
       onClick: roster.length && !(count && !dirty) ? () => setStage('missing') : undefined
     }, nSeen ? `Done — ${missing.length} not seen` : 'Done counting') : React.createElement(React.Fragment, null, React.createElement(RdAction, {
       primary: true,
-      glyph: RD_TICK_D,
+      glyph: 'tick',
       full: true,
       onClick: () => onDiscrepancy(nSeen, missing, record())
     }, count ? 'Save' : 'Record', " ", nSeen, " of ", total, " \xB7 ", missing.length, " not seen"), React.createElement(RdAction, {
@@ -12575,44 +12148,39 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     key: 'headcount',
     act: 'headcount',
     label: 'Head count',
-    d: 'M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM2 20a7 7 0 0 1 14 0M17 11a3 3 0 1 0 0-6M18 20h4a6 6 0 0 0-4-5.7'
-  }, {
-    key: 'camera',
-    act: 'camera',
-    label: 'Take a photo',
-    d: RD_CAMERA_D
+    icon: 'user-multiple'
   }, {
     key: 'roomsettings',
     act: 'settings',
     label: 'Room settings',
-    d: 'M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7ZM19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-2.87 1.2V21a2 2 0 1 1-4 0v-.09A1.7 1.7 0 0 0 7 19.4a1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.7 1.7 0 0 0 3 15a1.7 1.7 0 0 0-1.56-1H1a2 2 0 1 1 0-4h.09A1.7 1.7 0 0 0 2.6 7a1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.7 1.7 0 0 0 7 2.6h.09A1.7 1.7 0 0 0 8.6 1V1a2 2 0 1 1 4 0v.09a1.7 1.7 0 0 0 2.87 1.2l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.7 1.7 0 0 0 21.4 9H21a2 2 0 1 1 0 4h-.09'
+    icon: 'settings-cog'
   }, {
     key: 'incidents',
     label: 'Incident records',
-    d: 'M6 3h9l4 4v14H6V3ZM14 3v5h5M9 13h7M9 17h5'
+    icon: 'document'
   }, {
     key: 'learning',
     label: 'Learning',
-    d: 'M4 5.5A2.5 2.5 0 0 1 6.5 3H19v15H6.5A2.5 2.5 0 0 0 4 20.5V5.5Z'
+    icon: 'book-edit'
   }, {
     key: 'help',
     label: 'Help & support',
-    d: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18ZM9.6 9.5a2.5 2.5 0 1 1 3.3 2.4c-.6.2-.9.8-.9 1.4v.4M12 17h.01'
+    icon: 'question-mark-help'
   }];
   const RD_MENU_ACCOUNT = [{
     key: 'account',
     label: 'Account',
-    d: 'M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM4 21a8 8 0 0 1 16 0'
+    icon: 'user'
   }, {
     key: 'switchedu',
     act: 'switchEducator',
     label: 'Switch educator · keeps the service',
-    d: 'M16 3.1A4 4 0 0 1 16 11M8 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM2 21a6 6 0 0 1 12 0M17 14.3A6 6 0 0 1 22 21'
+    icon: 'user-refresh'
   }, {
     key: 'signout',
     act: 'signOut',
     label: 'Log out of this service',
-    d: 'M14 8V6a2 2 0 0 0-2-2H5v16h7a2 2 0 0 0 2-2v-2M9 12h11m0 0-3-3m3 3-3 3'
+    icon: 'signout'
   }];
   function RdDrawer({
     scope,
@@ -12658,8 +12226,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
           color: 'var(--sd-colour-text-secondary)',
           flexShrink: 0
         }
-      }, React.createElement(RdGlyph, {
-        d: m.d,
+      }, React.createElement(SdIcon, {
+        name: m.icon,
         size: 19
       })), React.createElement("span", {
         style: {
@@ -12766,8 +12334,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         border: `1px solid ${D_BORDER}`,
         color: '#fff'
       }
-    }, React.createElement(RdGlyph, {
-      d: RD_CLOSE_D,
+    }, React.createElement(SdIcon, {
+      name: "close",
       size: 19
     })))), React.createElement("div", {
       style: {
@@ -12802,8 +12370,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         color: scope === 'service' ? 'var(--sd-colour-text-on-cyan)' : 'var(--sd-colour-text-secondary)',
         flexShrink: 0
       }
-    }, React.createElement(RdGlyph, {
-      d: "M3 21V9l9-6 9 6v12M9 21v-6h6v6",
+    }, React.createElement(SdIcon, {
+      name: "dashboard",
       size: 19
     })), React.createElement("span", {
       style: {
@@ -12994,7 +12562,6 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       notifUnread,
       openNotifs,
       openSettings,
-      openCamera,
       facets,
       setFacets,
       showSelectedOnly,
@@ -13093,8 +12660,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       rowDetail,
       notifUnread,
       openNotifs,
-      openSettings,
-      openCamera
+      openSettings
     };
     if (scope === 'service') {
       const signed = pool.filter(c => c.status === 'here').length;
@@ -13154,7 +12720,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         actions: readOnly || !canCount ? [] : [{
           key: 'headcount',
           label: 'Head count · all rooms',
-          glyph: 'M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM2 20a7 7 0 0 1 14 0M17 11a3 3 0 1 0 0-6M18 20h4a6 6 0 0 0-4-5.7',
+          glyph: 'user-multiple',
           primary: true,
           onClick: openHeadcount
         }],
@@ -13295,7 +12861,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       actions: readOnly || !canCount ? [] : [{
         key: 'headcount',
         label: 'Head count',
-        glyph: 'M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM2 20a7 7 0 0 1 14 0M17 11a3 3 0 1 0 0-6M18 20h4a6 6 0 0 0-4-5.7',
+        glyph: 'user-multiple',
         primary: true,
         onClick: openHeadcount
       }],
@@ -13354,10 +12920,9 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         flexShrink: 0,
         color: '#fff'
       }
-    }, React.createElement(RdGlyph, {
-      d: RD_MENU_D,
-      size: 22,
-      width: 2
+    }, React.createElement(SdIcon, {
+      name: "menu-hamburger",
+      size: 22
     })), isIpad ? React.createElement("button", {
       type: "button",
       onClick: onMenu,
@@ -13395,10 +12960,9 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         display: 'inline-flex',
         transform: 'rotate(90deg)'
       }
-    }, React.createElement(RdGlyph, {
-      d: RD_CHEV_D,
-      size: 15,
-      width: 2.4
+    }, React.createElement(SdIcon, {
+      name: "chevron-right",
+      size: 15
     }))), React.createElement("span", {
       "aria-hidden": "true",
       style: {
@@ -13465,14 +13029,13 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     }), React.createElement(RdNotifBell, {
       count: d.notifUnread,
       onOpen: d.openNotifs
-    }), isIpad && React.createElement(RdCameraButton, {
-      onOpen: d.openCamera
     }), isIpad && d.scope === 'room' && React.createElement(RdSettingsCog, {
       onOpen: d.openSettings
     }), React.createElement(RdActingAs, {
       educator: d.educator,
       onOpen: d.openEducator
     })), !isIpad && React.createElement("div", {
+      className: "rd-hdr-chips",
       style: {
         position: 'relative',
         zIndex: 1,
@@ -13487,6 +13050,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       date: d.date,
       compact: true
     }), signedIn && React.createElement("span", {
+      role: "text",
+      "aria-label": `${signedIn.value} signed in`,
       style: {
         display: 'inline-flex',
         alignItems: 'baseline',
@@ -13505,12 +13070,17 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         color: '#fff'
       }
     }, signedIn.value), React.createElement("span", {
+      "aria-hidden": "true",
       style: {
         fontSize: 11.5,
         fontWeight: 600,
         color: 'var(--sd-colour-cyan-100)'
       }
-    }, "signed in")), alertPill)), d.readOnly && React.createElement("div", {
+    }, React.createElement("span", {
+      className: "rd-hdr-long"
+    }, "signed in"), React.createElement("span", {
+      className: "rd-hdr-short"
+    }, "in"))), alertPill)), d.readOnly && React.createElement("div", {
       style: {
         display: 'flex',
         alignItems: 'center',
@@ -13525,8 +13095,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         color: 'var(--sd-colour-text-secondary)',
         flexShrink: 0
       }
-    }, React.createElement(RdGlyph, {
-      d: d.readOnly === 'future' ? RD_CAL_D : RD_LOCK_D,
+    }, React.createElement(SdIcon, {
+      name: d.readOnly === 'future' ? 'calendar' : 'lock',
       size: 16
     })), React.createElement("span", {
       style: {
@@ -13552,7 +13122,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       d: d,
       arrangement: arrangement,
       pad: isIpad ? '18px 26px 18px' : '10px 12px 10px'
-    }), arrangement === 'none' && !!d.actions.length && React.createElement(RdActionBar, {
+    }), arrangement === 'none' && !!d.actions.length && !(d.selected || d.selectedRoom || d.tickedCount) && React.createElement(RdActionBar, {
       d: d,
       pad: isIpad ? '14px 26px' : '12px 16px'
     }));
@@ -13631,7 +13201,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     const [roomKey, setRoomKey] = useState(_room0);
     const [view, setView] = useState(_view0);
     const [calm, setCalm] = useState(!!_p.get('calm'));
-    const [showStaff, setShowStaff] = useState(!!_p.get('staff'));
+    const [showStaff, setShowStaff] = useState(false);
     const [selectArm, setSelectArm] = useState(rdReadArm(_p.get('sel')));
     useEffect(() => {
       setSelectArm(props.selectArm || '');
@@ -13655,7 +13225,6 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     const [menuOpen, setMenuOpen] = useState(false);
     const [educator, setEducator] = useState(props.educator || RD_EDUCATOR);
     const [educatorOpen, setEducatorOpen] = useState(false);
-    const [cameraOpen, setCameraOpen] = useState(false);
     const [dateIndex, setDateIndex] = useState(_p.get('date') && rdDateAt(Number(_p.get('date'))) ? Number(_p.get('date')) : 0);
     const dateDay = rdDateAt(dateIndex) || rdDateAt(0);
     const readOnly = dateIndex > 0 ? 'past' : dateIndex < 0 ? 'future' : false;
@@ -13725,7 +13294,6 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       signOut: props.onSignOut,
       switchEducator: props.onSwitchEducator,
       headcount: () => openHeadcount(),
-      camera: () => setCameraOpen(true),
       settings: scope === 'room' ? () => setSettingsOpen(true) : undefined
     };
     const isIpad = device === 'ipad';
@@ -13748,7 +13316,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         reset();
       }
     }, [props.roomKey]);
-    const busy = !!(menuOpen || sheet || chooser || incident || correct || med || profile || educatorOpen || notifsOpen || settingsOpen || cameraOpen || pendingOpen || dueOpen || calOpen || syncing);
+    const busy = !!(menuOpen || sheet || chooser || incident || correct || med || profile || educatorOpen || notifsOpen || settingsOpen || pendingOpen || dueOpen || calOpen || syncing);
     useEffect(() => {
       if (props.onBusyChange) props.onBusyChange(busy);
     }, [busy]);
@@ -13980,13 +13548,12 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         }, ...(c.audit || [])]
       };
     }));
-    const applySignIn = (id, at, by) => setRoster(rs => {
+    const applySignIn = (id, at) => setRoster(rs => {
       if (rs.some(c => c.id === id)) {
         return rs.map(c => c.id === id ? {
           ...c,
           status: 'here',
           at,
-          deliveredBy: by,
           by: null,
           loggedBy: educator.name
         } : c);
@@ -13997,7 +13564,6 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         ...other,
         status: 'here',
         at,
-        deliveredBy: by,
         by: null,
         fuzzy: true,
         loggedBy: educator.name
@@ -14136,7 +13702,6 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       notifUnread,
       openNotifs: () => setNotifsOpen(true),
       openSettings: () => setSettingsOpen(true),
-      openCamera: () => setCameraOpen(true),
       readOnly,
       date: {
         index: dateIndex,
@@ -14249,7 +13814,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
           okIds.forEach(id => {
             const d0 = details && details[id] || {};
             const t = d0.at || at || RD_NOW;
-            if (att === 'in') applySignIn(id, t, d0.detail || null);else if (att === 'out') applySignOut(id, t, d0.detail || null);else applyAbsent(id, d0.note || null);
+            if (att === 'in') applySignIn(id, t);else if (att === 'out') applySignOut(id, t, d0.detail || null);else applyAbsent(id, d0.note || null);
           });
         } else {
           applyEvent(okIds, ev, at || RD_NOW, details);
@@ -14280,8 +13845,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         onConfirm: (at, who) => {
           setSheet(null);
           const inbound = sheet.direction === 'in';
-          if (inbound) applySignIn(c.id, at, who);else applySignOut(c.id, at, who);
-          const label = `${inbound ? 'Signed in' : 'Signed out'} · ${c.name} · ${who} · ${at}`;
+          if (inbound) applySignIn(c.id, at);else applySignOut(c.id, at, who);
+          const label = `${inbound ? 'Signed in' : 'Signed out'} · ${c.name}${inbound ? '' : ` · ${who}`} · ${at}`;
           if (conn === 'offline') {
             queue(label, 'attendance', [c.id], at);
             showToast(`Saved on this device · ${c.name.split(' ')[0]}`);
@@ -14410,11 +13975,11 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         phone: !isIpad,
         educator: educator,
         onClose: () => setHcSign(null),
-        onConfirm: (at, who) => {
+        onConfirm: at => {
           setHcSign(null);
-          applySignIn(c.id, at, who);
+          applySignIn(c.id, at);
           if (conn === 'offline') {
-            queue(`Signed in · ${c.name} · ${who} · ${at}`, 'attendance', [c.id], at);
+            queue(`Signed in · ${c.name} · ${at}`, 'attendance', [c.id], at);
             showToast(`Saved on this device · ${c.name.split(' ')[0]}`);
           } else showToast(`${c.name.split(' ')[0]} signed in · ${at}`);
         }
@@ -14445,10 +14010,9 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         boxShadow: '0 8px 24px rgba(0,40,34,0.3)',
         pointerEvents: 'auto'
       }
-    }, React.createElement(RdGlyph, {
-      d: RD_TICK_D,
-      size: 17,
-      width: 2.4
+    }, React.createElement(SdIcon, {
+      name: "tick",
+      size: 17
     }), toast.msg, toast.undo && React.createElement("button", {
       type: "button",
       onClick: () => {
@@ -14469,10 +14033,9 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         fontSize: 13.5,
         fontWeight: 700
       }
-    }, React.createElement(RdGlyph, {
-      d: "M9 14 4 9l5-5M4 9h11a5 5 0 0 1 0 10h-3",
-      size: 15,
-      width: 2
+    }, React.createElement(SdIcon, {
+      name: "reply",
+      size: 15
     }), "Undo"))), chooser && React.createElement(RdEventChooser, {
       child: chooser,
       roomEvents: roomEvents,
@@ -14649,17 +14212,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         onEdit: scope === 'room' && !readOnly && !offlineBlocked('amendEvent') ? entry => openCorrect(c, entry) : undefined,
         onClose: () => setProfile(null)
       });
-    })(), cameraOpen && React.createElement(RdCameraSheet, {
-      offline: conn === 'offline',
-      onClose: () => setCameraOpen(false),
-      onCapture: () => {
-        setCameraOpen(false);
-        if (conn === 'offline') {
-          queue('Photo · captured on device', 'photo', [], '12:55');
-          showToast('Photo saved on this device');
-        } else showToast('Photo captured (demo)');
-      }
-    }), calOpen && React.createElement(RdCalendarPopover, {
+    })(), calOpen && React.createElement(RdCalendarPopover, {
       value: dateIndex,
       onPick: setDateIndex,
       onClose: () => setCalOpen(false)
@@ -14685,7 +14238,6 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     service: false,
     offline: 'queue'
   };
-  const RD_TAG_D = 'M3.5 12.6V4.5a1 1 0 0 1 1-1h8.1l8.4 8.4a1 1 0 0 1 0 1.4l-7.2 7.2a1 1 0 0 1-1.4 0L3.5 12.6ZM8 8h.01';
   const RD_CHILD_GROUP_DEFS = [{
     id: 'grp-hall',
     name: 'Hall',
@@ -14877,8 +14429,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         background: 'var(--sd-colour-surface-cyan)',
         color: 'var(--sd-colour-action-primary)'
       }
-    }, React.createElement(RdGlyph, {
-      d: RD_TAG_D,
+    }, React.createElement(SdIcon, {
+      name: "tag",
       size: 20
     })), React.createElement("span", {
       style: {
@@ -14908,8 +14460,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         cursor: 'pointer',
         color: sub
       }
-    }, React.createElement(RdGlyph, {
-      d: RD_CLOSE_D,
+    }, React.createElement(SdIcon, {
+      name: "close",
       size: 20
     }))), React.createElement("div", {
       style: {
@@ -15011,7 +14563,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       onClick: onClose
     }, "Cancel"), React.createElement(RdAction, {
       primary: true,
-      glyph: RD_TICK_D,
+      glyph: 'tick',
       muted: !ready || confirmDelete,
       onClick: ready && !confirmDelete ? () => pickKey === NONE ? onRemove() : onAdd(target) : undefined
     }, primaryLabel))));
@@ -15172,10 +14724,9 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         border: on ? 'none' : '2px solid var(--sd-colour-border-strong)',
         color: 'var(--sd-colour-text-inverse)'
       }
-    }, on && React.createElement(RdGlyph, {
-      d: RD_TICK_D,
-      size: 14,
-      width: 3
+    }, on && React.createElement(SdIcon, {
+      name: "tick",
+      size: 14
     })), React.createElement(RdKid, {
       c: p,
       size: 34
@@ -15263,9 +14814,6 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     RD_DATES,
     roomStats,
     RD_ALL_CHILDREN,
-    RdGlyph,
-    RD_ONLINE_D,
-    RD_OFFLINE_D,
     RD_SYNC_BG,
     RD_SYNC_FG
   };

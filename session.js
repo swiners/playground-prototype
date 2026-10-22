@@ -14,9 +14,6 @@
     RD_ROOMS,
     roomStats,
     RD_ALL_CHILDREN,
-    RdGlyph,
-    RD_ONLINE_D,
-    RD_OFFLINE_D,
     RD_SYNC_BG,
     RD_SYNC_FG
   } = window.PgDash;
@@ -51,10 +48,14 @@
       orient: 'landscape'
     }
   };
-  function layoutForWidth(w) {
+  function layoutForWidth(w, h) {
     if (!w) return {
       device: 'ipad',
       orient: 'landscape'
+    };
+    if (h && h < 500 && w < 1000) return {
+      device: 'phone',
+      orient: 'portrait'
     };
     if (w >= 1100) return {
       device: 'ipad',
@@ -126,7 +127,7 @@
   }, {
     slug: 'club',
     name: 'The club',
-    asks: 'Eighteen children aged three to five in one room. Ask for sunscreen for the four-year-old kinder group before they go outside — does the grouping get used, or does the whole room go at once? And notice what the quick-log does NOT offer: no sleep checks, no nappies, because a club does not do them (R-RS-3). Is that right, or do your three-year-olds still need toileting?',
+    asks: 'Eighteen children aged three to five in one room. Ask for sunscreen for the four-year-olds before they go outside — does the Age grouping get used, or does the whole room go at once? And notice what the quick-log does NOT offer: no sleep checks, no nappies, because a club does not do them (R-RS-3). Is that right, or do your three-year-olds still need toileting?',
     p: {
       phase: 'dash',
       room: 'wombat'
@@ -152,11 +153,10 @@
   }, {
     slug: 'service',
     name: "Who's in the building",
-    asks: 'Does the one scope rule read as a decision, or as a missing feature? The Kangaroo ratio breach is what this view is for.',
+    asks: 'Does the one scope rule read as a decision, or as a missing feature?',
     p: {
       phase: 'dash',
-      scope: 'service',
-      staff: '1'
+      scope: 'service'
     }
   }, {
     slug: 'handover',
@@ -217,13 +217,13 @@
   }
   const SHELL_NOTES = [{
     title: 'Where the demo starts',
-    lines: ['Today, 12:55 pm · Little Bugs Early Learning — four rooms and two clubs, 112 children.', 'Koala Room: 20 on the roll, 13 signed in, 2 educators.', 'You are recording as William Walker. Two things are due here, and a head count is coming up.', 'Every room carries a different situation — the Nursery is mid-sleep-round, Kangaroo is over ratio.']
+    lines: ['Today, 12:55 pm · Little Bugs Early Learning — four rooms and two clubs, 112 children.', 'Koala Room: 20 on the roll, 13 signed in, 2 educators.', 'You are recording as William Walker. Two things are due here, and a head count is coming up.', 'Every room carries a different situation — the Nursery is mid-sleep-round, Bilby is a school-age club.']
   }, {
     title: 'What to look for',
     lines: ['Which route you reach for first when asked to act on a group — the quick-log, the filter, or a group heading. That is the open question (R-RM-2), and OD-15 is the half of it we are testing arms on.', 'Every event time is to the minute, and each child in a batch carries their own.', 'Allergies and dietary flags on every bulk sheet, not only meals.', 'The head count has no "all present" button. That is deliberate.', 'An incident asks five plain questions and works out for itself whether it is serious.', 'Offline is a normal state, not an error.']
   }, {
     title: 'Where this stops',
-    lines: ['There is no backend. Every child, room, face and event is invented, and the PIN is a string compare.', 'The camera is a stub — where a photo goes is still open (A10, C5, and OD-10, whose deadline has passed).', 'Educator presence and ratios sit behind Staffing · E11 in the rail; the rest of that work is not built.', 'Emergency lists, transport lists and checklists are out of scope, so they are absent rather than broken.', 'The phone is knowingly squished (S5).']
+    lines: ['There is no backend. Every child, room, face and event is invented, and the PIN is a string compare.', 'Educator presence and ratios are not shown: the API has no count of educators in a room.', 'Emergency lists, transport lists and checklists are out of scope, so they are absent rather than broken.', 'The phone is knowingly squished (S5).']
   }, {
     title: 'Synthetic data',
     lines: ['The children’s faces are AI-generated (D47b) — fake people by requirement, not by fallback, because this sits on a shared room tablet with parents standing at it.', 'No real family data, and nothing here touches the network.']
@@ -232,9 +232,9 @@
     const [params, setParams] = useState(readParams);
     const [runId, setRunId] = useState(0);
     const bare = !!params.bare;
-    const [viewport, setViewport] = useState(() => layoutForWidth(window.innerWidth));
+    const [viewport, setViewport] = useState(() => layoutForWidth(window.innerWidth, window.innerHeight));
     useEffect(() => {
-      const onResize = () => setViewport(layoutForWidth(window.innerWidth));
+      const onResize = () => setViewport(layoutForWidth(window.innerWidth, window.innerHeight));
       window.addEventListener('resize', onResize);
       window.addEventListener('orientationchange', onResize);
       return () => {
@@ -242,7 +242,8 @@
         window.removeEventListener('orientationchange', onResize);
       };
     }, []);
-    const framed = params.frame === 'fill' ? null : FRAMES[params.frame] ? params.frame : 'tablet';
+    const realPhone = !params.frame && viewport.device === 'phone';
+    const framed = params.frame === 'fill' || realPhone ? null : FRAMES[params.frame] ? params.frame : 'tablet';
     const base = framed ? FRAMES[framed] : viewport;
     const layout = {
       device: base.device,
@@ -540,7 +541,7 @@
     }, stageEl) : stageEl, connSwitch && React.createElement(ConnectionSwitch, {
       conn: params.conn === 'offline' ? 'offline' : 'online',
       setConn: setConn
-    }), !bare && React.createElement(React.Fragment, null, params.rail !== 'hide' && !railLocked && !railOpen && React.createElement("button", {
+    }), !bare && React.createElement(React.Fragment, null, params.rail !== 'hide' && !railLocked && !railOpen && !realPhone && React.createElement("button", {
       type: "button",
       onClick: () => setRailOpen(true),
       "aria-label": "Open test rail",
@@ -562,17 +563,10 @@
         background: 'rgba(0,40,34,0.30)',
         color: '#fff'
       }
-    }, React.createElement("svg", {
-      viewBox: "0 0 24 24",
-      width: "13",
-      height: "13",
-      fill: "none",
-      stroke: "currentColor",
-      strokeWidth: "2.4",
-      strokeLinecap: "round"
-    }, React.createElement("path", {
-      d: "M15 5l-7 7 7 7"
-    }))), !railLocked && React.createElement(TestRail, {
+    }, React.createElement(SdIcon, {
+      name: "chevron-left",
+      size: 13
+    })), !railLocked && React.createElement(TestRail, {
       open: railOpen,
       onClose: () => setRailOpen(false),
       params: params,
@@ -615,10 +609,9 @@
         background: off ? RD_SYNC_BG : 'var(--sd-colour-surface-default)',
         color: off ? RD_SYNC_FG : 'var(--sd-colour-text-secondary)'
       }
-    }, React.createElement(RdGlyph, {
-      d: off ? RD_OFFLINE_D : RD_ONLINE_D,
-      size: 15,
-      width: 1.9
+    }, React.createElement(SdIcon, {
+      name: off ? 'wifi-off' : 'wifi',
+      size: 15
     }));
   }
   function ReviewShell({
@@ -1036,7 +1029,7 @@
       style: group
     }, React.createElement("p", {
       style: label
-    }, "Conditions"), seg([['online', 'Online'], ['offline', 'Offline']], params.conn || 'online', setConn), seg([['', 'Staffing off'], ['1', 'Staffing · E11']], params.staff || '', k => setParam('staff', k)), React.createElement("p", {
+    }, "Conditions"), seg([['online', 'Online'], ['offline', 'Offline']], params.conn || 'online', setConn), React.createElement("p", {
       style: {
         ...label,
         margin: '10px 0 2px'

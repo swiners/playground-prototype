@@ -4,7 +4,7 @@ const {
   useLayoutEffect,
   useRef
 } = React;
-const PG_VERSION = '0.13.0';
+const PG_VERSION = '0.14.0';
 const TEAL = 'var(--sd-colour-action-primary)';
 const LINK = 'var(--sd-colour-text-link)';
 const HERO_GRAD = 'radial-gradient(120% 70% at 50% 0%, var(--sd-colour-cyan-700), var(--sd-colour-cyan-900))';
@@ -26,6 +26,56 @@ const screenBase = {
   flexDirection: 'column',
   position: 'relative'
 };
+const SD_ICONS_ROOT = '../../assets/icons/';
+const SD_LOCAL_ICONS = ['backspace', 'badge-med', 'badge-nappy', 'badge-sleep', 'badge-sun', 'bag', 'wifi', 'wifi-off'];
+function sdIconUrl(name) {
+  const inlined = window.__PG_ICONS && window.__PG_ICONS[name];
+  if (inlined) return inlined;
+  if (name.indexOf('colour/') === 0) return SD_ICONS_ROOT + name + '.svg';
+  return SD_LOCAL_ICONS.indexOf(name) >= 0 ? './assets/icons/' + name + '.svg' : SD_ICONS_ROOT + 'outline/' + name + '.svg';
+}
+function SdIcon({
+  name,
+  size = 20,
+  style
+}) {
+  const url = sdIconUrl(name);
+  if (name.indexOf('colour/') === 0) {
+    return React.createElement("img", {
+      src: url,
+      alt: "",
+      "aria-hidden": "true",
+      width: size,
+      height: size,
+      style: {
+        display: 'inline-block',
+        flexShrink: 0,
+        objectFit: 'contain',
+        ...style
+      }
+    });
+  }
+  const mask = `url("${url}")`;
+  return React.createElement("span", {
+    "aria-hidden": "true",
+    style: {
+      display: 'inline-block',
+      width: size,
+      height: size,
+      flexShrink: 0,
+      background: 'currentColor',
+      WebkitMaskImage: mask,
+      maskImage: mask,
+      WebkitMaskRepeat: 'no-repeat',
+      maskRepeat: 'no-repeat',
+      WebkitMaskPosition: 'center',
+      maskPosition: 'center',
+      WebkitMaskSize: 'contain',
+      maskSize: 'contain',
+      ...style
+    }
+  });
+}
 function Spinner({
   size = 18,
   color = 'currentColor'

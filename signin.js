@@ -1,6 +1,5 @@
 function _extends() { return _extends = Object.assign ? Object.assign.bind() : function (n) { for (var e = 1; e < arguments.length; e++) { var t = arguments[e]; for (var r in t) ({}).hasOwnProperty.call(t, r) && (n[r] = t[r]); } return n; }, _extends.apply(null, arguments); }
 (function () {
-  const ICON2 = n => `./assets/icons/${n}.svg`;
   const DEMO_USER = 'LittleBugs';
   const DEMO_PASS = 'bugs123';
   const DEMO_PIN = '1234';
@@ -758,14 +757,11 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         borderWidth: 1,
         borderColor: border
       }
-    }, lead && React.createElement("img", {
-      src: ICON2(lead),
-      alt: "",
+    }, lead && React.createElement(SdIcon, {
+      name: lead,
+      size: 18,
       style: {
-        width: 18,
-        height: 18,
-        opacity: 0.5,
-        flexShrink: 0
+        opacity: 0.5
       }
     }), React.createElement("input", {
       ref: inputRef,
@@ -794,12 +790,10 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         flexShrink: 0,
         display: 'flex'
       }
-    }, React.createElement("img", {
-      src: ICON2(trail),
-      alt: "",
+    }, React.createElement(SdIcon, {
+      name: trail,
+      size: 18,
       style: {
-        width: 18,
-        height: 18,
         opacity: 0.5
       }
     })), clearable && value && React.createElement("button", {
@@ -827,25 +821,10 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
   function ClearGlyph({
     size = 20
   }) {
-    return React.createElement("svg", {
-      viewBox: "0 0 20 20",
-      width: size,
-      height: size,
-      "aria-hidden": "true",
-      style: {
-        display: 'block'
-      }
-    }, React.createElement("circle", {
-      cx: "10",
-      cy: "10",
-      r: "9",
-      fill: "currentColor"
-    }), React.createElement("path", {
-      d: "M7 7l6 6M13 7l-6 6",
-      stroke: "var(--sd-colour-surface-default)",
-      strokeWidth: "1.8",
-      strokeLinecap: "round"
-    }));
+    return React.createElement(SdIcon, {
+      name: "clear-cross-fill",
+      size: size
+    });
   }
   function Btn({
     sz,
@@ -969,28 +948,13 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
   function SearchIcon({
     color = 'currentColor'
   }) {
-    return React.createElement("svg", {
-      viewBox: "0 0 16 16",
-      width: "16",
-      height: "16",
-      fill: "none",
-      "aria-hidden": "true",
+    return React.createElement(SdIcon, {
+      name: "search",
+      size: 16,
       style: {
-        display: 'block',
-        flexShrink: 0
+        color
       }
-    }, React.createElement("circle", {
-      cx: "7",
-      cy: "7",
-      r: "4.6",
-      stroke: color,
-      strokeWidth: "1.5"
-    }), React.createElement("path", {
-      d: "M10.4 10.4 L14 14",
-      stroke: color,
-      strokeWidth: "1.5",
-      strokeLinecap: "round"
-    }));
+    });
   }
   function Search({
     sz,
@@ -1066,43 +1030,24 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
   function Chevron({
     sz
   }) {
-    return React.createElement("svg", {
-      viewBox: "0 0 24 24",
-      width: sz.chev,
-      height: sz.chev,
-      fill: "none",
-      "aria-hidden": "true",
+    return React.createElement(SdIcon, {
+      name: "chevron-right",
+      size: sz.chev,
       style: {
-        display: 'block',
-        flexShrink: 0
+        color: 'var(--sd-colour-action-primary)'
       }
-    }, React.createElement("path", {
-      d: "M9 5l7 7-7 7",
-      stroke: "var(--sd-colour-action-primary)",
-      strokeWidth: "2.4",
-      strokeLinecap: "round",
-      strokeLinejoin: "round"
-    }));
+    });
   }
   function Plus({
     sz
   }) {
-    return React.createElement("svg", {
-      viewBox: "0 0 24 24",
-      width: sz.chev,
-      height: sz.chev,
-      fill: "none",
-      "aria-hidden": "true",
+    return React.createElement(SdIcon, {
+      name: "add",
+      size: sz.chev,
       style: {
-        display: 'block',
-        flexShrink: 0
+        color: 'var(--sd-colour-action-primary)'
       }
-    }, React.createElement("path", {
-      d: "M12 5v14M5 12h14",
-      stroke: "var(--sd-colour-action-primary)",
-      strokeWidth: "2.4",
-      strokeLinecap: "round"
-    }));
+    });
   }
   function SquareThumb({
     sz,
@@ -1361,27 +1306,10 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
   function BinGlyph({
     size = 26
   }) {
-    return React.createElement("svg", {
-      viewBox: "0 0 24 24",
-      width: size,
-      height: size,
-      fill: "none",
-      "aria-hidden": "true",
-      style: {
-        display: 'block'
-      }
-    }, React.createElement("path", {
-      d: "M4 7h16M9 7V5.5A1.5 1.5 0 0 1 10.5 4h3A1.5 1.5 0 0 1 15 5.5V7M6 7l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12",
-      stroke: "var(--sd-colour-text-primary)",
-      strokeWidth: "1.6",
-      strokeLinecap: "round",
-      strokeLinejoin: "round"
-    }), React.createElement("path", {
-      d: "M10.5 11v6M13.5 11v6",
-      stroke: "var(--sd-colour-text-primary)",
-      strokeWidth: "1.6",
-      strokeLinecap: "round"
-    }));
+    return React.createElement(SdIcon, {
+      name: "delete",
+      size: size
+    });
   }
   function Keypad({
     sz,
@@ -1498,34 +1426,13 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
   function InfoGlyph({
     size = 16
   }) {
-    return React.createElement("svg", {
-      viewBox: "0 0 16 16",
-      width: size,
-      height: size,
-      fill: "none",
-      "aria-hidden": "true",
+    return React.createElement(SdIcon, {
+      name: "info-alert",
+      size: size,
       style: {
-        display: 'block',
-        flexShrink: 0,
         marginTop: 1
       }
-    }, React.createElement("circle", {
-      cx: "8",
-      cy: "8",
-      r: "6.6",
-      stroke: "currentColor",
-      strokeWidth: "1.1"
-    }), React.createElement("path", {
-      d: "M8 4.6v4.4",
-      stroke: "currentColor",
-      strokeWidth: "1.2",
-      strokeLinecap: "round"
-    }), React.createElement("circle", {
-      cx: "8",
-      cy: "11.2",
-      r: "0.75",
-      fill: "currentColor"
-    }));
+    });
   }
   function SentGlyph({
     size = 44
@@ -1574,34 +1481,10 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
   function LockGlyph({
     size = 30
   }) {
-    return React.createElement("svg", {
-      viewBox: "0 0 24 24",
-      width: size,
-      height: size,
-      fill: "none",
-      "aria-hidden": "true",
-      style: {
-        display: 'block'
-      }
-    }, React.createElement("rect", {
-      x: "4.5",
-      y: "10.5",
-      width: "15",
-      height: "10.5",
-      rx: "2.5",
-      stroke: "currentColor",
-      strokeWidth: "1.8"
-    }), React.createElement("path", {
-      d: "M8 10.5V8a4 4 0 0 1 8 0v2.5",
-      stroke: "currentColor",
-      strokeWidth: "1.8",
-      strokeLinecap: "round"
-    }), React.createElement("circle", {
-      cx: "12",
-      cy: "15.8",
-      r: "1.5",
-      fill: "currentColor"
-    }));
+    return React.createElement(SdIcon, {
+      name: "lock",
+      size: size
+    });
   }
   function StatePanel({
     sz,
@@ -1640,12 +1523,10 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         fontSize: d * 0.38,
         fontWeight: 700
       }
-    }, node || (iconName ? React.createElement("img", {
-      src: ICON2(iconName),
-      alt: "",
+    }, node || (iconName ? React.createElement(SdIcon, {
+      name: iconName,
+      size: d * 0.4,
       style: {
-        width: d * 0.4,
-        height: d * 0.4,
         opacity: 0.6
       }
     }) : glyph)), React.createElement("div", null, React.createElement("h2", {
@@ -1672,7 +1553,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
   function NavPill({
     sz,
     kind,
-    onNav
+    onNav,
+    compact
   }) {
     if (!kind) return null;
     const label = kind === 'logout' ? 'Sign Out' : 'Back';
@@ -1684,13 +1566,13 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         boxSizing: 'border-box',
         cursor: 'pointer',
         position: 'absolute',
-        top: sz.navInset,
-        left: sz.navInset,
+        top: compact ? 8 : sz.navInset,
+        left: compact ? 8 : sz.navInset,
         zIndex: 3,
         display: 'flex',
         alignItems: 'center',
-        height: 48,
-        padding: '0 16px',
+        height: compact ? 40 : 48,
+        padding: compact ? '0 12px' : '0 16px',
         background: ON_TEAL.navBg,
         color: ON_TEAL.navFg,
         borderStyle: 'solid',
@@ -1698,7 +1580,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         borderColor: ON_TEAL.navFg,
         borderRadius: 'var(--sd-radius-lg)',
         fontFamily: 'var(--sd-font-family)',
-        fontSize: 16,
+        fontSize: compact ? 14 : 16,
         fontWeight: 500
       }
     }, label);
@@ -1718,6 +1600,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     wide
   }) {
     const split = sz.split;
+    const short = !split && typeof window !== 'undefined' && window.innerHeight > 0 && window.innerHeight < 640;
     const measure = wide ? sz.listCol : sz.col;
     const panel = React.createElement("div", {
       style: {
@@ -1730,20 +1613,22 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
           height: '100%'
         } : {
           width: '100%',
-          height: panelH
+          height: short ? 'auto' : panelH,
+          minHeight: short ? 84 : undefined
         }),
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: split ? '32px' : '24px 32px',
+        padding: split ? '32px' : short ? '12px 98px' : '24px 32px',
         boxSizing: 'border-box',
         textAlign: 'center'
       }
     }, React.createElement(VScene, null), React.createElement(NavPill, {
       sz: sz,
       kind: nav,
-      onNav: onNav
+      onNav: onNav,
+      compact: short
     }), React.createElement("div", {
       style: {
         position: 'relative',
@@ -1754,16 +1639,16 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         gap: 10,
         maxWidth: '100%'
       }
-    }, React.createElement(PanelMark, {
+    }, !short && React.createElement(PanelMark, {
       step: step,
       educator: educator,
       size: sz.mark
     }), title && React.createElement("h1", {
       style: {
         margin: 0,
-        maxWidth: sz.titleW,
-        fontSize: sz.h1,
-        lineHeight: `${sz.h1lh}px`,
+        maxWidth: short ? '100%' : sz.titleW,
+        fontSize: short ? 20 : sz.h1,
+        lineHeight: short ? '24px' : `${sz.h1lh}px`,
         fontWeight: 700,
         color: ON_TEAL.title,
         letterSpacing: '-0.01em'
@@ -1771,9 +1656,9 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     }, title), subtitle && React.createElement("p", {
       style: {
         margin: 0,
-        maxWidth: sz.subW,
-        fontSize: sz.h2,
-        lineHeight: `${sz.h2lh}px`,
+        maxWidth: short ? '100%' : sz.subW,
+        fontSize: short ? 14 : sz.h2,
+        lineHeight: short ? '18px' : `${sz.h2lh}px`,
         fontWeight: 600,
         color: ON_TEAL.sub
       }
@@ -1795,7 +1680,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        justifyContent: center ? 'center' : 'flex-start',
+        justifyContent: 'flex-start',
         padding: `${sz.pad}px ${sz.listPad}px`,
         boxSizing: 'border-box'
       }
@@ -1805,7 +1690,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         maxWidth: measure,
         display: 'flex',
         flexDirection: 'column',
-        gap: sz.gap
+        gap: sz.gap,
+        margin: center ? 'auto 0' : 0
       }
     }, children)), footer && React.createElement("div", {
       style: {
