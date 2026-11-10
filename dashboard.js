@@ -912,7 +912,32 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
   const rdItemByKey = k => RD_ITEMS.find(i => i.key === k) || null;
   const rdUnitsFor = (item, slot) => slot === 'bottle' ? ['ml'] : item && item.units || RD_ANY_UNITS;
   const rdNotWord = (type, slot) => type === 'drink' || slot === 'bottle' ? 'drunk' : 'eaten';
-  const rdMealText = items => (items || []).map(i => `${i.name} ${rdUnitText(i.qty, i.unit)}${i.notEaten ? `, not ${rdNotWord(i.type)}` : ''}`).join(' · ');
+  const rdMealText = items => (items || []).map(i => i.ate ? `${i.name} · Ate ${i.ate.toLowerCase()}` : `${i.name} ${rdUnitText(i.qty, i.unit)}${i.notEaten ? `, not ${rdNotWord(i.type)}` : ''}`).join(' · ');
+  const rdMenuFor = slot => {
+    const m = RD_ITEMS.filter(i => i.menu === slot);
+    return m.length ? m : RD_ITEMS.filter(i => i.type === 'food').slice(6, 12);
+  };
+  const rdDishItem = (key, slot, id) => {
+    const it = rdItemByKey(key);
+    const u = rdUnitsFor(it, slot)[0];
+    return {
+      id,
+      key: it.key,
+      name: it.name,
+      type: it.type,
+      typed: false,
+      unit: u,
+      qty: u === 'ml' || u === 'g' ? '' : '1'
+    };
+  };
+  const rdSeedDish = slot => slot === 'bottle' ? [] : [rdDishItem(rdMenuFor(slot)[0].key, slot, 'i0')];
+  const rdMealAte = (items, ate) => (items || []).map(x => ate === 'None' ? {
+    ...x,
+    notEaten: true
+  } : {
+    ...x,
+    ate
+  });
   const rdMealEntry = (at, slot, list, note) => {
     const items = list.map(([key, qty, notEaten]) => {
       const it = rdItemByKey(key);
@@ -2787,7 +2812,12 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     meal: {
       label: 'Meal',
       verb: 'Served',
-      items: true
+      items: true,
+      perChild: {
+        label: 'Ate',
+        options: ['All', 'Most', 'Half', 'None'],
+        value: 'All'
+      }
     },
     nappy: {
       label: 'Nappy / toileting',
@@ -11896,7 +11926,11 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     key: k,
     label: RD_UNITS[k].label
   }));
-  const rdMealFor = (items, mr) => items.map(x => {
+  const rdMealFor = (items, mr, ate, slot) => rdMealAte(rdMealForRaw((mr || {}).food && slot !== 'bottle' ? [rdDishItem((mr || {}).food, slot, 'f')] : items, mr), ate || null).map(x => x.ate === null || x.ate === undefined ? (({
+    ate: _a,
+    ...rest
+  }) => rest)(x) : x);
+  const rdMealForRaw = (items, mr) => items.map(x => {
     const own = rdQty(((mr || {}).qty || {})[x.id], x.unit);
     return {
       key: x.key,
@@ -12529,13 +12563,36 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     const [shared, setShared] = useState(cfg.shared && (cfg.shared.options || cfg.shared.select) ? cfg.shared.value : null);
     const mealOn = !!cfg.items;
     const [slot, setSlot] = useState(() => mealOn ? rdMealSlotAt(RD_NOW) : null);
-    const [items, setItems] = useState([]);
+    const [items, setItems] = useState(() => mealOn ? rdSeedDish(rdMealSlotAt(RD_NOW)) : []);
     const [mealRows, setMealRows] = useState({});
     const [pick, setPick] = useState(false);
     const itemSeq = React.useRef(0);
     const focusItem = React.useRef(null);
     const justAdded = React.useRef(false);
     const mealOf = id => mealRows[id] || {};
+    const rdRowFood = id => {
+      const base = items[0] ? items[0].key : '';
+      const opts = rdMenuFor(slot).map(i => ({
+        key: i.key,
+        label: i.name
+      }));
+      if (!opts.some(o => o.key === base) && items[0]) opts.unshift({
+        key: base,
+        label: items[0].name
+      });
+      const mine = mealOf(id).food || base;
+      return React.createElement(RdDropdown, {
+        key: `food-${id}`,
+        label: "",
+        plain: true,
+        value: mine,
+        options: opts,
+        ariaLabel: "Dish",
+        onChange: k => setMealRow(id, {
+          food: k === base ? undefined : k
+        })
+      });
+    };
     const setMealRow = (id, patch) => setMealRows(m => ({
       ...m,
       [id]: {
@@ -12549,15 +12606,24 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     } : x));
     const changeSlot = k => {
       setSlot(k);
-      setItems(xs => xs.map(x => {
-        const u = rdUnitsFor(x.typed ? null : rdItemByKey(x.key), k);
-        return u.includes(x.unit) ? x : {
-          ...x,
-          unit: u[0]
-        };
-      }));
+      setItems(rdSeedDish(k));
+      setMealRows({});
     };
     const addItems = list => {
+      if (slot !== 'bottle') {
+        const it = list[0];
+        if (it) setItems([{
+          id: `i${++itemSeq.current}`,
+          key: it.key,
+          name: it.name,
+          type: it.type,
+          typed: !!it.typed,
+          unit: rdUnitsFor(it.typed ? null : it, slot)[0],
+          qty: '1'
+        }]);
+        setPick(false);
+        return;
+      }
       const made = list.map(it => ({
         id: `i${++itemSeq.current}`,
         key: it.key,
@@ -12734,7 +12800,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         const floor = floorOf(child);
         const mealRec = mealOn ? {
           slot,
-          items: rdMealFor(items, mealRows[r.id])
+          items: rdMealFor(items, mealRows[r.id], slot === 'bottle' ? null : r.value, slot)
         } : null;
         m[r.id] = {
           at: floor && RD_MINS(own) < RD_MINS(floor) ? floor : own,
@@ -12779,7 +12845,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         value: v
       }));
     };
-    const perOptions = cfg.attendance === 'out' ? null : cfg.perChild && cfg.perChild.options || cfg.shared && cfg.shared.options || null;
+    const perOptions = cfg.attendance === 'out' || mealOn && slot === 'bottle' ? null : cfg.perChild && cfg.perChild.options || cfg.shared && cfg.shared.options || null;
     const sharedOptions = cfg.attendance === 'out' ? rdCollectCommon(people, offline) : cfg.shared && cfg.shared.options;
     const [openId, setOpenId] = useState(null);
     const openRef = React.useRef(null);
@@ -13223,7 +13289,37 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
           flexDirection: 'column',
           gap: 'var(--sd-spacing-2)'
         }
-      }, mealOn && React.createElement(RdMealItems, {
+      }, mealOn && slot !== 'bottle' && React.createElement("span", {
+        style: {
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 6,
+          paddingBottom: 6
+        }
+      }, React.createElement(RdLabel, null, "What was served"), React.createElement("span", {
+        style: {
+          display: 'flex'
+        }
+      }, React.createElement(RdDropdown, {
+        label: "",
+        plain: true,
+        wide: true,
+        value: items[0] ? items[0].typed ? '__typed' : items[0].key : '',
+        ariaLabel: "What was served",
+        options: [...(items[0] && items[0].typed ? [{
+          key: '__typed',
+          label: items[0].name
+        }] : []), ...rdMenuFor(slot).map(i => ({
+          key: i.key,
+          label: i.name
+        })), {
+          key: '__other',
+          label: 'Something else…'
+        }],
+        onChange: k => {
+          if (k === '__other') setPick(true);else if (k !== '__typed') setItems([rdDishItem(k, slot, `i${++itemSeq.current}`)]);
+        }
+      }))), mealOn && slot === 'bottle' && React.createElement(RdMealItems, {
         items: items,
         slot: slot,
         narrow: narrow,
@@ -13323,7 +13419,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
             color: sTone
           });
         } else {
-          if (mealOn) {
+          if (false) {
             const was = rdLastOf(c, 'meal');
             if (was && was.context === rdSlotLabel(slot) && RD_MINS(RD_NOW) - RD_MINS(was.at) >= RD_JUST_LOGGED) lead.push({
               key: 'dup',
@@ -13544,7 +13640,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
             flexDirection: 'column',
             gap: 'var(--sd-spacing-2)'
           }
-        }, React.createElement("span", {
+        }, mealOn && slot !== 'bottle' && rdRowFood(r.id), React.createElement("span", {
           style: RD_ROW_HEAD
         }, cfg.perChild ? cfg.perChild.label : cfg.label), React.createElement(RdChoiceChips, {
           options: perOptions,
@@ -13599,31 +13695,6 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
               [key]: v
             }
           } : x))
-        }), mealOn && !single && items.length > 0 && React.createElement(RdMealChild, {
-          key: "meal",
-          c: c,
-          items: items,
-          slot: slot,
-          mr: mealOf(r.id),
-          onOut: (itemId, on) => setMealRow(r.id, {
-            out: {
-              ...(mealOf(r.id).out || {}),
-              [itemId]: on
-            }
-          }),
-          onQty: (itemId, v) => setMealRows(m => {
-            const q = {
-              ...((m[r.id] || {}).qty || {})
-            };
-            if (v === undefined) delete q[itemId];else q[itemId] = v;
-            return {
-              ...m,
-              [r.id]: {
-                ...(m[r.id] || {}),
-                qty: q
-              }
-            };
-          })
         }), !advancedOn && (single ? noteEl : excRow), !single && timesOn && React.createElement("span", {
           key: "time",
           style: {
@@ -13696,7 +13767,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
               lineHeight: '20px',
               color: off ? sTone : undefined
             }
-          }, c.name), summary)), hasState && !narrow && React.createElement(React.Fragment, null, React.createElement(RdSegmented, {
+          }, c.name), summary)), hasState && !narrow && React.createElement(React.Fragment, null, mealOn && slot !== 'bottle' && rdRowFood(r.id), React.createElement(RdSegmented, {
             options: perOptions,
             value: isNotApplied(r.value) ? null : r.value,
             onChange: setValue,
@@ -21596,7 +21667,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       size: 15
     })));
     const showRoomDrop = roomOptions.length > 2;
-    const subtitle = amend ? [countRooms.length > 1 ? 'All rooms' : roomName(countRooms[0]), rdHcView(count).people.map(first).join(' + '), RD_MINS(count.updatedAt || count.at) > RD_MINS(count.at) ? `edited ${RD_AMPM(count.updatedAt)}` : null].filter(Boolean).join(' · ') : scopeKeys.length === countRooms.length && countRooms.length > 1 ? `All rooms · ${rdJoin(scopeKeys.map(roomName))}` : rdJoin(scopeKeys.map(roomName));
+    const subtitle = amend ? [countRooms.length > 1 ? `${countRooms.length} rooms` : roomName(countRooms[0]), rdHcView(count).people.map(first).join(' + '), RD_MINS(count.updatedAt || count.at) > RD_MINS(count.at) ? `edited ${RD_AMPM(count.updatedAt)}` : null].filter(Boolean).join(' · ') : scopeKeys.length > 1 ? view === 'all' || scopeKeys.length === countRooms.length ? `All rooms · ${scopeKeys.length} rooms` : `${scopeKeys.length} rooms` : rdJoin(scopeKeys.map(roomName));
     const title = amend ? `Edit ${count.by === acting ? 'your' : `${first(count.by)}’s`} ${RD_AMPM(count.at)} count` : 'Head count';
     return React.createElement("div", {
       style: {
@@ -21856,7 +21927,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         flexDirection: 'column',
         gap: 6
       }
-    }, rosterList(), footSection('f:booked', 'Booked, not arrived', footBooked, false)), showCounts && React.createElement(RdHcCountsSheet, {
+    }, rosterList(), footSection('f:booked', 'Booked in', footBooked, false)), showCounts && React.createElement(RdHcCountsSheet, {
       history: history,
       rooms: rooms,
       phone: phone,
@@ -21988,7 +22059,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         fontWeight: 700,
         color: 'var(--sd-colour-text-primary)'
       }
-    }, recSeen, " of ", recTotal), " accounted for", recTotal - recSeen > 0 ? React.createElement(React.Fragment, null, ", ", recTotal - recSeen, " not ticked. You can add to it later from Today\u2019s counts.") : '.') : amend ? React.createElement(React.Fragment, null, "Your changes to the ", RD_AMPM(count.at), " count won\u2019t be saved. The count stays as it was.") : React.createElement(React.Fragment, null, "You\u2019ve ticked ", Object.keys(ticks).length === 1 ? '1 child' : `${Object.keys(ticks).length} children`, ". If you discard, this count isn\u2019t recorded."))), React.createElement("div", {
+    }, recSeen, " of ", recTotal), " accounted for", recTotal - recSeen > 0 ? React.createElement(React.Fragment, null, ", ", recTotal - recSeen, " not seen", scopeKeys.length > 1 ? ` across ${scopeKeys.length} rooms` : '', ". You can add to it later from Today\u2019s counts.") : scopeKeys.length > 1 ? ` across ${scopeKeys.length} rooms.` : '.') : amend ? React.createElement(React.Fragment, null, "Your changes to the ", RD_AMPM(count.at), " count won\u2019t be saved. The count stays as it was.") : React.createElement(React.Fragment, null, "You\u2019ve ticked ", Object.keys(ticks).length === 1 ? '1 child' : `${Object.keys(ticks).length} children`, ". If you discard, this count isn\u2019t recorded."))), React.createElement("div", {
       style: {
         display: 'flex',
         flexDirection: 'column',
@@ -22404,7 +22475,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     const sub = 'var(--sd-colour-text-secondary)';
     const isKid = person.kind === 'child' || !person.kind && person.status;
     const set = isKid ? rdCountContacts(person) : null;
-    const link = (href, glyph, text) => href ? React.createElement("a", {
+    const link = (href, glyph, text) => href && emergency ? React.createElement("a", {
       href: href,
       style: {
         position: 'relative',
@@ -24774,7 +24845,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       name: "time",
       size: 14
     }), d.staleNote);
-    if (!f) return null;
+    if (!f || !f.degraded) return null;
     return React.createElement("span", {
       role: "status",
       style: {
@@ -25936,7 +26007,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       running: d.emergency.running,
       label: d.emergency.label,
       onOpen: d.emergency.open,
-      wide: isIpad && !d.readOnly
+      wide: isIpad && !d.readOnly && roomyBar
     }), React.createElement(RdConnChip, {
       conn: d.conn,
       syncing: d.syncing,
@@ -28658,6 +28729,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       return f.length > 2 ? `${f[0]}, ${f[1]} + ${f.length - 2} more` : f.join(' + ');
     };
     const n = history.length;
+    const edited = h => !!h.updatedAt && RD_MINS(h.updatedAt) > RD_MINS(h.at);
     const latest = history[0];
     const hrOf = h => Math.floor(RD_MINS(h.at) / 60);
     const groups = [];
@@ -28763,13 +28835,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       }))],
       onChange: setRoomF,
       defaultKey: "all"
-    })), allHistory.length > 0 && React.createElement(RdSearch, {
-      value: q,
-      onChange: setQ,
-      count: needle ? hits.length : history.length,
-      placeholder: "Search a child by name",
-      compact: true
-    }), needle && (hits.length === 0 ? React.createElement("span", {
+    })), needle && (hits.length === 0 ? React.createElement("span", {
       style: {
         fontSize: 14,
         fontWeight: 600,
@@ -28867,36 +28933,22 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       }
     }, React.createElement("span", {
       style: {
-        fontSize: 12,
-        fontWeight: 700,
-        letterSpacing: 0.3,
-        textTransform: 'uppercase',
-        color: 'var(--sd-colour-text-secondary)'
-      }
-    }, "Latest \xB7 tap to add to it"), React.createElement("span", {
-      style: {
-        display: 'flex',
-        gap: 12,
-        alignItems: 'baseline',
-        flexWrap: 'wrap'
-      }
-    }, React.createElement("span", {
-      style: {
-        fontSize: 22,
-        fontWeight: 700
-      }
-    }, RD_AMPM(latest.at)), React.createElement("span", {
-      style: {
-        fontSize: 18,
-        fontWeight: 700
-      }
-    }, latest.seen, " of ", latest.of, " accounted for")), React.createElement("span", {
-      style: {
         fontSize: 13,
         fontWeight: 600,
         color: 'var(--sd-colour-text-secondary)'
       }
-    }, who(latest))), React.createElement("span", {
+    }, "Latest count \xB7 tap to add to it"), React.createElement("span", {
+      style: {
+        fontSize: 22,
+        fontWeight: 700
+      }
+    }, latest.seen, " of ", latest.of, " accounted for"), React.createElement("span", {
+      style: {
+        fontSize: 14,
+        fontWeight: 600,
+        color: 'var(--sd-colour-text-secondary)'
+      }
+    }, RD_AMPM(latest.at), " \xB7 Counted by ", who(latest), edited(latest) ? ` · Edited ${RD_AMPM(latest.updatedAt)}` : '')), React.createElement("span", {
       "aria-hidden": "true",
       style: {
         display: 'inline-flex',
@@ -28969,37 +29021,33 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
           }
         }, React.createElement("span", {
           style: {
-            fontSize: 15,
-            fontWeight: 700,
-            whiteSpace: 'nowrap'
-          }
-        }, RD_AMPM(h.at)), React.createElement("span", {
-          style: {
-            fontSize: 15,
-            fontWeight: 700,
-            whiteSpace: 'nowrap'
-          }
-        }, h.seen, " of ", h.of, phone ? '' : ' accounted for'), React.createElement("span", {
-          style: {
             flex: 1,
             minWidth: 0,
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 2
+          }
+        }, React.createElement("span", {
+          style: {
+            fontSize: 15,
+            fontWeight: 700
+          }
+        }, h.seen, " of ", h.of, " accounted for"), React.createElement("span", {
+          style: {
             fontSize: 13,
             fontWeight: 600,
             color: 'var(--sd-colour-text-secondary)',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap',
-            textAlign: 'right'
+            overflowWrap: 'anywhere'
           }
-        }, who(h)), React.createElement("span", {
+        }, RD_AMPM(h.at), " \xB7 ", edited(h) ? `Edited ${RD_AMPM(h.updatedAt)} by` : 'By', " ", who(h))), React.createElement("span", {
           "aria-hidden": "true",
           style: {
             display: 'inline-flex',
             color: 'var(--sd-colour-text-secondary)'
           }
         }, React.createElement(SdIcon, {
-          name: "edit",
-          size: 16
+          name: "chevron-right",
+          size: 20
         })));
       }));
     }), React.createElement("span", {
