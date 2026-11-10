@@ -1,0 +1,8 @@
+
+
+
+.ds-icon { display: inline-block; flex-shrink: 0; width: 16px; height: 16px; vertical-align: middle; }
+.ds-icon--xs { width: 12px; height: 12px; }
+.ds-icon--sm { width: 16px; height: 16px; }
+.ds-icon--md { width: 20px; height: 20px; }
+.ds-icon--lg { width: 24px; height: 24px; }

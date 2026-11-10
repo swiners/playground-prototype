@@ -23,7 +23,9 @@
   color: var(--sd-colour-text-disabled);
 }
 
-.ds-accordion__item + .ds-accordion__item {
+
+.ds-accordion__item + .ds-accordion__item,
+xplor-accordion-item + xplor-accordion-item .ds-accordion__item {
   border-top: 1px solid var(--sd-colour-border-default);
 }
 

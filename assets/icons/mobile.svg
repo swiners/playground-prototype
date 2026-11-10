@@ -1,0 +1,5 @@
+<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<!-- PROTOTYPE STAND-IN, not a Stardust icon. Stardust has a handset (`phone`) and a `tablet`, but no mobile-device icon, so the bar's Phone button drew a handset. Drawn to sit beside `tablet`: 16 grid, 0.875 stroke, one colour (currentColor). -->
+<rect x="3.5" y="1.5" width="9" height="13" rx="2" fill="none" stroke="currentColor" stroke-width="0.875" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M7 12.25H9" fill="none" stroke="currentColor" stroke-width="0.875" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

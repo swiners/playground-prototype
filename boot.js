@@ -28,7 +28,10 @@ function fit() {
   const host = box.parentElement;
   const availW = host && host.clientWidth || window.innerWidth;
   const availH = host && host.clientHeight || window.innerHeight;
-  const k = Math.max(0.2, Math.min(1, (availW - 40) / w, (availH - 40) / h));
+  const inShell = !!(host && host.closest && host.closest('.pg-shell__stage'));
+  const ring = inShell ? dev.classList.contains('is-ipad') ? 13 : 12 : 0;
+  const pad = inShell ? 24 : 40;
+  const k = Math.max(0.2, Math.min(1, (availW - pad) / (w + 2 * ring), (availH - pad) / (h + 2 * ring)));
   scaler.style.transform = 'scale(' + k + ')';
   box.style.width = w * k + 'px';
   box.style.height = h * k + 'px';
