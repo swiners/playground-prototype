@@ -21339,12 +21339,16 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     const listGrouping = view === 'all' ? 'room' : grouping;
     const peopleSig = onList.map(p => p.id + (p.state || '') + p.status).join(',');
     const hcOpen = React.useMemo(() => rdHcSections(onList, listGrouping), [peopleSig, listGrouping]);
+    const careKeys = [...new Set(onList.map(p => {
+      const rm = rooms.find(x => x.name === p.room || x.key === p.room) || RD_ROOMS.find(x => x.name === p.room || x.key === p.room);
+      return rm && rm.care;
+    }).filter(Boolean))];
+    const careSig = careKeys.join(',');
     const hcChoices = React.useMemo(() => {
-      const keys = [...(listGrouping === 'room' ? ['room'] : []), ...RD_GROUP_MENU.map(g => g.key).filter(k => k !== 'attendance')];
-      const ok = keys.map(k => rdHcTry(onList, k)).filter(Boolean);
-      return hcOpen.key && !ok.some(o => o.key === hcOpen.key) ? [hcOpen, ...ok] : ok;
-    }, [peopleSig, listGrouping]);
-    const defaultKey = hcOpen.key || 'none';
+      const keys = [...(listGrouping === 'room' ? ['room'] : []), ...rdHcMenuFor(careKeys)];
+      return keys.map(k => rdHcAlways(onList, k)).filter(Boolean);
+    }, [peopleSig, listGrouping, careSig]);
+    const defaultKey = hcChoices.some(o => o.key === hcOpen.key) ? hcOpen.key : 'none';
     const gNow = gKey && (gKey === 'none' || hcChoices.some(o => o.key === gKey)) ? gKey : defaultKey;
     const hc = gNow === 'none' ? RD_HC_NONE : hcChoices.find(o => o.key === gNow) || RD_HC_NONE;
     const bigList = onList.length > RD_HC_COLLAPSE_AT;
@@ -22475,33 +22479,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     const sub = 'var(--sd-colour-text-secondary)';
     const isKid = person.kind === 'child' || !person.kind && person.status;
     const set = isKid ? rdCountContacts(person) : null;
-    const link = (href, glyph, text) => href && emergency ? React.createElement("a", {
-      href: href,
-      style: {
-        position: 'relative',
-        display: 'inline-flex',
-        alignItems: 'center',
-        gap: 5,
-        minWidth: 0,
-        overflowWrap: 'anywhere',
-        fontSize: 13,
-        fontWeight: 600,
-        color: 'var(--sd-colour-action-primary)',
-        textDecoration: 'none'
-      }
-    }, React.createElement("span", {
-      "aria-hidden": "true",
-      style: {
-        position: 'absolute',
-        left: -6,
-        right: -6,
-        top: -14,
-        bottom: -14
-      }
-    }), React.createElement(SdIcon, {
-      name: glyph,
-      size: 15
-    }), text) : React.createElement("span", {
+    const link = (href, glyph, text) => React.createElement("span", {
       style: {
         display: 'inline-flex',
         alignItems: 'center',
@@ -28304,6 +28282,30 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       word: RD_HC_WORD[k] || k,
       groups
     } : null;
+  }
+  const RD_HC_MENU = {
+    ldc: ['age', 'sleep', RD_TAG_GROUPING],
+    oshc: ['grade', 'school', RD_TAG_GROUPING],
+    vac: ['grade', 'school', RD_TAG_GROUPING]
+  };
+  function rdHcMenuFor(careKeys) {
+    const keys = careKeys.length ? careKeys : ['ldc'];
+    return [...new Set(keys.flatMap(c => RD_HC_MENU[c] || RD_HC_MENU.ldc))];
+  }
+  function rdHcAlways(people, k) {
+    if (k === 'room') return rdHcTry(people, 'room');
+    const groups = rdSubGroup(people, k).filter(g => g.label && g.items.length);
+    const inGroups = new Set(groups.flatMap(g => g.items.map(p => p.id)));
+    const rest = people.filter(p => !inGroups.has(p.id));
+    return {
+      key: k,
+      word: RD_HC_WORD[k] || k,
+      groups: rest.length ? [...groups, {
+        key: 'unset',
+        label: 'Not set',
+        items: rest
+      }] : groups
+    };
   }
   function rdHcSections(people, grouping) {
     const tries = grouping === 'room' ? ['room'] : [...new Set([grouping, ...RD_HC_FALLBACK])].filter(k => k && k !== 'attendance' && k !== RD_UNGROUPED);
