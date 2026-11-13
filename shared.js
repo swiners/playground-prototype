@@ -4,7 +4,7 @@ const {
   useLayoutEffect,
   useRef
 } = React;
-const PG_VERSION = '0.16.2';
+const PG_VERSION = '0.16.4';
 const PG_LEARNING = false;
 const PG_CONN_SWITCH = false;
 const TEAL = 'var(--sd-colour-action-primary)';

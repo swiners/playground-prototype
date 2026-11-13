@@ -1647,7 +1647,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
   }) {
     const [failed, setFailed] = useState(false);
     const seed = rdSeed(c.id);
-    if (c.age != null && c.age >= 6) return React.createElement(RdAvatar, {
+    if (c.age != null && c.age >= 6 && new URLSearchParams(window.location.search).get('faces') === 'initials') return React.createElement(RdAvatar, {
       name: c.name,
       size: size,
       ring: ring
@@ -2723,7 +2723,6 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     const on = RD_SLEEP_CHECKS.map(k => (checks || {})[k.key] != null && rdCheckTone(k, checks[k.key], setup) === 'alert' ? rdCheckOpts(k).find(o => o.key === checks[k.key]) : null).filter(Boolean);
     return on.some(o => o.prompt === 'call') ? 'call' : on.some(o => o.prompt === 'airway') ? 'airway' : null;
   };
-  const RD_PUBLIC_NOTE = 'Families can see this note.';
   const RD_SLEEP_PROMPT = {
     call: 'Call 000 now and start your emergency and first-aid plan.',
     airway: 'Clear the airway now. Any change in skin and lip colour or breathing: call 000.'
@@ -4024,7 +4023,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         all: 'unset',
         cursor: 'pointer',
         color: 'var(--sd-colour-text-secondary)',
-        flexShrink: 0
+        flexShrink: 0,
+        display: 'inline-flex'
       }
     }, React.createElement(SdIcon, {
       name: "close",
@@ -4159,6 +4159,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         }
       }, noPin ? 'No PIN set up' : locked ? 'PIN locked' : 'PIN required')), on ? React.createElement("span", {
         style: {
+          display: 'inline-flex',
           color: 'var(--sd-colour-action-primary)',
           flexShrink: 0
         }
@@ -4167,6 +4168,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         size: 18
       })) : noPin ? null : React.createElement("span", {
         style: {
+          display: 'inline-flex',
           color: 'var(--sd-colour-text-secondary)',
           flexShrink: 0
         }
@@ -4311,7 +4313,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       style: {
         all: 'unset',
         cursor: 'pointer',
-        color: 'var(--sd-colour-text-secondary)'
+        color: 'var(--sd-colour-text-secondary)',
+        display: 'inline-flex'
       }
     }, React.createElement(SdIcon, {
       name: "close",
@@ -4367,6 +4370,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       }
     }, React.createElement("span", {
       style: {
+        display: 'inline-flex',
         color: 'var(--sd-colour-action-primary)',
         flexShrink: 0,
         marginTop: 1
@@ -4563,7 +4567,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       style: {
         all: 'unset',
         cursor: 'pointer',
-        color: 'var(--sd-colour-text-secondary)'
+        color: 'var(--sd-colour-text-secondary)',
+        display: 'inline-flex'
       }
     }, React.createElement(SdIcon, {
       name: "close",
@@ -4588,6 +4593,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       }
     }, React.createElement("span", {
       style: {
+        display: 'inline-flex',
         color: 'var(--sd-colour-text-secondary)',
         flexShrink: 0
       }
@@ -5128,7 +5134,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         all: 'unset',
         cursor: 'pointer',
         color: 'var(--sd-colour-text-secondary)',
-        flexShrink: 0
+        flexShrink: 0,
+        display: 'inline-flex'
       }
     }, React.createElement(SdIcon, {
       name: "close",
@@ -5161,6 +5168,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       }
     }, React.createElement("span", {
       style: {
+        display: 'inline-flex',
         color: 'var(--sd-colour-feedback-error-default)',
         flexShrink: 0
       }
@@ -5265,6 +5273,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       }
     }, React.createElement("span", {
       style: {
+        display: 'inline-flex',
         color: 'var(--sd-colour-text-secondary)',
         flexShrink: 0
       }
@@ -5296,7 +5305,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         all: 'unset',
         cursor: 'pointer',
         color: 'var(--sd-colour-text-secondary)',
-        flexShrink: 0
+        flexShrink: 0,
+        display: 'inline-flex'
       }
     }, React.createElement(SdIcon, {
       name: "close",
@@ -5745,6 +5755,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       }
     }, "Staff")), React.createElement("span", {
       style: {
+        display: 'inline-flex',
         color: sub
       }
     }, React.createElement(SdIcon, {
@@ -5934,7 +5945,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       style: {
         all: 'unset',
         cursor: 'pointer',
-        color: 'var(--sd-colour-text-secondary)'
+        color: 'var(--sd-colour-text-secondary)',
+        display: 'inline-flex'
       }
     }, React.createElement(SdIcon, {
       name: "close",
@@ -6034,6 +6046,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       }
     }, c.alert.label, showRoom ? ` · ${roomName}` : '')), React.createElement("span", {
       style: {
+        display: 'inline-flex',
         color: urgent ? 'var(--sd-colour-feedback-error-default)' : 'var(--sd-colour-text-on-orange)',
         flexShrink: 0
       }
@@ -6535,6 +6548,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       size: 22
     }), c.name.split(' ')[0], React.createElement("span", {
       style: {
+        display: 'inline-flex',
         color: 'var(--sd-colour-text-secondary)'
       }
     }, React.createElement(SdIcon, {
@@ -6675,6 +6689,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         }
       }, React.createElement("span", {
         style: {
+          display: 'inline-flex',
           color: 'var(--sd-colour-feedback-error-default)',
           flexShrink: 0
         }
@@ -6703,6 +6718,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         }
       }, "1:", r.ratio, " \xB7 needs 1:", r.limit)), React.createElement("span", {
         style: {
+          display: 'inline-flex',
           color: 'var(--sd-colour-feedback-error-default)'
         }
       }, React.createElement(SdIcon, {
@@ -6864,6 +6880,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       }
     }, React.createElement("span", {
       style: {
+        display: 'inline-flex',
         color: 'var(--sd-colour-action-primary)',
         flexShrink: 0
       }
@@ -6894,6 +6911,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       }
     }, "contacts \xB7 documents \xB7 full event log")), React.createElement("span", {
       style: {
+        display: 'inline-flex',
         color: sub,
         flexShrink: 0
       }
@@ -7173,6 +7191,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         }
       }, ago)), canOpen && React.createElement("span", {
         style: {
+          display: 'inline-flex',
           color: sub,
           flexShrink: 0
         }
@@ -7292,6 +7311,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       }
     }, React.createElement("span", {
       style: {
+        display: 'inline-flex',
         color: 'var(--sd-colour-feedback-error-default)',
         flexShrink: 0
       }
@@ -8529,6 +8549,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         }
       }, React.createElement("span", {
         style: {
+          display: 'inline-flex',
           color: sub,
           flexShrink: 0
         }
@@ -8713,6 +8734,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
           }
         }, React.createElement("span", {
           style: {
+            display: 'inline-flex',
             color: missing ? sub : 'var(--sd-colour-action-primary)',
             flexShrink: 0
           }
@@ -9207,6 +9229,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       }
     }, React.createElement("span", {
       style: {
+        display: 'inline-flex',
         color: 'var(--sd-colour-feedback-error-default)',
         flexShrink: 0
       }
@@ -10012,7 +10035,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       style: {
         all: 'unset',
         cursor: 'pointer',
-        color: 'var(--sd-colour-text-secondary)'
+        color: 'var(--sd-colour-text-secondary)',
+        display: 'inline-flex'
       }
     }, React.createElement(SdIcon, {
       name: "close",
@@ -10131,6 +10155,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       }
     }, React.createElement("span", {
       style: {
+        display: 'inline-flex',
         color: RD_SYNC_FG,
         flexShrink: 0
       }
@@ -10348,6 +10373,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     count,
     active,
     wide,
+    fill,
     ariaLabel,
     reveal,
     children
@@ -10378,7 +10404,11 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     }, [open]);
     return React.createElement("div", {
       ref: ref,
-      style: {
+      style: fill ? {
+        position: 'relative',
+        flex: typeof fill === 'string' ? fill : `${fill === true ? 1 : fill} 1 0`,
+        minWidth: 0
+      } : {
         position: 'relative',
         flexShrink: 0
       }
@@ -10399,6 +10429,11 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         height: 40,
         padding: '0 13px',
         position: 'relative',
+        ...(fill ? {
+          width: '100%',
+          minWidth: 0,
+          overflow: 'hidden'
+        } : null),
         borderRadius: 'var(--sd-radius-lg)',
         border: `1px solid ${open || active ? 'var(--sd-colour-action-primary)' : 'var(--sd-colour-border-default)'}`,
         background: active ? 'var(--sd-colour-surface-cyan)' : 'var(--sd-colour-surface-default)',
@@ -10409,11 +10444,17 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       }
     }, !!label && React.createElement("span", {
       style: {
-        color: active ? 'var(--sd-colour-action-primary)' : 'var(--sd-colour-text-secondary)'
+        color: active ? 'var(--sd-colour-action-primary)' : 'var(--sd-colour-text-secondary)',
+        flexShrink: 0
       }
     }, label), value != null && value !== '' && React.createElement("b", {
       style: {
-        fontWeight: 700
+        fontWeight: 700,
+        ...(fill ? {
+          minWidth: 0,
+          overflow: 'hidden',
+          textOverflow: 'ellipsis'
+        } : null)
       }
     }, value), count !== undefined && React.createElement("span", {
       style: {
@@ -10424,7 +10465,11 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       style: {
         transform: open ? 'rotate(180deg)' : 'none',
         transition: 'transform .15s',
-        display: 'inline-flex'
+        display: 'inline-flex',
+        ...(fill ? {
+          marginLeft: 'auto',
+          flexShrink: 0
+        } : null)
       }
     }, React.createElement(SdIcon, {
       name: "chevron-down",
@@ -10448,7 +10493,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
           top: 'calc(100% + 6px)',
           left: 0,
           zIndex: 20,
-          minWidth: wide ? 320 : 216,
+          minWidth: wide ? 320 : fill ? '100%' : 216,
           maxHeight: 400
         }),
         background: 'var(--sd-colour-surface-default)',
@@ -10530,6 +10575,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     counts,
     plain,
     wide,
+    fill,
+    hideCount,
     defaultKey,
     offLabel,
     ariaLabel
@@ -10545,8 +10592,9 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       value: current.label,
       active: active,
       wide: wide,
+      fill: fill,
       ariaLabel: ariaLabel ? `${ariaLabel}: ${current.label}` : undefined,
-      count: counts && counts[current.key] !== undefined ? counts[current.key] : undefined
+      count: !hideCount && counts && counts[current.key] !== undefined ? counts[current.key] : undefined
     }, close => React.createElement(RdRadioRows, {
       options: options,
       value: value,
@@ -11804,6 +11852,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       }
     }, React.createElement("span", {
       style: {
+        display: 'inline-flex',
         flexShrink: 0,
         marginTop: 1
       }
@@ -12538,9 +12587,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     educator = RD_EDUCATOR,
     onClose,
     onCommit,
-    onProfile,
     onLeft,
-    covered = false,
     z = 40
   }) {
     const cfg = RD_BULK[eventKey];
@@ -12548,7 +12595,6 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     const single = people.length === 1;
     const advancedOn = !!cfg.advanced;
     const timesOn = cfg.attendance ? true : rdTimesEditable();
-    const publicNote = eventKey === 'sleep' || eventKey === 'meal';
     const floorOf = c => {
       if (!c || !/^\d{1,2}:\d{2}$/.test(String(c.at))) return null;
       if (cfg.attendance === 'out') return c.status === 'here' ? c.at : null;
@@ -12915,7 +12961,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       changeOpen(opening ? id : null);
     };
     const coveredRef = React.useRef(false);
-    coveredRef.current = covered || pick;
+    coveredRef.current = pick;
     useEffect(() => {
       const esc = e => {
         if (e.key !== 'Escape' || coveredRef.current) return;
@@ -13157,31 +13203,44 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
           display: 'flex',
           flexDirection: 'column',
           gap: 7,
-          minWidth: 0
+          minWidth: 0,
+          alignSelf: 'flex-start'
         }
-      }, React.createElement(RdLabel, null, "Which meal"), React.createElement(RdDropdown, {
+      }, React.createElement(RdLabel, null, "Which meal"), React.createElement("span", {
+        style: {
+          display: 'flex',
+          alignItems: 'center',
+          minHeight: 44
+        }
+      }, React.createElement(RdDropdown, {
         label: "",
         plain: true,
         value: slot,
         options: RD_MEAL_SLOTS,
         onChange: changeSlot,
         ariaLabel: "Which meal"
-      })), warning && (phone ? React.createElement("div", {
+      }))), warning && (phone ? React.createElement("div", {
         style: {
+          display: 'flex',
+          alignItems: 'flex-start',
+          gap: 6,
           padding: '8px 12px',
           borderRadius: 'var(--sd-radius-lg)',
           background: 'var(--sd-colour-surface-orange)',
           flexBasis: '100%'
         }
-      }, React.createElement(SdIcon, {
-        name: "warning",
-        size: 16,
+      }, React.createElement("span", {
         style: {
-          verticalAlign: 'text-bottom',
-          marginRight: 6,
+          display: 'flex',
+          alignItems: 'center',
+          height: 17.5,
+          flexShrink: 0,
           color: 'var(--sd-colour-text-on-orange)'
         }
-      }), React.createElement("span", {
+      }, React.createElement(SdIcon, {
+        name: "warning",
+        size: 16
+      })), React.createElement("span", {
         id: "rd-bs-warn",
         style: {
           fontSize: 12.5,
@@ -13192,6 +13251,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       }, warning)) : React.createElement("div", {
         style: {
           display: 'flex',
+          alignItems: 'center',
           gap: 10,
           padding: '11px 13px',
           borderRadius: 'var(--sd-radius-lg)',
@@ -13202,7 +13262,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         style: {
           color: 'var(--sd-colour-text-on-orange)',
           flexShrink: 0,
-          marginTop: 1
+          display: 'flex'
         }
       }, React.createElement(SdIcon, {
         name: "warning",
@@ -13219,25 +13279,26 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         style: {
           display: 'flex',
           flexDirection: 'column',
-          gap: 6,
+          gap: 7,
+          alignSelf: 'flex-start',
           ...(phone ? {
             flex: '1 1 130px',
             minWidth: 0
           } : {})
         }
-      }, React.createElement(RdLabel, null, "Room temperature (optional)"), React.createElement("input", {
+      }, React.createElement(RdLabel, null, phone ? 'Room temperature' : 'Room temperature (optional)'), React.createElement("input", {
         className: "fp-input",
         type: "text",
         inputMode: "decimal",
         value: roomTemp,
         onChange: e => setRoomTemp(e.target.value),
-        placeholder: "\xB0C",
+        placeholder: phone ? '°C (optional)' : '°C',
         "aria-invalid": roomTempBad || undefined,
         "aria-describedby": roomTempBad ? 'rd-rt-hint' : undefined,
         style: {
           all: 'unset',
           boxSizing: 'border-box',
-          width: 120,
+          width: phone ? '100%' : 120,
           maxWidth: '100%',
           height: 'var(--sd-spacing-touch-target)',
           padding: '0 14px',
@@ -13258,6 +13319,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
           display: 'flex',
           flexDirection: 'column',
           gap: 7,
+          alignSelf: 'flex-start',
           ...(phone && advancedOn && cfg.roomTemp ? {
             flex: '1 1 130px',
             minWidth: 0
@@ -13348,7 +13410,6 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         value: roundNote,
         onChange: e => setRoundNote(e.target.value),
         placeholder: "Optional",
-        "aria-describedby": publicNote ? 'rd-bs-public' : undefined,
         style: {
           all: 'unset',
           boxSizing: 'border-box',
@@ -13360,15 +13421,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
           fontFamily: 'var(--sd-font-family)',
           fontSize: 14
         }
-      }), publicNote && React.createElement("span", {
-        id: "rd-bs-public",
-        style: {
-          fontSize: 12.5,
-          lineHeight: '16px',
-          fontWeight: 600,
-          color: 'var(--sd-colour-text-secondary)'
-        }
-      }, RD_PUBLIC_NOTE)), shownRows.map(r => {
+      })), shownRows.map(r => {
         const c = people.find(x => x.id === r.id);
         const blocked = blockedReason(c);
         const off = r.excluded || !!blocked;
@@ -13571,11 +13624,10 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
           onChange: e => set(r.id, {
             note: e.target.value
           }),
-          "aria-describedby": publicNote ? `rd-pub-${r.id}` : undefined,
           style: {
             all: 'unset',
             boxSizing: 'border-box',
-            ...(single ? {
+            ...(single || advancedOn ? {
               width: '100%'
             } : {
               flex: '1 1 220px',
@@ -13599,40 +13651,15 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
             marginLeft: 'auto'
           }
         }, "Leave ", first, " out of this ", cfg.verb === 'Checked' ? 'check' : 'record');
-        const profileEl = eventKey === 'sleep' && onProfile && React.createElement(RdTextAction, {
-          onClick: () => onProfile(c)
-        }, "Open ", first, "\u2019s profile");
         const excRow = (noteEl || leaveEl) && React.createElement("div", {
           key: "exc",
-          style: {
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 'var(--sd-spacing-1)'
-          }
-        }, React.createElement("div", {
           style: {
             display: 'flex',
             flexWrap: 'wrap',
             alignItems: 'center',
             gap: 'var(--sd-spacing-3)'
           }
-        }, noteEl, leaveEl), noteEl && publicNote || profileEl ? React.createElement("div", {
-          style: {
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            gap: 12,
-            flexWrap: 'wrap'
-          }
-        }, noteEl && publicNote ? React.createElement("span", {
-          id: `rd-pub-${r.id}`,
-          style: {
-            fontSize: 12.5,
-            lineHeight: '16px',
-            fontWeight: 600,
-            color: 'var(--sd-colour-text-secondary)'
-          }
-        }, RD_PUBLIC_NOTE) : React.createElement("span", null), profileEl) : null);
+        }, noteEl, leaveEl);
         const body = [hasState && narrow && React.createElement("div", {
           key: "found",
           style: {
@@ -13651,7 +13678,13 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
           on: isNotApplied(r.value),
           name: c.name,
           onToggle: toggleNotApplied
-        }))), advancedOn && excRow, isMulti && React.createElement(RdPillMulti, {
+        }))), advancedOn && leaveEl && React.createElement("div", {
+          key: "leave-row",
+          style: {
+            display: 'flex',
+            justifyContent: 'flex-end'
+          }
+        }, leaveEl), isMulti && React.createElement(RdPillMulti, {
           key: "multi",
           groups: cfg.perChild.groups,
           options: cfg.perChild.options,
@@ -13695,7 +13728,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
               [key]: v
             }
           } : x))
-        }), !advancedOn && (single ? noteEl : excRow), !single && timesOn && React.createElement("span", {
+        }), advancedOn ? noteEl : single ? noteEl : excRow, !single && timesOn && React.createElement("span", {
           key: "time",
           style: {
             display: 'flex',
@@ -14033,6 +14066,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         }
       }, React.createElement("span", {
         style: {
+          display: 'inline-flex',
           color: 'var(--sd-colour-feedback-error-default)',
           flexShrink: 0
         }
@@ -14694,6 +14728,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         }
       }, o.hint)), on && React.createElement("span", {
         style: {
+          display: 'inline-flex',
           color: 'var(--sd-colour-action-primary)'
         }
       }, React.createElement(SdIcon, {
@@ -14701,6 +14736,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         size: 16
       })), React.createElement("span", {
         style: {
+          display: 'inline-flex',
           color: sub
         }
       }, React.createElement(SdIcon, {
@@ -14959,7 +14995,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       style: {
         all: 'unset',
         cursor: 'pointer',
-        color: 'var(--sd-colour-text-secondary)'
+        color: 'var(--sd-colour-text-secondary)',
+        display: 'inline-flex'
       }
     }, React.createElement(SdIcon, {
       name: "close",
@@ -14983,7 +15020,9 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       style: {
         color: 'var(--sd-colour-text-on-orange)',
         flexShrink: 0,
-        marginTop: 1
+        display: 'flex',
+        alignItems: 'center',
+        height: 20
       }
     }, React.createElement(SdIcon, {
       name: "warning",
@@ -14999,6 +15038,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       id: "rd-med-blocked",
       style: {
         fontSize: 13.5,
+        lineHeight: '20px',
         fontWeight: 700,
         color: 'var(--sd-colour-text-primary)'
       }
@@ -15382,7 +15422,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       style: {
         all: 'unset',
         cursor: 'pointer',
-        color: 'var(--sd-colour-text-secondary)'
+        color: 'var(--sd-colour-text-secondary)',
+        display: 'inline-flex'
       }
     }, React.createElement(SdIcon, {
       name: "close",
@@ -15503,7 +15544,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     }, React.createElement("span", {
       style: {
         color: 'var(--sd-colour-action-primary)',
-        flexShrink: 0
+        flexShrink: 0,
+        display: 'flex'
       }
     }, React.createElement(SdIcon, {
       name: "badge",
@@ -15549,7 +15591,9 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       style: {
         color: 'var(--sd-colour-text-on-orange)',
         flexShrink: 0,
-        marginTop: 1
+        display: 'flex',
+        alignItems: 'center',
+        height: 20
       }
     }, React.createElement(SdIcon, {
       name: "warning",
@@ -15564,6 +15608,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     }, React.createElement("span", {
       style: {
         fontSize: 13.5,
+        lineHeight: '20px',
         fontWeight: 700,
         color: 'var(--sd-colour-text-primary)'
       }
@@ -15586,7 +15631,9 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       style: {
         color: 'var(--sd-colour-text-on-orange)',
         flexShrink: 0,
-        marginTop: 1
+        display: 'flex',
+        alignItems: 'center',
+        height: 20
       }
     }, React.createElement(SdIcon, {
       name: "warning",
@@ -15601,6 +15648,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     }, React.createElement("span", {
       style: {
         fontSize: 13.5,
+        lineHeight: '20px',
         fontWeight: 700,
         color: 'var(--sd-colour-text-primary)'
       }
@@ -15622,7 +15670,9 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     }, React.createElement("span", {
       style: {
         flexShrink: 0,
-        marginTop: 1,
+        display: 'flex',
+        alignItems: 'center',
+        height: 20,
         color: warm ? 'var(--sd-colour-text-on-orange)' : 'var(--sd-colour-text-secondary)'
       }
     }, React.createElement(SdIcon, {
@@ -15638,6 +15688,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     }, givenName && React.createElement("span", {
       style: {
         fontSize: 13.5,
+        lineHeight: '20px',
         fontWeight: 700,
         color: 'var(--sd-colour-text-primary)'
       }
@@ -15780,7 +15831,9 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       style: {
         color: 'var(--sd-colour-text-on-orange)',
         flexShrink: 0,
-        marginTop: 1
+        display: 'flex',
+        alignItems: 'center',
+        height: 20
       }
     }, React.createElement(SdIcon, {
       name: "warning",
@@ -15795,6 +15848,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     }, React.createElement("span", {
       style: {
         fontSize: 13.5,
+        lineHeight: '20px',
         fontWeight: 700,
         color: 'var(--sd-colour-text-primary)'
       }
@@ -16346,7 +16400,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       style: {
         all: 'unset',
         cursor: 'pointer',
-        color: 'var(--sd-colour-text-secondary)'
+        color: 'var(--sd-colour-text-secondary)',
+        display: 'inline-flex'
       }
     }, React.createElement(SdIcon, {
       name: "close",
@@ -16413,6 +16468,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       }
     }, e.hint)), React.createElement("span", {
       style: {
+        display: 'inline-flex',
         color: 'var(--sd-colour-text-secondary)'
       }
     }, React.createElement(SdIcon, {
@@ -19312,7 +19368,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       style: {
         all: 'unset',
         cursor: 'pointer',
-        color: sub
+        color: sub,
+        display: 'inline-flex'
       }
     }, React.createElement(SdIcon, {
       name: "close",
@@ -19694,7 +19751,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       style: {
         all: 'unset',
         cursor: 'pointer',
-        color: RD_INC_SUB
+        color: RD_INC_SUB,
+        display: 'inline-flex'
       }
     }, React.createElement(SdIcon, {
       name: "close",
@@ -20249,14 +20307,15 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         fontWeight: 600,
         color: 'var(--sd-colour-text-secondary)'
       }
-    }, child.name)), !phone && React.createElement("button", {
+    }, child.name, !out && (RD_ROOMS.find(r => r.key === child.room) || {}).name ? ` · ${RD_ROOMS.find(r => r.key === child.room).name}` : '')), !phone && React.createElement("button", {
       type: "button",
       "aria-label": "Cancel",
       onClick: onClose,
       style: {
         all: 'unset',
         cursor: 'pointer',
-        color: 'var(--sd-colour-text-secondary)'
+        color: 'var(--sd-colour-text-secondary)',
+        display: 'inline-flex'
       }
     }, React.createElement(SdIcon, {
       name: "close",
@@ -20616,14 +20675,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     if (!snap || entry.note) rows.push({
       key: 'note',
       label: 'Note',
-      node: entry.note ? React.createElement(React.Fragment, null, "\u201C", entry.note, "\u201D", (entry.kind === 'sleep' || entry.kind === 'meal') && React.createElement("span", {
-        style: {
-          display: 'block',
-          fontSize: 12.5,
-          color: sub,
-          fontWeight: 600
-        }
-      }, RD_PUBLIC_NOTE)) : React.createElement("span", {
+      node: entry.note ? React.createElement(React.Fragment, null, "\u201C", entry.note, "\u201D") : React.createElement("span", {
         style: {
           color: sub
         }
@@ -21151,7 +21203,6 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         value: newNote,
         onChange: e => setNewNote(e.target.value),
         placeholder: "Anything worth passing on",
-        "aria-describedby": kind === 'sleep' || kind === 'meal' ? 'rd-am-public' : undefined,
         style: {
           all: 'unset',
           boxSizing: 'border-box',
@@ -21163,15 +21214,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
           fontFamily: 'var(--sd-font-family)',
           fontSize: 14.5
         }
-      }), (kind === 'sleep' || kind === 'meal') && React.createElement("span", {
-        id: "rd-am-public",
-        style: {
-          fontSize: 12.5,
-          lineHeight: 1.45,
-          fontWeight: 600,
-          color: 'var(--sd-colour-text-secondary)'
-        }
-      }, RD_PUBLIC_NOTE)), timeOn && React.createElement("span", {
+      })), timeOn && React.createElement("span", {
         style: {
           display: 'flex',
           flexDirection: 'column',
@@ -21245,6 +21288,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     rooms = [],
     startView = 'all',
     grouping = null,
+    sortKey: sortIn = 'first',
     count: countNow = null,
     history = [],
     acting = '',
@@ -21275,14 +21319,17 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     const countRooms = amend ? [...new Set(count.children.map(x => x.room))] : roomKeys;
     const draft = amend ? null : rdCountDraft.routine;
     const [view, setView] = useState(() => amend ? countRooms.length === 1 ? countRooms[0] : 'all' : draft && (draft.view === 'all' || roomKeys.includes(draft.view)) ? draft.view : startView);
+    const [opened, setOpened] = useState(() => amend || view === 'all' ? [] : [view]);
     const [ticks, setTicks] = useState(() => amend ? Object.fromEntries(count.children.filter(x => x.counted).map(x => [x.id, {
       by: x.by,
       at: x.at
     }])) : draft ? Object.fromEntries(Object.entries(draft.ticks).filter(([id]) => roster.some(c => String(c.id) === id && c.status === 'here'))) : {});
+    const startedBy = React.useRef(draft && draft.by || acting);
     useEffect(() => {
       if (!amend) rdCountDraft.routine = Object.keys(ticks).length ? {
         ticks,
-        view
+        view,
+        by: startedBy.current
       } : null;
     }, [ticks, view]);
     const [stage, setStage] = useState('count');
@@ -21316,9 +21363,10 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     const byId = new Map(roster.map(c => [c.id, c]));
     const everyone = amend ? count.children.filter(x => byId.has(x.id)).map(x => rowOf(byId.get(x.id))) : roster.filter(c => (c.status === 'here' || c.status === 'expected') && roomKeys.includes(c.room)).map(rowOf);
     const viewKeys = view === 'all' ? countRooms : [view];
-    const people = everyone.filter(p => viewKeys.includes(p.roomKey));
+    const [nameBy, setNameBy] = useState(sortIn === 'last' ? 'last' : 'first');
+    const people = rdSortItems(everyone.filter(p => viewKeys.includes(p.roomKey)), nameBy);
     const tickedRooms = [...new Set(everyone.filter(p => ticks[p.id]).map(p => p.roomKey))];
-    const scopeKeys = amend || view === 'all' ? countRooms : tickedRooms.length ? tickedRooms : [view];
+    const scopeKeys = amend || view === 'all' ? countRooms : [...new Set([...opened, ...tickedRooms, view])].filter(k => roomKeys.includes(k));
     const scope = everyone.filter(p => scopeKeys.includes(p.roomKey));
     const viewSeen = people.filter(p => ticks[p.id]).length;
     const onSite = p => !p.notIn || !!ticks[p.id];
@@ -21362,6 +21410,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     const chooseView = k => {
       if (k === view) return;
       setView(k);
+      if (k !== 'all') setOpened(o => o.includes(k) ? o : [...o, k]);
       setGKey(null);
       setClosedX(null);
     };
@@ -21443,6 +21492,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       if (!amend) rdCountDraft.routine = null;
       const children = record();
       const res = onRecord({
+        by: amend ? undefined : startedBy.current,
         children,
         rooms: [...new Set(children.map(x => x.room))],
         seen: children.filter(x => x.counted).length,
@@ -21641,10 +21691,14 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       key: r.key,
       label: r.name
     }))];
+    const multi = !amend && scopeKeys.length > 1;
+    const hdrSeen = multi ? recSeen : viewSeen;
+    const hdrTotal = multi ? recTotal : total;
+    const roomCounts = multi ? Object.fromEntries(scopeKeys.map(k => [k, `${everyone.filter(p => p.roomKey === k && ticks[p.id]).length} of ${everyone.filter(p => p.roomKey === k && onSite(p)).length}`])) : null;
     const inRoom = (h, k) => k === 'all' || h.rooms.includes(k);
     const chipN = history.length;
     const lastH = history[0];
-    const chipLabel = !lastH ? phone ? 'Counts · 0' : 'Today’s counts · none in this room' : phone ? `Counts · ${chipN}` : `Today’s counts · ${chipN}`;
+    const chipLabel = !lastH ? 'Today’s counts · none in this room' : `Today’s counts · ${chipN}`;
     const dayChip = history.length > 0 && !amend && stage === 'count' && React.createElement("button", {
       type: "button",
       onClick: () => setShowCounts(true),
@@ -21652,7 +21706,11 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       className: "fp-btn",
       style: {
         ...toolBtn(false),
-        padding: '0 14px'
+        padding: '0 14px',
+        ...(phone ? {
+          width: '100%',
+          justifyContent: 'space-between'
+        } : null)
       }
     }, React.createElement(RdHit, {
       n: 3
@@ -21661,7 +21719,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         fontWeight: 600,
         color: 'var(--sd-colour-text-primary)'
       }
-    }, chipLabel), !phone && React.createElement("span", {
+    }, chipLabel), React.createElement("span", {
       style: {
         display: 'inline-flex',
         color: 'var(--sd-colour-text-secondary)'
@@ -21671,7 +21729,10 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       size: 15
     })));
     const showRoomDrop = roomOptions.length > 2;
-    const subtitle = amend ? [countRooms.length > 1 ? `${countRooms.length} rooms` : roomName(countRooms[0]), rdHcView(count).people.map(first).join(' + '), RD_MINS(count.updatedAt || count.at) > RD_MINS(count.at) ? `edited ${RD_AMPM(count.updatedAt)}` : null].filter(Boolean).join(' · ') : scopeKeys.length > 1 ? view === 'all' || scopeKeys.length === countRooms.length ? `All rooms · ${scopeKeys.length} rooms` : `${scopeKeys.length} rooms` : rdJoin(scopeKeys.map(roomName));
+    const subtitle = amend ? [countRooms.length > 1 ? `${countRooms.length} rooms` : roomName(countRooms[0]), RD_MINS(count.updatedAt || count.at) > RD_MINS(count.at) ? first(count.by) : rdHcNames(rdHcCounters(count)), RD_MINS(count.updatedAt || count.at) > RD_MINS(count.at) ? `Last edited ${RD_AMPM(count.updatedAt)}${(() => {
+      const o = rdHcView(count).people.filter(x => x !== count.by).map(first);
+      return o.length ? ` · ${o.join(', ')}` : '';
+    })()}` : null].filter(Boolean).join(' · ') : scopeKeys.length > 1 ? view === 'all' || scopeKeys.length === countRooms.length ? `All rooms · ${scopeKeys.length} rooms` : `${scopeKeys.length} rooms` : rdJoin(scopeKeys.map(roomName));
     const title = amend ? `Edit ${count.by === acting ? 'your' : `${first(count.by)}’s`} ${RD_AMPM(count.at)} count` : 'Head count';
     return React.createElement("div", {
       style: {
@@ -21739,9 +21800,63 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     }, React.createElement("span", {
       style: {
         fontSize: 18,
-        fontWeight: 700
+        fontWeight: 700,
+        ...(phone && !amend ? {
+          display: 'flex',
+          alignItems: 'baseline',
+          gap: 8
+        } : null)
       }
-    }, title), React.createElement("span", {
+    }, amend ? React.createElement("span", {
+      style: {
+        display: 'flex',
+        flexDirection: 'column'
+      },
+      "aria-label": title
+    }, React.createElement("span", {
+      style: {
+        whiteSpace: 'nowrap'
+      }
+    }, "Edit ", count.by === acting ? 'your' : `${first(count.by)}’s`), React.createElement("span", {
+      style: {
+        whiteSpace: 'nowrap'
+      }
+    }, RD_AMPM(count.at), " count")) : title, phone && !amend && React.createElement("b", {
+      "aria-label": `${hdrSeen} of ${hdrTotal} accounted for`,
+      style: {
+        fontSize: 15,
+        fontWeight: 700,
+        whiteSpace: 'nowrap',
+        flexShrink: 0,
+        color: hdrTotal > 0 && hdrSeen === hdrTotal ? 'var(--sd-colour-action-primary)' : 'var(--sd-colour-text-primary)'
+      }
+    }, hdrSeen, " of ", hdrTotal)), phone && amend ? React.createElement("span", {
+      style: {
+        display: 'flex',
+        alignItems: 'baseline',
+        gap: 6,
+        minWidth: 0,
+        fontSize: 13,
+        fontWeight: 600,
+        color: 'var(--sd-colour-text-secondary)'
+      }
+    }, React.createElement("b", {
+      "aria-label": `${hdrSeen} of ${hdrTotal} accounted for`,
+      style: {
+        fontSize: 15,
+        fontWeight: 700,
+        flexShrink: 0,
+        whiteSpace: 'nowrap',
+        color: hdrTotal > 0 && hdrSeen === hdrTotal ? 'var(--sd-colour-action-primary)' : 'var(--sd-colour-text-primary)'
+      }
+    }, hdrSeen, " of ", hdrTotal), React.createElement("span", {
+      style: {
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        minWidth: 0
+      }
+    }, "\xB7 ", subtitle)) : React.createElement("span", {
       style: {
         fontSize: 13,
         fontWeight: 600,
@@ -21750,33 +21865,17 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         overflow: 'hidden',
         textOverflow: 'ellipsis'
       }
-    }, subtitle), phone && history.length > 0 && !amend && stage === 'count' && React.createElement("button", {
-      type: "button",
-      onClick: () => setShowCounts(true),
-      "aria-label": `Today’s counts, ${chipN}`,
-      className: "fp-btn",
-      style: {
-        all: 'unset',
-        cursor: 'pointer',
-        position: 'relative',
-        alignSelf: 'flex-start',
-        fontSize: 13,
-        fontWeight: 700,
-        color: 'var(--sd-colour-action-primary)'
-      }
-    }, React.createElement(RdHit, {
-      n: 3
-    }), "Today\u2019s counts \xB7 ", chipN, " \u203A")), React.createElement("span", {
-      "aria-label": `${viewSeen} of ${total} accounted for`,
-      title: `${viewSeen} of ${total} accounted for`,
+    }, subtitle)), !phone && React.createElement("span", {
+      "aria-label": `${hdrSeen} of ${hdrTotal} accounted for`,
+      title: `${hdrSeen} of ${hdrTotal} accounted for${multi ? ', across all rooms in this count' : ''}`,
       style: {
         fontSize: 17,
         fontWeight: 700,
         whiteSpace: 'nowrap',
         flexShrink: 0,
-        color: allSeen ? 'var(--sd-colour-action-primary)' : 'var(--sd-colour-text-primary)'
+        color: hdrTotal > 0 && hdrSeen === hdrTotal ? 'var(--sd-colour-action-primary)' : 'var(--sd-colour-text-primary)'
       }
-    }, viewSeen, " of ", total, !phone && React.createElement("span", {
+    }, hdrSeen, " of ", hdrTotal, !phone && React.createElement("span", {
       style: {
         fontSize: 13,
         fontWeight: 600,
@@ -21801,7 +21900,12 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     }), React.createElement(SdIcon, {
       name: "close",
       size: 20
-    }))), React.createElement(React.Fragment, null, React.createElement("div", {
+    }))), phone && dayChip && React.createElement("div", {
+      style: {
+        padding: '10px 22px 0',
+        flexShrink: 0
+      }
+    }, dayChip), React.createElement(React.Fragment, null, React.createElement("div", {
       style: {
         padding: phone ? 0 : '12px 22px 8px',
         display: 'flex',
@@ -21838,12 +21942,12 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       style: {
         padding: phone ? '12px 22px 8px' : '0 22px 8px',
         display: 'flex',
-        flexWrap: 'nowrap',
+        flexWrap: phone ? 'nowrap' : 'wrap',
         alignItems: 'center',
         gap: 8,
         flexShrink: 0
       }
-    }, stage === 'count' && hasPeople && phone && React.createElement("button", {
+    }, "   ", stage === 'count' && hasPeople && phone && React.createElement("button", {
       type: "button",
       onClick: toggleSearch,
       "aria-pressed": searchShown,
@@ -21869,14 +21973,18 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       label: "Room",
       value: view,
       options: roomOptions,
+      counts: roomCounts,
       onChange: chooseView,
       defaultKey: startView,
-      plain: true
+      plain: true,
+      fill: phone ? true : '1 1 100%',
+      hideCount: true
     }), !phone && hcChoices.length > 0 && React.createElement(RdDropdown, {
       label: "Group by",
       value: gNow,
       onChange: chooseGrouping,
       defaultKey: defaultKey,
+      fill: true,
       options: [...hcChoices.map(o => ({
         key: o.key,
         label: rdHcLabel(o)
@@ -21884,6 +21992,13 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         key: 'none',
         label: 'None'
       }]
+    }), !phone && React.createElement(RdDropdown, {
+      label: "A\u2013Z",
+      value: nameBy,
+      options: RD_SORTS,
+      onChange: setNameBy,
+      defaultKey: sortIn === 'last' ? 'last' : 'first',
+      fill: true
     })), phone && (hcChoices.length > 0 || !!hc.key && bigList) && React.createElement("button", {
       type: "button",
       onClick: () => setViewOpen(true),
@@ -21989,6 +22104,11 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       value: gNow,
       defaultKey: defaultKey,
       onPick: chooseGrouping,
+      sort: {
+        value: nameBy,
+        onPick: setNameBy,
+        defaultKey: sortIn === 'last' ? 'last' : 'first'
+      },
       fold: !!hc.key && bigList ? {
         open: anyOpen,
         onFold: () => setClosedX(anyOpen ? new Set(hc.groups.map(g => g.key)) : new Set())
@@ -22511,9 +22631,18 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       }), React.createElement("span", {
         style: {
           display: 'flex',
+          flexWrap: 'wrap',
+          alignItems: 'flex-start',
+          gap: '8px 16px',
+          flex: 1,
+          minWidth: 0
+        }
+      }, React.createElement("span", {
+        style: {
+          display: 'flex',
           flexDirection: 'column',
           gap: 4,
-          flex: 1,
+          flex: '1 1 130px',
           minWidth: 0
         }
       }, React.createElement("span", {
@@ -22534,17 +22663,20 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
           fontWeight: 500,
           color: sub
         }
-      }, c.rel)), React.createElement("span", {
-        style: {
-          display: 'flex',
-          flexWrap: 'wrap',
-          gap: '14px 18px'
-        }
-      }, c.phone && link(rdTel(c.phone), 'phone', c.phone), c.email && link(rdMail(c.email), 'mail', c.email)), may && (may.on ? React.createElement("span", null, React.createElement("span", {
+      }, c.rel)), may && (may.on ? React.createElement("span", null, React.createElement("span", {
         className: "ds-pill ds-pill--xs ds-pill--green ds-pill--minimal"
       }, "May collect")) : React.createElement("span", null, React.createElement("span", {
         className: "ds-pill ds-pill--xs ds-pill--grey ds-pill--minimal"
-      }, c.noCollect ? 'Not permitted to collect' : 'May not collect')))));
+      }, c.noCollect ? 'Not permitted to collect' : 'May not collect')))), (c.phone || c.email) && React.createElement("span", {
+        style: {
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 4,
+          flex: '0 0 215px',
+          minWidth: 0,
+          maxWidth: '100%'
+        }
+      }, c.phone && link(rdTel(c.phone), 'phone', c.phone), c.email && link(rdMail(c.email), 'mail', c.email))));
     };
     const section = (title, kids) => React.createElement("div", {
       key: title,
@@ -22657,10 +22789,10 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         flexDirection: 'column',
         gap: 14
       }
-    }, isKid && React.createElement(React.Fragment, null, section('Parents & guardians', set.guardians.map((c, i) => card(c, `g${i}`))), section('Emergency contact', [card(set.emergency, 'e')]), section('Hub contacts', conn === 'offline' ? [React.createElement(RdBlockedNote, {
+    }, isKid && React.createElement(React.Fragment, null, section('Parents & guardians', set.guardians.map((c, i) => card(c, `g${i}`))), section('Contacts', [card(set.emergency, 'e'), ...(conn === 'offline' ? [React.createElement(RdBlockedNote, {
       key: "hub",
-      label: "Hub contacts"
-    })] : set.hub.map((c, i) => card(c, `h${i}`)))), person.kind === 'staff' && React.createElement(React.Fragment, null, section('Contact', [card({
+      label: "Other contacts"
+    })] : set.hub.map((c, i) => card(c, `h${i}`)))])), person.kind === 'staff' && React.createElement(React.Fragment, null, section('Contact', [card({
       name: person.name,
       rel: person.role || 'Educator',
       phone: person.phone,
@@ -22825,7 +22957,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       style: {
         all: 'unset',
         cursor: 'pointer',
-        color: 'var(--sd-colour-text-secondary)'
+        color: 'var(--sd-colour-text-secondary)',
+        display: 'inline-flex'
       }
     }, React.createElement(SdIcon, {
       name: "close",
@@ -23396,7 +23529,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         cursor: 'pointer',
         color: sub,
         flexShrink: 0,
-        position: 'relative'
+        position: 'relative',
+        display: 'inline-flex'
       }
     }, React.createElement(RdHit, {
       n: 12
@@ -24040,6 +24174,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     value,
     defaultKey,
     onPick,
+    sort,
     fold,
     shown,
     onClose
@@ -24107,7 +24242,18 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       value: value,
       defaultKey: defaultKey,
       onPick: onPick
-    }), fold && React.createElement("div", {
+    }), sort && React.createElement(React.Fragment, null, React.createElement("div", {
+      style: {
+        fontSize: 13,
+        fontWeight: 700,
+        padding: '14px 11px 4px'
+      }
+    }, "A\u2013Z"), React.createElement(RdRadioRows, {
+      options: RD_SORTS,
+      value: sort.value,
+      defaultKey: sort.defaultKey,
+      onPick: sort.onPick
+    })), fold && React.createElement("div", {
       style: {
         padding: '10px 0 0'
       }
@@ -24419,6 +24565,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       }
     }, React.createElement("span", {
       style: {
+        display: 'inline-flex',
         color: 'var(--sd-colour-text-secondary)',
         flexShrink: 0
       }
@@ -24441,6 +24588,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       }
     }, sub)), tail && React.createElement("span", {
       style: {
+        display: 'inline-flex',
         color: 'var(--sd-colour-text-secondary)',
         flexShrink: 0
       }
@@ -24815,6 +24963,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     };
     if (d.staleNote) return React.createElement("span", {
       style: {
+        display: 'inline-flex',
         ...tone,
         alignItems: 'center',
         color: RD_SYNC_FG
@@ -24916,6 +25065,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
           style: rowStyle(!!link)
         }, React.createElement("span", {
           style: {
+            display: 'inline-flex',
             color: 'var(--sd-colour-text-secondary)',
             flexShrink: 0
           }
@@ -24937,6 +25087,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
           }
         }, m.none)), link && React.createElement("span", {
           style: {
+            display: 'inline-flex',
             color: 'var(--sd-colour-text-secondary)',
             flexShrink: 0
           }
@@ -24953,6 +25104,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
           style: rowStyle(false)
         }, React.createElement("span", {
           style: {
+            display: 'inline-flex',
             color: 'var(--sd-colour-text-secondary)',
             flexShrink: 0
           }
@@ -24988,6 +25140,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         style: rowStyle(!!act)
       }, React.createElement("span", {
         style: {
+          display: 'inline-flex',
           color: 'var(--sd-colour-text-secondary)',
           flexShrink: 0
         }
@@ -25001,6 +25154,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         }
       }, m.label), m.tail && React.createElement("span", {
         style: {
+          display: 'inline-flex',
           color: 'var(--sd-colour-text-secondary)',
           flexShrink: 0
         }
@@ -25164,6 +25318,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       }
     }, "Account")), React.createElement("span", {
       style: {
+        display: 'inline-flex',
         color: 'var(--sd-colour-text-secondary)',
         flexShrink: 0
       }
@@ -25209,6 +25364,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       }
     }, React.createElement("span", {
       style: {
+        display: 'inline-flex',
         color: scope === 'service' ? 'var(--sd-colour-text-on-cyan)' : 'var(--sd-colour-text-secondary)',
         flexShrink: 0
       }
@@ -25852,7 +26008,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         all: 'unset',
         cursor: 'pointer',
         flexShrink: 0,
-        color: '#fff'
+        color: '#fff',
+        display: 'inline-flex'
       }
     }, React.createElement(SdIcon, {
       name: "menu-hamburger",
@@ -26036,6 +26193,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       }
     }, React.createElement("span", {
       style: {
+        display: 'inline-flex',
         color: 'var(--sd-colour-text-secondary)',
         flexShrink: 0
       }
@@ -26220,7 +26378,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     const logHeadcount = ({
       children,
       rooms,
-      queued
+      queued,
+      by
     }) => saveHeadcounts([{
       id: `hc-${Date.now()}`,
       room: rooms.length > 1 ? 'service' : rooms[0],
@@ -26229,7 +26388,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       updatedAt: RD_NOW,
       rev: 0,
       lastBy: educator.name,
-      by: educator.name,
+      by: by || educator.name,
       children,
       queued: !!queued
     }, ...(rdHcStore.counts || headcounts)]);
@@ -26534,12 +26693,14 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       children,
       rooms,
       seen,
-      of
+      of,
+      by
     }) => {
       setSheet(null);
       logHeadcount({
         children,
         rooms,
+        by,
         queued: conn === 'offline'
       });
       const lost = children.filter(x => x.signedIn && !x.counted).map(x => x.name);
@@ -27253,8 +27414,6 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       flaky: flaky,
       educator: educator,
       sleepTrack: roomEvents && roomEvents.sleepTrack || 'Sleep',
-      onProfile: c => openProfile(c),
-      covered: !!profile,
       onLeft: names => showToast(`Not saved: ${names.join(', ')}`),
       onClose: () => setSheet(null),
       onCommit: (okIds, at, opts, details) => {
@@ -27371,6 +27530,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         rooms: rdCountRooms(scope === 'service' ? null : roomKey),
         startView: scope === 'service' ? 'all' : roomKey,
         grouping: groupingNow,
+        sortKey: sortKey,
         count: hcCount,
         history: headcounts.map(rdHcView),
         acting: educator.name,
@@ -27935,6 +28095,10 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
   }];
   const RD_CHILD_GROUP_DEAL = ['grp-hall', 'grp-indoor', 'grp-hall', 'grp-excursion', 'grp-indoor', 'grp-hall', 'grp-excursion', 'grp-indoor', 'grp-hall', 'grp-excursion', 'grp-indoor', 'grp-hall'];
   function rdChildGroupSeed() {
+    if (new URLSearchParams(window.location.search).get('tags') !== 'seed') return RD_CHILD_GROUP_DEFS.map(g => ({
+      ...g,
+      childIds: []
+    }));
     const kids = RD_ALL_CHILDREN.filter(c => c.room === 'bilby' && c.status === 'here');
     return RD_CHILD_GROUP_DEFS.map(g => ({
       ...g,
@@ -28143,7 +28307,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       style: {
         all: 'unset',
         cursor: 'pointer',
-        color: sub
+        color: sub,
+        display: 'inline-flex'
       }
     }, React.createElement(SdIcon, {
       name: "close",
@@ -28308,7 +28473,7 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     };
   }
   function rdHcSections(people, grouping) {
-    const tries = grouping === 'room' ? ['room'] : [...new Set([grouping, ...RD_HC_FALLBACK])].filter(k => k && k !== 'attendance' && k !== RD_UNGROUPED);
+    const tries = grouping === 'room' ? ['room'] : grouping && grouping !== 'attendance' && grouping !== RD_UNGROUPED ? [grouping] : [];
     for (const k of tries) {
       const r = rdHcTry(people, k);
       if (r) return r;
@@ -28598,6 +28763,56 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       by: 'Priya Anand',
       children: everyone.map(c => rdHcChild(c, c.status === 'here' && !(c.room === 'koala' && RD_HC_OUTSIDE.includes(c.id)), 'Priya Anand', '12:30'))
     });
+    if (new URLSearchParams(window.location.search).get('counts') !== 'short') {
+      const keep = counts.filter(h => h.id === 'koala-12:48');
+      counts.length = 0;
+      keep.forEach(h => counts.push(h));
+      const staff = ['Priya Anand', 'Grace Chen', 'Thomas Nguyen', 'William Walker'];
+      const rooms = RD_ROOMS.filter(r => !RD_COUNT_FIXTURE_ROOMS.includes(r.key));
+      const hm = m => `${Math.floor(m / 60)}:${String(m % 60).padStart(2, '0')}`;
+      let i = 0;
+      for (let m = 9 * 60; m < 12 * 60 + 50; m += 10, i += 1) {
+        const at = hm(m);
+        const by = staff[i % staff.length];
+        if (i % 6 === 5) {
+          counts.push({
+            id: `service-${at}`,
+            room: 'service',
+            rooms: [...new Set(everyone.map(c => c.room))],
+            at,
+            updatedAt: at,
+            by,
+            children: everyone.map(c => rdHcChild(c, c.status === 'here', by, at))
+          });
+          continue;
+        }
+        const r = rooms[i % rooms.length];
+        const kids = RD_ALL_CHILDREN.filter(c => c.room === r.key && (c.status === 'here' || c.status === 'expected'));
+        const out = i % 4 === 1 ? kids.filter((c, k) => k % 5 === 0).map(c => c.id) : [];
+        const rec = {
+          id: `${r.key}-${at}`,
+          room: r.key,
+          rooms: [r.key],
+          at,
+          updatedAt: at,
+          by,
+          children: kids.map(c => rdHcChild(c, c.status === 'here' && !out.includes(c.id), by, at))
+        };
+        if (out.length && i % 8 === 1) {
+          const other = staff[(i + 1) % staff.length];
+          const upd = hm(m + 8);
+          rec.updatedAt = upd;
+          rec.children = rec.children.map(x => x.signedIn && !x.counted && out.indexOf(x.id) < Math.ceil(out.length / 2) ? {
+            ...x,
+            counted: true,
+            by: other,
+            at: upd
+          } : x);
+        }
+        counts.push(rec);
+      }
+      counts.sort((a, b) => RD_MINS(b.at) - RD_MINS(a.at));
+    }
     return counts;
   }
   const rdHcStore = {
@@ -28668,6 +28883,8 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
     } : x);
   }
   const rdHcOf = kids => kids.filter(x => x.signedIn || x.counted).length;
+  const rdHcCounters = h => [h.by, ...(h.children || []).map(x => x.by)].filter((v, i, a) => v && a.indexOf(v) === i).map(n => String(n).split(' ')[0]);
+  const rdHcNames = a => a.length < 3 ? a.join(' and ') : `${a.slice(0, -1).join(', ')} and ${a[a.length - 1]}`;
   function rdHcView(h) {
     const rooms = h.rooms || [...new Set(h.children.map(x => x.room))];
     const lost = h.children.filter(x => x.signedIn && !x.counted);
@@ -28731,6 +28948,15 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
       return f.length > 2 ? `${f[0]}, ${f[1]} + ${f.length - 2} more` : f.join(' + ');
     };
     const n = history.length;
+    const starter = h => String(h.by || (h.people || [])[0] || '').split(' ')[0];
+    const editors = h => (h.people || []).filter(x => x !== h.by).map(x => String(x).split(' ')[0]).join(', ');
+    const editLine = h => `Last edited ${RD_AMPM(h.updatedAt)}${editors(h) ? ` · ${editors(h)}` : ''}`;
+    const roomOf = h => {
+      if (roomF !== 'all') return null;
+      const ks = h.rooms || [h.room];
+      if (ks.length > 1) return ks.length >= rooms.length ? 'All rooms' : `${ks.length} rooms`;
+      return (rooms.find(r => r.key === ks[0]) || {}).name || ks[0];
+    };
     const edited = h => !!h.updatedAt && RD_MINS(h.updatedAt) > RD_MINS(h.at);
     const latest = history[0];
     const hrOf = h => Math.floor(RD_MINS(h.at) / 60);
@@ -28950,7 +29176,13 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
         fontWeight: 600,
         color: 'var(--sd-colour-text-secondary)'
       }
-    }, RD_AMPM(latest.at), " \xB7 Counted by ", who(latest), edited(latest) ? ` · Edited ${RD_AMPM(latest.updatedAt)}` : '')), React.createElement("span", {
+    }, RD_AMPM(latest.at), roomOf(latest) ? ` · ${roomOf(latest)}` : '', " \xB7 Counted by ", edited(latest) ? starter(latest) : rdHcNames(rdHcCounters(latest))), edited(latest) && React.createElement("span", {
+      style: {
+        fontSize: 14,
+        fontWeight: 600,
+        color: 'var(--sd-colour-text-secondary)'
+      }
+    }, editLine(latest))), React.createElement("span", {
       "aria-hidden": "true",
       style: {
         display: 'inline-flex',
@@ -29041,7 +29273,14 @@ function _extends() { return _extends = Object.assign ? Object.assign.bind() : f
             color: 'var(--sd-colour-text-secondary)',
             overflowWrap: 'anywhere'
           }
-        }, RD_AMPM(h.at), " \xB7 ", edited(h) ? `Edited ${RD_AMPM(h.updatedAt)} by` : 'By', " ", who(h))), React.createElement("span", {
+        }, RD_AMPM(h.at), roomOf(h) ? ` · ${roomOf(h)}` : '', " \xB7 ", edited(h) ? starter(h) : rdHcNames(rdHcCounters(h))), edited(h) && React.createElement("span", {
+          style: {
+            fontSize: 13,
+            fontWeight: 600,
+            color: 'var(--sd-colour-text-secondary)',
+            overflowWrap: 'anywhere'
+          }
+        }, editLine(h))), React.createElement("span", {
           "aria-hidden": "true",
           style: {
             display: 'inline-flex',
